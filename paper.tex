@@ -16,7 +16,7 @@
 \newcommand{\SSS}{\mathfrak{S}}
 \newcommand{\e}{\mathrm{e}}
 \newcommand{\Si}{\mathrm{Si}}
-\title{\bf More than $0.7957$ of the zeros of the Riemann zeta
+\title{\bf More than $0.7962$ of the zeros of the Riemann zeta
 function are simple and on the critical
 line\thanks{Verification status (read this first): the chain of
 this paper consists of classical inputs, machine-verified
@@ -24,11 +24,12 @@ identities, certified constants, and numerically evaluated
 connected constants carrying stated two-sided bands. Its claim
 grade is \emph{certified-candidate}, not record: each connected
 constant is proved RATIONAL (a finite signed sum of rational
-polytope volumes, \S\ref{s:conv}); $C_5=\tfrac1{36}$ and
-$\{6\}=-\tfrac1{126}$ are now \emph{identified} at machine
-precision with uniqueness-guaranteed rational reconstruction
-(\S\ref{s:five:conn}; symbolic verification designated), the
-closed form of $\{4,2\}$ remains open --- the Lean
+polytope volumes, \S\ref{s:conv}); all three are now
+\emph{identified} at machine precision with
+uniqueness-guaranteed rational reconstruction ---
+$C_5=\tfrac1{36}$, $\{4,2\}=-\tfrac{23}{420}$,
+$\{6\}=-\tfrac1{126}$ (\S\ref{s:five:conn}; symbolic
+verification designated) --- the Lean
 formalization covers the identity and certificate layers only
 (kernel-compiled, core Lean~4, zero \texttt{sorry};
 \S\ref{s:verif}(f)), the analytic layer is unformalized, and no
@@ -41,13 +42,13 @@ exact rational dual certificate valid on unbounded support
 discrepancy register, and the program's verification gate
 (formalization and external review precede any record claim) are
 in \S\ref{s:verif} and Appendix~\ref{a:record}.}}
-\author{Hongyi Yang\\[2pt]
-\small University of Toronto\\
-\small \texttt{hongy.yang@mail.utoronto.ca}
-\and Shihua Yang\\[2pt]
-\small The University of Hong Kong\\
-\small \texttt{u3590485@connect.hku.hk}}
-\date{August 2026}
+\author{Hongyi Yang\thanks{University of Toronto.
+\textit{E-mail}: \texttt{hongy.yang@mail.utoronto.ca}}
+\and Shihua Yang\thanks{The University of Hong Kong.
+\textit{E-mail}: \texttt{u3590485@connect.hku.hk}}}
+\date{August 2026\\[4pt]
+\small DOI: \href{https://doi.org/10.5281/zenodo.21975236}%
+{10.5281/zenodo.21975236}}
 \begin{document}
 \maketitle
 
@@ -58,9 +59,9 @@ the critical line, respectively distinct. Subject to the
 verification grading stated below and in \S\ref{s:verif}, we
 establish, with ineffective constants,
 \[
-\liminf_{T\to\infty}\frac{N_0^{s}}{N}\;\ge\;0.7957,
+\liminf_{T\to\infty}\frac{N_0^{s}}{N}\;\ge\;0.7962,
 \qquad
-\liminf_{T\to\infty}\frac{N_d}{N}\;\ge\;0.8978,
+\liminf_{T\to\infty}\frac{N_d}{N}\;\ge\;0.8981,
 \]
 and the same for any fixed primitive Dirichlet $L$-function; en
 route, the rungs $0.6916/0.8458$ (one-sided fourth-moment
@@ -69,8 +70,8 @@ and $13/18=0.7222$, $31/36=0.8611$ (exact fourth moment). The proof
 evaluates
 the third through sixth trace moments of the Gabor-compressed
 Weil matrix of \cite{C26} --- $m_3=2$ and $m_4=\tfrac{13}4$
-exactly, $m_5=\tfrac{101}{18}$ (via the identified
-$C_5=\tfrac1{36}$) and $m_6=10.1656(8)$, the remainders being
+exactly, $m_5=\tfrac{101}{18}$ and
+$m_6=\tfrac{12809}{1260}+O(10^{-4})$ via the identified
 connected sine-kernel Ursell constants --- and consumes them through a
 moment-pinned linear program built on an explicit
 Chebyshev--Markov certificate --- an
@@ -96,14 +97,14 @@ the write-out items W1--W3
 are written out in \S\ref{s:writeouts}; the analytic chain is
 certified-candidate; the connected constants are proved
 rational by the polytope dimension theorem of \S\ref{s:conv},
-and two of the three are now \emph{identified}:
-$C_5=\tfrac1{36}$ and $\{6\}=-\tfrac1{126}$, each pinned by a
-seven-rung Romberg ladder converging at machine precision
-(adjacent-row drift $2\times10^{-16}$) with a
-uniqueness-guaranteed unique rational reconstruction, calibrated
-against two exact anchors in the same run
-(\S\ref{s:five:conn}; symbolic verification designated);
-$\{4,2\}=-0.0552(8)$ remains a banded ladder evaluation; the
+and all three are now \emph{identified}:
+$C_5=\tfrac1{36}$, $\{4,2\}=-\tfrac{23}{420}$ and
+$\{6\}=-\tfrac1{126}$, each pinned by a seven-rung Romberg
+ladder converging at machine precision (adjacent-row drift
+$2\times10^{-16}$) with a uniqueness-guaranteed unique rational
+reconstruction, calibrated against two exact anchors in the same
+run --- and $\{4,2\}$ hitting its pre-registered candidate
+(\S\ref{s:five:conn}; symbolic verification designated); the
 consumption layer (inertia, tail, counting) is that of
 \cite{C26}, recalled in \S\ref{s:frame}.
 The consumption step itself is exact: a rational sum-of-squares
@@ -113,7 +114,7 @@ identity, local-law and certificate layers, zero
 certification package accompanies the paper
 (\url{https://github.com/JoshuaHKU/zeta-0.7947-reproduction});
 a falsifier registry
-($199$ pre-registered checks, $35$ fired and converted, all
+($201$ pre-registered checks, $35$ fired and converted, all
 forward-recorded) documents the research trail.
 \end{abstract}
 
@@ -158,9 +159,9 @@ below.
 \S\ref{s:verif}]\label{t:main}
 With ineffective constants,
 \[
-\liminf_{T\to\infty}\frac{N_0^{s}(T,2T)}{N(T,2T)}\ge 0.7957,
+\liminf_{T\to\infty}\frac{N_0^{s}(T,2T)}{N(T,2T)}\ge 0.7962,
 \qquad
-\liminf_{T\to\infty}\frac{N_d(T,2T)}{N(T,2T)}\ge 0.8978,
+\liminf_{T\to\infty}\frac{N_d(T,2T)}{N(T,2T)}\ge 0.8981,
 \]
 and the same holds for the zeros of any fixed primitive Dirichlet
 $L$-function. En route, each rung consuming exactly what its
@@ -177,12 +178,11 @@ The dependency structure of Theorem~\ref{t:main} is graded
 explicitly in \S\ref{s:verif}: the $13/18$ rung rests on the
 classical-technology proof of Lemma D (\S\ref{s:four}) and
 the consumption layer of \cite{C26} (recalled in
-\S\ref{s:frame}); the $0.7957$ headline
+\S\ref{s:frame}); the $0.7962$ headline
 additionally consumes the identified constants
-$C_5=\tfrac1{36}$, $\{6\}=-\tfrac1{126}$
-(\S\ref{s:five:conn}) and the banded $\{4,2\}$ of
-\S\ref{s:five} (the pairing layer is exact,
-\S\ref{s:five:cert}). Nothing in this paper bears on the Riemann Hypothesis
+$C_5=\tfrac1{36}$, $\{4,2\}=-\tfrac{23}{420}$,
+$\{6\}=-\tfrac1{126}$ (\S\ref{s:five:conn}; the pairing
+layer is exact, \S\ref{s:five:cert}). Nothing in this paper bears on the Riemann Hypothesis
 itself: proportion statements are insensitive to $o(N)$ off-line
 zeros: the inputs (functional equation, explicit formula, mean
 values of Dirichlet polynomials of length $\le T$) are satisfied
@@ -215,7 +215,7 @@ falsifier checks, a forward-only discrepancy register, and a
 kernel-compiled Lean layer (\S\ref{s:verif}), replacing the
 traditional single-grade presentation of \cite{C26}. The
 constants rise from $2/3$ and $\tfrac56$ (distinct) to
-$0.7957$ and $0.8978$.
+$0.7962$ and $0.8981$.
 
 \subsection*{Relation to the pair-correlation route}
 
@@ -231,7 +231,7 @@ objects, controlled by the Siegel--Walfisz theorem and Vaughan's
 estimate alone --- through the compressed-matrix framework, with
 no hypothesis on the zeros. The two-thirds threshold, previously
 reached only under such hypotheses, is crossed here
-unconditionally with margin ($0.7957>2/3$), and the additional
+unconditionally with margin ($0.7962>2/3$), and the additional
 information consumed relative to the bandwidth-one data is
 exactly the third-through-sixth moment chain of
 \S\S\ref{s:cert}--\ref{s:five}.
@@ -1485,9 +1485,10 @@ identically --- verified symbolically in the certification
 audit and kernel-compiled in the Lean package,
 \S\ref{s:verif}(f)), with $\{2,2,2\}=\tfrac{131}{420}$ now
 \emph{certified exactly} (Proposition~\ref{p:t222}),
-$\{4,2\}=-0.0552(8)$ (the four-cycle connected object consumed
-jointly with a spectator pair), and $\{6\}=-\tfrac1{126}$
-(identified, \S\ref{s:five:conn}). The former write-out items W1--W3
+$\{4,2\}=-\tfrac{23}{420}$ (the four-cycle connected object
+consumed jointly with a spectator pair) and
+$\{6\}=-\tfrac1{126}$ (both identified,
+\S\ref{s:five:conn}). The former write-out items W1--W3
 are written out in \S\ref{s:writeouts}.
 
 \subsection{The pairing layer certified exactly}\label{s:five:cert}
@@ -1633,57 +1634,68 @@ class contrast directly.
 
 \subsection{The connected values}\label{s:five:conn}
 
-$C_5=\int O_5C_5^{\mathrm{Urs}}=\tfrac1{36}$ and
-$\{6\}=-\tfrac1{126}$, \emph{identified at machine
-precision}: seven-rung grouped midpoint ladders
-($dv=0.08\ldots0.00125$ for $C_5$; $0.2\ldots0.0125$ for
-$\{6\}$; GPU-accelerated engine with support pruning, term trie
-and negation symmetry, mathematically identical to the
-reference engine and cross-validated bitwise on three
-architectures) whose Romberg tables converge with adjacent-row
-drift $2\times10^{-16}$; within the error band the rational
-reconstruction is \emph{unique by the
-$Q^{2}\ge1/(2\varepsilon)$ criterion}, giving $\tfrac1{36}$
-(dev $6.9\times10^{-18}$) and $-\tfrac1{126}$ (dev
-$6.9\times10^{-18}$). Credibility anchors: the identical
-pipeline reproduces, in the same run, the exact values $0$
-($b=3$, dev $6\times10^{-19}$) and $\Phi_4=-\tfrac1{60}$
-($b=4$, dev $3.5\times10^{-18}$); and the raw-ladder error
-ratios against the identified fractions converge to the pure
-$h^{2}$ value $4.000$. The seven-cycle constant is identified
-at one rung less as $C_7=-\tfrac{17}{360}$ (error band
-$1.5\times10^{-6}$, unique below the uniqueness denominator
-bound $582$; not consumed in this paper). Symbolic verification
-of the identified fractions by the exact-integration algorithm
-of Proposition~\ref{p:t222} is the designated closure (item N1;
-these values enter the consumption of \S\ref{s:lp} at the
-identification grade stated in \S\ref{s:verif}(d)). An
-observation, not consumed: all identified constants of the
+$C_5=\int O_5C_5^{\mathrm{Urs}}=\tfrac1{36}$,
+$\{4,2\}=-\tfrac{23}{420}$ and $\{6\}=-\tfrac1{126}$,
+\emph{identified at machine precision}: seven-rung grouped
+midpoint ladders ($dv$ down to $0.00125$ for $C_5$, $0.0125$
+for $\{6\}$, $0.0015625$ for the four-dimensional
+spectator-pair variant of $\{4,2\}$; GPU-accelerated engine
+with support pruning, term trie and negation symmetry,
+mathematically identical to the reference engines and
+cross-validated bitwise on three architectures) whose Romberg
+tables converge with adjacent-row drift $2\times10^{-16}$;
+within the error band the rational reconstruction is
+\emph{unique by the $Q^{2}\ge1/(2\varepsilon)$ criterion}.
+Credibility anchors: the identical pipeline reproduces, in the
+same runs, the exact values $0$ ($b=3$) and
+$\Phi_4=-\tfrac1{60}$ ($b=4$) at $10^{-18}$; the raw-ladder
+error ratios against the identified fractions converge to the
+pure $h^{2}$ value $4.000$; and $\{4,2\}$ \emph{hit its
+pre-registered candidate} ($-\tfrac{23}{420}$, registered from
+three coarse reference rungs before the fine ladder ran), its
+three placement-class components identifying separately as
+$-\tfrac2{315}$, $-\tfrac1{1260}$, $-\tfrac1{252}$ with
+$6(-\tfrac2{315})+6(-\tfrac1{1260})+3(-\tfrac1{252})
+=-\tfrac{23}{420}$. The seven-cycle constant is identified at
+one rung less as $C_7=-\tfrac{17}{360}$ (not consumed).
+Symbolic verification of the identified fractions by the
+exact-integration algorithm of Proposition~\ref{p:t222} is the
+designated closure (item N1; the values enter \S\ref{s:lp} at
+the identification grade of \S\ref{s:verif}(d)). The mixed
+odd-block class $\{3,3\}$ \emph{vanishes}: identically zero
+--- exact floating-point zeros, not small numbers --- on every
+grid tested (two protocols, four resolutions, all three
+placement classes), the model-side face of the odd-block
+vanishing proved on the arithmetic side in \S\ref{s:five};
+the residual allowance it formerly carried in the $m_6$ budget
+is retired (register D17). An
+observation, not consumed: the identified constants of the
 program --- $\tfrac13$, $\tfrac7{60}$, $\tfrac1{30}$,
 $-\tfrac1{60}$, $\tfrac{131}{420}$, $\tfrac1{36}$,
-$-\tfrac1{126}$, $-\tfrac{17}{360}$ --- have denominators
-dividing $2520$. (Earlier endpoint-grid evaluations are retired
---- register item, 32nd conversion; the anchor correction of
-\S\ref{s:five:cert} was forced by the same audit.)
+$-\tfrac{23}{420}$, $-\tfrac1{126}$ and the $\{4,2\}$
+components --- have denominators dividing $1260$; adding
+$C_7=-\tfrac{17}{360}$, all divide $2520=\mathrm{lcm}(1..9)$.
+(Earlier endpoint-grid evaluations are retired --- register
+item, 32nd conversion.)
 Fluctuations are
 controlled by the factor-wise variance lemmas (the transports of
 Theorem~\ref{t:D}; the resolved multi-dimensional comb exhibits
 are bracketed by the aggregate faces and the resolved four-cycle
 case --- now Proposition~\ref{p:W1}). End-to-end faces: the
 assembled
-$m_5=\tfrac{101}{18}=5.6\overline{1}$ and $m_6=10.1656(8)$
-both lie inside the sine-model bands \eqref{e:guebands}.
+$m_5=\tfrac{101}{18}=5.6\overline{1}$ and
+$m_6=\tfrac{12809}{1260}=10.16587\ldots$ both lie inside the
+sine-model bands \eqref{e:guebands}.
 
 \emph{Grading note.} By the dimension theorem of
-\S\ref{s:conv} every connected constant is rational.
-$C_5=\tfrac1{36}$ and $\{6\}=-\tfrac1{126}$ are consumed at
-\emph{identification} grade (machine-precision Romberg limit +
-uniqueness-guaranteed reconstruction + double exact-anchor
-calibration; symbolic verification by the algorithm of
-Proposition~\ref{p:t222} designated); $\{4,2\}$ is consumed
-with its stated band. The headline claim is exactly: \emph{the
-stated bounds hold provided the identified values are correct
-and $\{4,2\}$ lies within its band} --- the precise grading is
+\S\ref{s:conv} every connected constant is rational. All three
+are consumed at \emph{identification} grade (machine-precision
+Romberg limit + uniqueness-guaranteed reconstruction + double
+exact-anchor calibration + the pre-registration hit for
+$\{4,2\}$; symbolic verification by the algorithm of
+Proposition~\ref{p:t222} designated). The headline claim is
+exactly: \emph{the stated bounds hold provided the identified
+values are correct} --- the precise grading is
 \S\ref{s:verif}(d).
 
 \subsection{The convolution calculus, rationality, and the
@@ -1749,24 +1761,25 @@ Theorem~\ref{t:main}}\label{s:lp}
 With $(m_1,\dots,m_4)=(1,\tfrac43,2,\tfrac{13}4)$ pinned
 two-sidedly (Theorem~\ref{t:m3}, Theorem~\ref{t:D},
 \eqref{e:moments}) and the identified values of
-\S\ref{s:five:conn}, the fifth-moment constraint is exact and
-the sixth carries a single residual band:
+\S\ref{s:five:conn}, both remaining constraints are exact
+rationals:
 \[
 m_5\;\ge\;M_5:=\tfrac{67}{12}+\tfrac1{36}=\tfrac{101}{18},
 \qquad
 m_6\;\le\;M_6:=\tfrac{39}4+\tfrac{131}{420}
-+\tfrac16-\tfrac1{126}-0.0552+0.0008+0.0002
-=\tfrac{3202427}{315000},
++\tfrac16-\tfrac{23}{420}-\tfrac1{126}
+=\tfrac{12809}{1260}.
 \]
-the residual itemizing as the $\{4,2\}$ band top ($+0.0008$)
-plus the frozen-slot transport ($0.0002$); the $C_5$ and
-$\{6\}$ band contributions are retired by the identifications,
-the $\{2,2,2\}$ contribution by Proposition~\ref{p:t222}. The
-consumption is an exact certificate:
+Every band contribution is retired: the constant bands by the
+identifications ($\{2,2,2\}$ by Proposition~\ref{p:t222}),
+and the residual allowance formerly carried for the mixed
+odd-block class $\{3,3\}$ by its written-out vanishing
+(\S\ref{s:five:conn}). The consumption is an exact
+certificate:
 
 \begin{lemma}[Exact dual certificate]\label{l:dual}
-Let $a=\tfrac{2673}{5000}$, $b=\tfrac{13149}{10000}$,
-$c=\tfrac{10303}{5000}$ and
+Let $a=\tfrac{5323}{10000}$, $b=\tfrac{6561}{5000}$,
+$c=\tfrac{10293}{5000}$ and
 \[
 P(x)\;=\;\frac{\bigl[(x-a)(x-b)(x-c)\bigr]^{2}}{(abc)^{2}}
 \;=\;\sum_{k=0}^{6}y_kx^{k}.
@@ -1781,15 +1794,14 @@ $m_5\ge M_5$, $m_6\le M_6$:
 \;=\;\sum_{k\le4}y_km_k+y_5m_5+y_6m_6
 \;\le\;\sum_{k\le4}y_km_k+y_5M_5+y_6M_6\;=:\;w_0(M_5,M_6),
 \]
-and $w_0$ is affine in $M_6$ with $y_6>0$, hence maximized at
-the $\{4,2\}$ band top (the single residual band; $M_5$ is
-exact). There, exact rational arithmetic gives
+with $M_5$ and $M_6$ exact rationals. Exact rational
+arithmetic gives
 \[
 w_0\;=\;
-\tfrac{281255854405058410769981}{2753785207121825824389981}
-\;=\;0.10213\ldots,
+\tfrac{829278553005924403328783}{8140995278473611944088783}
+\;=\;0.10186\ldots,
 \qquad
-1-2w_0\;\ge\;0.7957,\qquad 1-w_0\;\ge\;0.8978 .
+1-2w_0\;\ge\;0.7962,\qquad 1-w_0\;\ge\;0.8981 .
 \]
 \end{lemma}
 
@@ -1885,7 +1897,7 @@ per-bin Siegel--Walfisz face falling tenfold over the range;
 Bell(5)/Bell(6) gates exact; five- and six-fold product faces
 green at all heights; well-spacing zero violations; hybrid size
 control $24$--$31\times$ height-stable; consumption LP
-grid-stable. The registry: $199$ pre-registered checks, $164$
+grid-stable. The registry: $201$ pre-registered checks, $166$
 passed, $35$ fired and converted, all forward-recorded (the
 $31$st--$35$th conversions belong to the corrected-constants
 pass, the Lean compiles and the spectral-route audit,
@@ -1945,15 +1957,18 @@ maintainers' toolchain (\S\ref{s:verif}(f)).
 The identification pass (August 17) ran the accelerated ladder
 engine (support pruning $171\times$ at $b=6$, term trie, fused
 kernels, negation symmetry --- mathematically identical to the
-reference engine, validated gate-by-gate against it and bitwise
-across V100/consumer-GPU/256-thread-CPU paths) to seven Romberg
-rungs per constant: $C_5$ to $dv=0.00125$ ($3200^4$ grid),
-$\{6\}$ to $dv=0.0125$ ($320^5$), $C_7$ to $dv=0.025$
-($160^6$). Two prediction gates pre-registered from the
-$h^{2}$-model before the runs (F-RAT) were both confirmed by
-the error-ratio tables; the two exact anchors ($0$ at $b=3$,
-$-\tfrac1{60}$ at $b=4$) were reproduced by the identical
-pipeline at $10^{-18}$ in the same run.
+reference engines, validated gate-by-gate against them and
+bitwise across V100/consumer-GPU/256-thread-CPU paths) to seven
+Romberg rungs per constant: $C_5$ to $dv=0.00125$ ($3200^4$
+grid), $\{6\}$ to $dv=0.0125$ ($320^5$), the $\{4,2\}$
+spectator-pair variant to $dv=0.0015625$ ($2560^4$; total wall
+$234$\,s), $C_7$ to $dv=0.025$ ($160^6$). Three prediction
+gates pre-registered before the fine runs (F-RAT, from
+$h^{2}$-model fits of the coarse rungs) were all confirmed ---
+for $\{4,2\}$ the fine ladder \emph{hit the pre-registered
+fraction} $-\tfrac{23}{420}$ exactly; the exact anchors ($0$
+at $b=3$, $-\tfrac1{60}$ at $b=4$) were reproduced by the
+identical pipeline at $10^{-18}$ in the same runs.
 
 \begin{remark}[Effective faces, ineffective theorem]
 The faces are finite-height measurements with effective
@@ -2009,21 +2024,19 @@ W1 (Proposition~\ref{p:W1}), W2 (Lemma~\ref{l:W2}), W3
 complete (elementary); W1 and W3 are proved at the grade of
 layer (b), since they consume the same spectral transports.
 
-\emph{(d) Numerical constants and identified values.}
-N1 status: all connected constants are proved rational
-(\S\ref{s:conv}). $C_5=\tfrac1{36}$ and $\{6\}=-\tfrac1{126}$
+\emph{(d) Identified values.} N1 status: all connected
+constants are proved rational (\S\ref{s:conv}) and all three
 are \emph{identified} --- machine-precision Romberg limits
 (adjacent-row drift $2\times10^{-16}$), uniqueness-guaranteed
 rational reconstruction, double exact-anchor calibration in the
-same pipeline, cross-architecture bitwise agreement, and
-pre-registered $h^{2}$ prediction gates
-(\S\ref{s:five:conn}) --- consumed at identification grade;
-their symbolic verification by the exact-integration algorithm
-of Proposition~\ref{p:t222} is the designated closure.
-$\{4,2\}$ remains a banded ladder evaluation ($-0.0552(8)$;
-its engine variant is specified for the same accelerated
-pipeline). $C_7=-\tfrac{17}{360}$ is identified one rung
-weaker and is not consumed. The \emph{certificate family} of
+same pipeline, cross-architecture bitwise agreement,
+pre-registered $h^{2}$ prediction gates, and for $\{4,2\}$ a
+pre-registration hit with componentwise identification
+(\S\ref{s:five:conn}) --- consumed at identification grade.
+Their symbolic verification by the exact-integration algorithm
+of Proposition~\ref{p:t222} is the designated closure of N1.
+$C_7=-\tfrac{17}{360}$ is identified one rung weaker and is
+not consumed. The \emph{certificate family} of
 Appendix~\ref{a:cert}(A5) makes the payoff graded and
 plug-in: any future enclosure yields an exact certificate, and a
 sign-only certification already yields $0.740/0.870$. N2
@@ -2121,6 +2134,70 @@ compiled, \S\ref{s:verif}(f); the analytic layer remains), and
 external review. No Riemann Hypothesis, zero-density input,
 pair-correlation conjecture, or Kloosterman technology is used
 anywhere. Nothing here bears on RH itself.
+
+\section{Outlook: routes to higher
+proportions}\label{s:outlook}
+
+The chain of this paper exhausts the $k\le6$ moment tower at
+the identification level; we record, with the quantitative
+evidence in hand, where further gains can come from.
+
+\emph{(a) Closing the present chain.} The designated closures
+are the symbolic verification of the three identified fractions
+by the exact-integration algorithm of
+Proposition~\ref{p:t222} (reducing item N1 from
+identification to proof), the formalization of the analytic
+layer, and external review. These change grades, not
+constants.
+
+\emph{(b) The $k=8$ rung.} The seven-cycle constant is already
+identified ($C_7=-\tfrac{17}{360}$, \S\ref{s:five:conn}), and
+the moment cone over the pinned $(m_1,\dots,m_6)$ forces
+$m_7\ge19.123$, which intersected with the assembled
+reconnaissance band leaves $m_7\in[19.123,\,19.136]$. Linear
+programming over this sharpened interval prices the fully
+pinned $k=8$ tower at $0.797$--$0.802$, the exact landing
+point determined by the model values. What is missing is
+analytic, not numerical: the transports of the mixed joints
+(the $\{5,2\}$ class and the $m_8$ ledger with its
+$\{2^4\}$, $\{4,2,2\}$, $\{4,4\}$, $\{6,2\}$ classes)
+at the grade of \S\S\ref{s:trunc}--\ref{s:four}. The
+machinery is $k$-uniform (product identities, local law,
+frozen-slot collapses, the partition-cyclic formula), so the
+labour is bookkeeping rather than new technology.
+
+\emph{(c) The tower's horizon.} The moment route cannot stop
+at any fixed proportion --- level repulsion forces
+$w_0(k)\to0$ as all moments are pinned --- but the marginal
+gain per rung is now governed by the mismatch between the
+LP-extremal's implied moments and the sine-model moments,
+which the $k\le8$ data show to be closing. Crude
+extrapolation puts $0.9$ near $k\approx20$--$40$: reachable
+only if the per-$k$ bookkeeping of (b) is automated on both
+sides. On the model side this is done (the identification
+engine evaluates any pure or joint cumulant class); the
+arithmetic side is the open half.
+
+\emph{(d) Beyond moments.} Moments are global functionals,
+while the mass at the origin is killed by a local property
+(level repulsion: spacing density $\sim x^{2}$). A
+consumption mechanism accepting localized test functions ---
+a Christoffel-type dual at non-polynomial functions with
+arithmetically computable values --- would bypass the tower's
+diminishing returns entirely; whether the compressed-matrix
+framework admits one is, in our view, the most consequential
+open question raised by this work.
+
+\emph{(e) A structural question.} Every constant identified
+by the program --- $\tfrac13$, $\tfrac7{60}$, $\tfrac1{30}$,
+$-\tfrac1{60}$, $\tfrac{131}{420}$, $\tfrac1{36}$,
+$-\tfrac{23}{420}$, $-\tfrac1{126}$, $-\tfrac{17}{360}$ ---
+is a rational with denominator dividing
+$2520=\mathrm{lcm}(1..9)$. The dimension theorem of
+\S\ref{s:conv} explains rationality but not the small
+denominators; a closed-form theory of these polytope volumes
+(producing all $C_b$ at once) would collapse the model side of
+every future rung.
 
 \section*{Acknowledgements}
 
@@ -2360,6 +2437,29 @@ move $0.0278(1)\to\tfrac1{36}$, $-0.0078(8)\to-\tfrac1{126}$
 and the theorem $0.7947\to0.7957$. \emph{Impact: direct ---
 band collapse by eleven orders of magnitude on two of the
 three consumed constants.}
+\item[D16.] The $\{4,2\}$ spectator-pair variant (specified
+with three coarse reference rungs and the pre-registered
+candidate $-\tfrac{23}{420}$) was ported to the accelerated
+engine, passed its four gates (C$_4$ mechanics; bitwise
+reference agreement; archive cross-check
+$-0.0588$/$-0.0558$; band), and its seven-rung ladder
+identified $\{4,2\}=-\tfrac{23}{420}$, hitting the
+pre-registered candidate, with components
+$-\tfrac2{315},-\tfrac1{1260},-\tfrac1{252}$. All three N1
+constants are now identified; the theorem moves
+$0.7957\to0.7960$. \emph{Impact: direct --- the last
+constant band is retired; only the transport allowance
+remains.}
+\item[D17.] The residual $m_6$ allowance ($0.0002$), formerly
+labelled a frozen-slot transport allowance, is traced in the
+audit ledger to the adopted band of the mixed odd-block class
+$\{3,3\}$; the class is written out as vanishing (identically
+zero on every grid under both protocols, all placements ---
+the model face of the arithmetic odd-block vanishing of
+\S\ref{s:five}) and the allowance is retired. $M_6$ becomes
+the exact rational $\tfrac{12809}{1260}$ and the theorem moves
+$0.7960\to0.7962$. \emph{Impact: direct --- the consumption
+inputs are now exact rationals end to end.}
 \end{itemize}
 
 \noindent The registry's $30$th conversion occurred during the
@@ -2534,8 +2634,8 @@ scenario):
 scenario (what the 4D/5D exact integration certifies) &
 $1-2w_0\ge$ & $1-w_0\ge$\\
 \hline
-current status (identified $C_5,\{6\}$; $u_{42}$ band top) &
-$0.79573$ & $0.89787$\\
+current status (all identified; allowance retired) &
+$0.79627$ & $0.89814$\\
 enclosure width $0.01$ & $0.77418$ & $0.88709$\\
 enclosure width $0.04$ & $0.74299$ & $0.87149$\\
 signs only: $C_5\ge0$, $\{4,2\}\le0$, $\{6\}\le0$ &
@@ -2565,32 +2665,32 @@ scale.
 The polynomial of Lemma~\ref{l:dual} expands (numerator,
 monic) as
 \[
-x^6-\tfrac{39101}{5000}x^5+\tfrac{2431693249}{100000000}x^4
--\tfrac{2387347458831}{62500000000}x^3
-+\tfrac{39629877598393353}{1250000000000000}x^2
--\tfrac{40865740767194551461}{3125000000000000000}x
+x^6-\tfrac{39031}{5000}x^5+\tfrac{2422533313}{100000000}x^4
+-\tfrac{4746141355593}{125000000000}x^3
++\tfrac{39293368568783721}{1250000000000000}x^2
+-\tfrac{20200560698400422913}{1562500000000000000}x
 +(abc)^2,
 \]
-with $(abc)^2=\tfrac{131132628910563134494761}
+with $(abc)^2=\tfrac{129222147277358919747441}
 {62500000000000000000000}$, so $y_0=1$,
-$y_5=-\tfrac{39101}{5000}(abc)^{-2}<0$, $y_6=(abc)^{-2}>0$.
-At $M_5=\tfrac{101}{18}$ (exact) and the $\{4,2\}$-band-top
-$M_6=\tfrac{3202427}{315000}$, exact rational arithmetic gives
-$w_0=\tfrac{281255854405058410769981}
-{2753785207121825824389981}$, whence the headlines
-$1-2w_0\ge\tfrac{7957}{10000}$,
-$1-w_0\ge\tfrac{8978}{10000}$.
+$y_5=-\tfrac{39031}{5000}(abc)^{-2}<0$, $y_6=(abc)^{-2}>0$.
+At the exact rationals $M_5=\tfrac{101}{18}$ and
+$M_6=\tfrac{12809}{1260}$, exact rational arithmetic gives
+$w_0=\tfrac{829278553005924403328783}
+{8140995278473611944088783}$, whence the headlines
+$1-2w_0\ge\tfrac{7962}{10000}$,
+$1-w_0\ge\tfrac{8981}{10000}$.
 
 \emph{Construction of the atoms.} The triple
-$(a,b,c)=(\tfrac{2673}{5000},\tfrac{13149}{10000},
-\tfrac{10303}{5000})$ is extracted from the primal extremal
+$(a,b,c)=(\tfrac{5323}{10000},\tfrac{6561}{5000},
+\tfrac{10293}{5000})$ is extracted from the primal extremal
 measure of the moment problem, then rationalized and locally
 re-optimized in exact arithmetic; its validity does not depend
 on the extraction. In detail: (i) the discretized linear
 program (maximize origin mass subject to $m_1,\dots,m_4$
 pinned, $m_5\ge M_5$, $m_6\le M_6$; grid $dx=0.0005$) has
 optimal measure supported on four atoms,
-$\{0,\ 0.5347,\ 1.3150,\ 2.0607\}$ ---
+$\{0,\ 0.5332,\ 1.3128,\ 2.0592\}$ ---
 complementary slackness forces the optimal dual polynomial to
 vanish doubly at the three non-origin atoms, which dictates the
 shape $P=[(x-a)(x-b)(x-c)]^{2}/(abc)^{2}$; (ii) the atoms are
@@ -2603,9 +2703,8 @@ $1>0$, so $y_5<0<y_6$ automatically --- hence the LP solver, the
 grid, and the extraction all leave the trust base, and only the
 exact rational evaluation of $w_0$ at the chosen triple remains,
 which is Lemma~\ref{l:dual} (kernel recompile queued). The
-rounding cost of the rationalization is $2\times10^{-6}$ in the
-headline (grid LP optimum $0.7957315$ against the certified
-$0.7957293$). Verification:
+rounding cost of the rationalization is below $10^{-6}$ in
+the headline. Verification:
 \texttt{certification/certify\_lp.py}; Lean:
 \texttt{lean/RhGate/Certificate.lean}, kernel-compiled
 (\S\ref{s:verif}(f)): the denominator-cleared identity, this

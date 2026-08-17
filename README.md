@@ -1,4 +1,4 @@
-# More than 0.7957 of the zeros of the Riemann zeta function are simple and on the critical line
+# More than 0.7962 of the zeros of the Riemann zeta function are simple and on the critical line
 
 Preprint + self-contained reproduction, certification and Lean
 packages. / 预印本与自包含的复现、认证及 Lean 形式化包。
@@ -36,8 +36,11 @@ cd lean/RhGate && lake build   # toolchain: leanprover/lean4:v4.33.0
 
 Headline, certified in exact rational arithmetic and kernel-checked
 in core Lean 4 (the rational-arithmetic layer):
-**N₀ˢ/N ≥ 1 − 2w₀ ≥ 0.7957, N_d/N ≥ 1 − w₀ ≥ 0.8978** at the
-identified constants C₅ = 1/36, {6} = −1/126 (gpu/COMPUTATION_REPORT.md).
+**N₀ˢ/N ≥ 1 − 2w₀ ≥ 0.7962, N_d/N ≥ 1 − w₀ ≥ 0.8981** at exact
+rational inputs end to end: C₅ = 1/36, {4,2} = −23/420,
+{6} = −1/126 identified (gpu/COMPUTATION_REPORT.md), M₆ = 12809/1260.
+
+DOI: [10.5281/zenodo.21975236](https://doi.org/10.5281/zenodo.21975236)
 
 ## Claim grade / 声明等级
 

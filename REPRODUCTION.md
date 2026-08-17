@@ -1,10 +1,11 @@
 # Reproduction checklist — preprint-0.8/paper.tex
 
+DOI: 10.5281/zenodo.21975236
 Public repository / 公开仓库:
 https://github.com/JoshuaHKU/zeta-0.7947-reproduction
 
 Self-contained reproduction and certification package for the paper
-"More than 0.7957 of the zeros of the Riemann zeta function are simple
+"More than 0.7962 of the zeros of the Riemann zeta function are simple
 and on the critical line" (authors: Hongyi Yang, Shihua Yang;
 mathematical development by Claude (Anthropic), see the paper's
 Acknowledgements). The paper is built on the publicly posted
@@ -32,14 +33,16 @@ short set (≈ 15 min); the midpoint ladders are long gates (hours).
     cd certification
     python3 certify_lp.py            # exact Fractions; < 1 s
 
-Recorded 2026-08-17 (identified constants C5 = 1/36, {6} = −1/126;
-see gpu/COMPUTATION_REPORT.md and paper §5.5/D15):
-- P(x) at atoms (2673/5000, 13149/10000, 10303/5000): perfect
+Recorded 2026-08-17 (ALL constants identified: C5 = 1/36,
+{4,2} = −23/420, {6} = −1/126; gpu/COMPUTATION_REPORT.md §4/4bis,
+paper §5.5/D15-D16):
+- P(x) at atoms (5323/10000, 6561/5000, 10293/5000): perfect
   square, P(0)=1, y₅<0, y₆>0 — UNBOUNDED support, no LP solver
-- M5 = 101/18 exact; M6 = 3202427/315000 ({4,2} band top)
-- w₀ = 281255854405058410769981/2753785207121825824389981
+- M5 = 101/18; M6 = 12809/1260 — EXACT rationals end to end
+  (the {3,3} allowance retired, register D17)
+- w₀ = 829278553005924403328783/8140995278473611944088783
   (asserted exactly against the paper and lean/RhGate/Certificate.lean)
-- **1−2w₀ ≥ 0.7957, 1−w₀ ≥ 0.8978 — exact rational**
+- **1−2w₀ ≥ 0.7962, 1−w₀ ≥ 0.8981 — exact rational**
 - 13/18 certificate re-check: E[Q] = 5/36 exact
 
 ## 2. Identity and face gate suite (paper §§5–10 faces)
@@ -150,9 +153,9 @@ and the analytic chain are graded in paper §11.
 
 | constant | value | script |
 |---|---|---|
-| dual certificate & headline (EXACT) | 0.7957/0.8978 | certification/certify_lp.py + lean/RhGate/Certificate.lean |
+| dual certificate & headline (EXACT) | 0.7962/0.8981 | certification/certify_lp.py + lean/RhGate/Certificate.lean |
 | t_adj, t_opp, T₀–T₃, {2,2,2} (EXACT) | 7/60, 1/30, 3/70, 1/90, 1/180, 1/70, 131/420 | certification/exact_t222.py |
-| C₅, {6} (IDENTIFIED), {4,2} (banded) | 1/36, −1/126, −0.0552(8) | gpu/COMPUTATION_REPORT.md + certification/midpoint_ladder.py |
+| C₅, {4,2}, {6} (ALL IDENTIFIED) | 1/36, −23/420, −1/126 | gpu/COMPUTATION_REPORT.md §4/4bis |
 | F-CYC / F-TRACE gates | exact / ≤ 3.4e-14 | certification/cyclic_cumulant.py |
 | identity faces, LP grid edge | ALL PASS; 0.79472/0.89736 | pipeline/run_all.py |
 | certificate laws, κ(c), threshold | exact; 0.0721 | scripts/certificate_verification.py, moment_lp_reopt.py |
