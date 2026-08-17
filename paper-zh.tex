@@ -1,0 +1,2099 @@
+% !TEX program = xelatex
+% 中文译本 / Chinese translation of:
+%   "More than 0.7947 of the zeros of the Riemann zeta function
+%    are simple and on the critical line" (paper.tex, August 2026)
+% Compile: xelatex paper-zh.tex (twice).  Overleaf: set compiler to XeLaTeX.
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{fontspec}
+% CJK 断行与字体: 优先 xeCJK (Overleaf/完整 TeXLive), 否则回退到
+% XeTeX 原生 locale 断行 + 含 CJK 的主字体 (精简 TeXLive 亦可编译)
+\IfFileExists{xeCJK.sty}{%
+  \IfFileExists{ctexhook.sty}{%
+    \usepackage{xeCJK}%
+    \IfFontExistsTF{Noto Serif CJK SC}%
+      {\setCJKmainfont{Noto Serif CJK SC}}%
+      {\setCJKmainfont{Noto Sans CJK SC}}%
+  }{%
+    \XeTeXlinebreaklocale "zh"%
+    \XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt%
+    \IfFontExistsTF{Noto Sans CJK SC}%
+      {\setmainfont{Noto Sans CJK SC}}%
+      {\setmainfont{Noto Serif CJK SC}}%
+  }%
+}{%
+  \XeTeXlinebreaklocale "zh"%
+  \XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt%
+  \IfFontExistsTF{Noto Sans CJK SC}%
+    {\setmainfont{Noto Sans CJK SC}}%
+    {\setmainfont{Noto Serif CJK SC}}%
+}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+\numberwithin{equation}{section}
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}[theorem]{引理}
+\newtheorem{proposition}[theorem]{命题}
+\newtheorem{corollary}[theorem]{推论}
+\theoremstyle{definition}
+\newtheorem{hypothesis}[theorem]{假设}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{注记}
+\renewcommand{\proofname}{证明}
+\renewcommand{\abstractname}{摘要}
+\renewcommand{\contentsname}{目录}
+\renewcommand{\refname}{参考文献}
+\renewcommand{\appendixname}{附录}
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\newcommand{\LL}{\Lambda}
+\newcommand{\SSS}{\mathfrak{S}}
+\newcommand{\e}{\mathrm{e}}
+\newcommand{\Si}{\mathrm{Si}}
+\title{\bf 黎曼 zeta 函数超过 $0.7947$ 的零点是单零点且位于临界线上%
+\thanks{验证状态（请先阅读）：本文的证明链由经典输入、机器验证的恒等式、
+已认证常数、以及带有明示双侧带宽的数值连通常数组成。其声明等级为
+\emph{认证候选}（certified-candidate），而非纪录：$C_5$、$\{4,2\}$ 与
+$\{6\}$ 的认证闭形式仍未完成——尽管三者均已被证明为\textbf{有理数}
+（有理多面体体积的有限带号和，\S\ref{s:conv}），从而为既定的精确积分
+路线给出了显式表示——Lean 形式化仅覆盖恒等式层与证书层（核心
+Lean~4 内核编译，零 \texttt{sorry}；\S\ref{s:verif}(f)），解析层未
+形式化，且尚未经过外部评审。三个写出项 W1--W3 已完整写出
+（\S\ref{s:writeouts}），配对层常数已认证为精确有理数
+（\S\ref{s:five:cert}，附录~\ref{a:cert}），消费步由一个在无界支撑上
+有效的精确有理对偶证书支撑（引理~\ref{l:dual}）。每一层的精确分级、
+差异登记册、以及纲领的验证门（形式化与外部评审先于任何纪录性声明）
+见 \S\ref{s:verif} 与附录~\ref{a:record}。本文为英文原文之中文译本，
+以英文版为准。}}
+\author{杨鸿毅 (Hongyi Yang)\\[2pt]
+\small 多伦多大学 University of Toronto\\
+\small \texttt{hongy.yang@mail.utoronto.ca}
+\and 杨世华 (Shihua Yang)\\[2pt]
+\small 香港大学 The University of Hong Kong\\
+\small \texttt{u3590485@connect.hku.hk}}
+\date{2026 年 8 月}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+设 $N(T,2T)$ 为 $\zeta(s)$ 纵坐标位于 $(T,2T]$ 内的非平凡零点计数，
+$N_0^{s}$、$N_d$ 分别为其中单且在临界线上的零点计数与相异零点计数。
+在下文及 \S\ref{s:verif} 所述验证分级之下，我们以非有效常数证明
+\[
+\liminf_{T\to\infty}\frac{N_0^{s}}{N}\;\ge\;0.7947,
+\qquad
+\liminf_{T\to\infty}\frac{N_d}{N}\;\ge\;0.8973,
+\]
+且同样的结论对任意固定的原特征 Dirichlet $L$-函数成立；沿途还得到
+梯级 $0.6916/0.8458$（单侧四阶矩余项路线，经
+Matom\"aki--Radziwi\l{}\l--Tao）与 $13/18=0.7222$、$31/36=0.8611$
+（精确四阶矩）。证明对 \cite{C26} 的 Gabor 压缩 Weil 矩阵求值第三至
+第六阶迹矩——$m_3=2$ 与 $m_4=\tfrac{13}4$ 为精确值，
+$m_5=\tfrac{67}{12}+C_5$，$m_6=10.1657(18)$，其余项为连通正弦核
+Ursell 常数——并通过建立在显式 Chebyshev--Markov 证书之上的矩钉定
+线性规划予以消费：一个在无界支撑上有效的\emph{精确有理}对偶证书。
+四阶矩引擎（``引理 D''）以纲领所消费的截断形式得到证明：胞元账本在
+$(\log X)^{B}$ 处作 $\ell_1$-截断并带幂节省尾项，锁方差经精确乘积
+恒等式与 Parseval 恒等式输运到一个谱框架，其中每个因子都是对数分母
+有理点处的加窗单素数和，Siegel--Walfisz 定理加 Vaughan 估计闭合全部
+区间——全程不用色散方法，不用大模技术。每个圈长的局部主项由四行的
+重合计数闭形式钉定；Bell$(5)$ 与 Bell$(6)$ 账本经机器精确的冻结槽
+恒等式坍缩到四圈锚上，后者现已认证为精确有理数
+（$t_{\mathrm{adj}}=\tfrac7{60}$，$t_{\mathrm{opp}}=\tfrac1{30}$，
+$\{2,2,2\}=\tfrac{131}{420}$：精确多面体积分，附录~\ref{a:cert}）。
+\emph{声明分级}：恒等式层、证书层与配对常数层为机器验证或精确有理；
+写出项 W1--W3 已在 \S\ref{s:writeouts} 写出；解析链为认证候选级；
+三个连通常数 $C_5=0.0278(1)$、$\{4,2\}=-0.0552(8)$ 与
+$\{6\}=-0.0078(8)$ 为带明示带宽的中点网格阶梯求值
+（\S\ref{s:conv}），已由 \S\ref{s:conv} 的多面体维数定理证明为有理数
+但尚未求出闭形式；消费层（惯性、尾控制、计数）取自 \cite{C26}，在
+\S\ref{s:frame} 中复述。消费步本身是精确的：一个有理平方和对偶证书，
+已在核心 Lean~4 中内核验证（恒等式、局部律与证书层共二十条定理，零
+\texttt{sorry}）。随文附带独立的复现与认证包；一个证伪器注册表
+（$194$ 项预注册检查，$34$ 项触发并转化，全部前向记录）记录了研究
+轨迹。
+\end{abstract}
+
+\tableofcontents
+
+\section{引言}\label{s:intro}
+
+$\zeta(s)$ 的非平凡零点有正比例位于临界线上，归于 Selberg
+\cite{Sel42}；Levinson \cite{Lev74} 得到比例 $\tfrac13$，Conrey
+\cite{Con89} 达到 $\tfrac25$，沿 Levinson 方法的纪录为
+$\kappa>5/12$ \cite{PRZZ}（另见 \cite{BCY11,Fen12}）。最近，两三
+定理 \cite{C26} 走了一条不同的路线：对 Montgomery 配对相关和的
+线性代数解读——从 Weil Hermite 形式的 Gabor 压缩 $\widetilde G$
+的迹矩中读取谱信息——仅用前两阶矩（二者均可由 Montgomery 在带宽
+$\lambda\le1$ 处的素数侧求值无条件算得 \cite{Mon73,BGST}）便已给出
+比例 $2/3-o(1)$（配 Montgomery--Taylor 窗则为 $0.6725$
+\cite{Mon75}）。本文把该框架延伸到第三至第六阶矩。由
+\cite[注记~1.1]{C26}，任何只消费带宽一数据的证书都不能超过
+$0.68185$；越过该文（\cite{C26} 之 \S7.5(f)）所指认天花板的路线是
+第四阶矩
+$\operatorname{tr}\widetilde G^{4}=d\ell_1^{4}(13/4+o(1))$，其价值
+为 $13/18$。
+
+本文分四个阶段攀登这架梯子，全文统一记号、统一文献、统一验证账本、
+统一声明分级：证书演算与第三阶矩（\S\ref{s:cert}）；逻辑独立的单侧
+四阶矩路线，达 $0.6916$（\S\ref{s:fm}）；价值 $13/18$ 的精确四阶矩
+（\S\S\ref{s:trunc}--\ref{s:four}）；以及第五、第六阶矩及其消费
+（\S\S\ref{s:five}--\ref{s:lp}），最终得到下述定理。
+
+\begin{theorem}[主定理；等级：认证候选，见
+\S\ref{s:verif}]\label{t:main}
+以非有效常数，
+\[
+\liminf_{T\to\infty}\frac{N_0^{s}(T,2T)}{N(T,2T)}\ge 0.7947,
+\qquad
+\liminf_{T\to\infty}\frac{N_d(T,2T)}{N(T,2T)}\ge 0.8973,
+\]
+且同样结论对任意固定原特征 Dirichlet $L$-函数的零点成立。沿途每一
+梯级都恰好消费其证明链所建立的内容：$m_4\to13/4$ 双侧（从而得
+$13/18-\varepsilon$ 与 $31/36-\varepsilon$），以及经 \S\ref{s:fm}
+的逻辑独立单侧路线得 $0.6916/0.8458$。（本研究早期阶段考虑过的一个
+四五阶矩中间梯级在 \S\ref{s:lp} 中被修复并降级：没有六阶矩信息时它
+在无界谱支撑上不成立——登记条目 D6。）
+\end{theorem}
+
+定理~\ref{t:main} 的依赖结构在 \S\ref{s:verif} 中显式分级：$13/18$
+梯级依托引理 D 的经典技术证明（\S\ref{s:four}）与 \cite{C26} 的
+消费层（\S\ref{s:frame} 复述）；$0.7947$ 头条另外把 \S\ref{s:five}
+的三个连通 Ursell 常数作为带明示双侧带宽的数值求值来消费（配对层为
+精确层，\S\ref{s:five:cert}）。本文不涉及黎曼假设本身：比例性陈述
+对 $o(N)$ 个线外零点不敏感：所用输入（函数方程、显式公式、长度
+$\le T$ 的 Dirichlet 多项式均值）被 RH 类比不成立的对象所满足，且
+论证只产生下界 \cite[\S1.5]{C26}。
+
+\subsection*{与 \cite{C26} 的关系及本文新贡献}
+
+本文以 \cite{C26} 为基础并不加重复地消费其框架：压缩 Weil 矩阵、
+零点侧块结构、尾估计与前两阶迹矩均按该文所建立的原样使用
+（\S\ref{s:frame}）。推进有四层。\emph{(i) 矩阶梯}：\cite{C26} 只
+消费 $\mu_1\to1$、$\mu_2\to\tfrac43$；本文精确求出 $\mu_3\to2$ 与
+$\mu_4\to\tfrac{13}4$，并把 $\mu_5$、$\mu_6$ 求到三个已证有理性的
+连通常数（\S\S\ref{s:cert}--\ref{s:five}）。\emph{(ii) 截断技术}：
+带 Siegel--Walfisz/Vaughan 闭合的 $\ell_1$-截断胞元账本
+（\S\ref{s:trunc}）为 \cite{C26} 所无，正是它使高阶矩可用经典工具
+计算。\emph{(iii) 消费}：\cite[引理~3.2]{C26} 的秩--迹不等式——
+$m^{2}\ge2m-1$ 的矩阵形式——被替换为六次的精确 Chebyshev--Markov
+对偶证书（\S\ref{s:lp}），即 $m^{2}\ge3m-2$ 及更高阶的类比，在无界
+支撑上有效且角点为精确有理数。\emph{(iv) 验证机制}：预注册证伪器
+检查、只进不改的差异登记册、以及内核编译的 Lean 层
+（\S\ref{s:verif}），替换了 \cite{C26} 传统的单一等级呈现。常数从
+$2/3$ 与 $\tfrac56$（相异）升至 $0.7947$ 与 $0.8973$。
+
+\subsection*{与配对相关路线的关系}
+
+Baluyot、Goldston、Suriajaya 与 Turnage-Butterbaugh \cite{BGST}
+证明了 Montgomery 配对相关方法在弱于 RH 的假设下可给出三分之二型
+结论，Goldston--Suriajaya \cite{GS} 则有条件地达到三分之二常数本身；
+这些都是关于\emph{零点}配对相关的条件性陈述。本文路线与之不相交，
+且是无条件的：它经压缩矩阵框架消费 $\LL\star\LL$ 的 $2k$ 点相关的
+平均行为——素数侧对象，仅由 Siegel--Walfisz 定理与 Vaughan 估计
+控制——对零点不作任何假设。此前只能在上述假设下触及的三分之二
+门槛，在此被带余量地无条件越过（$0.7947>2/3$）；相对带宽一数据所
+消费的增量信息，恰是 \S\S\ref{s:cert}--\ref{s:five} 的第三至第六阶
+矩链。
+
+\subsection*{方法一页速览}
+
+$\widetilde G$ 谱测度的矩 $m_k$ 由 $k$-圈账本承载：胞元由素数幂模
+组与锁（位移）向量索引，权重 $1/(d\ell_1^{k})$，窗重叠体积提供
+游走几何。消费是显式的 Chebyshev--Markov 证书（\S\ref{s:cert}）：
+谱测度在原点附近的质量仅由矩数据以精确交换率控制。三个观察把矩
+求值化归到经典工具。
+
+\emph{截断（\S\ref{s:trunc}）。}$1/\ell_1^{k}$ 权重把所有
+$\ell_1>(\log X)^{B}$ 的胞元平凡且双侧地卸掉；只余对数尺度的模。
+
+\emph{谱框架（\S\ref{s:four}，\S\ref{s:five}）。}$k$-圈的锁方差
+服从精确恒等式——$k=4$ 时为离散 Parseval 恒等式；每个 $k$ 处为
+\emph{乘积恒等式} $\sum_j N_k(j)^2=\sum_t A_1(t)\cdots A_k(t)$
+（两条链锁向量相同当且仅当相差一个公共位移）——它们把锁方差呈现为
+谱 $L^2$-距离，其每个因子都是\emph{加窗单素数和}。在对数尺度的模处
+每个主项频率都是对数分母的有理数：Siegel--Walfisz 定理在双主区间上
+逐点给出任意对数幂节省，Vaughan 估计闭合次要与混合区间，奇异级数梳
+由下述局部律精确识别。锁定相关的表观``孪生困难''消解：从未尝试
+逐锁求值。
+
+\emph{局部律与锚坍缩（\S\ref{s:local}，\S\ref{s:five}）。}每个圈长
+的 mod-$p$ 结构都是一条仿射锁链，其密度服从一个四行即证、并经穷举
+验证的重合计数闭形式。第五、第六阶矩的 Bell$(5)=52$ 与
+Bell$(6)=203$ 类账本随即经机器精确的冻结槽恒等式坍缩到已认证的四圈
+锚上；$m_4$ 之上真正新的常数只有连通 Ursell 值。
+
+\subsection*{验证纪律与贡献声明}
+
+本文背后的研究纲领以证伪器优先的方式运作：每个结构性断言都带有预
+注册的数值检查；更正只作前向记录，从不回改；断言分级呈现。注册表
+已有三十四项检查触发并转化——其中若干直接塑造了本文
+（附录~\ref{a:record}）。链的等级、命名写出项与认证审计结果见
+\S\ref{s:verif}；按纲领的验证门，Lean 形式化与外部评审先于任何
+纪录性声明。本文的数学发展由大语言模型 Claude（Anthropic）在作者
+指导的研究纲领内完成；作者设定目标、验证纪律与发表决策，并对内容
+承担全部学术责任。依照当前期刊作者政策，模型不列为作者；其角色在
+此处与致谢中说明。本文的定理性断言\emph{按所述等级}提出：作为认证
+候选，而非既立纪录。
+
+\section{框架与记号（沿用 \cite{C26}）}\label{s:frame}
+
+压缩 Weil 矩阵 $\widetilde G$ 的构造——Weil Hermite 形式、测试族、
+零点侧块结构、尾估计与前两阶迹矩——与两三定理论文 \cite{C26}
+（该文 \S\S2--5）完全相同。本节复述记号并陈述矩阶梯所消费的
+\cite{C26} 五条结果；证明见 \cite{C26}，其自身的解析输入均为已
+发表文献 \cite{Wei52,IK,Tit86,Mon73,BGST}。本文的贡献自第三阶矩
+（\S\ref{s:cert}）开始。
+
+\subsection{Weil 形式、测试族与 $\widetilde G$}\label{s:frame:G}
+
+全文约定 $l=\log(T/2\pi)$，$\ell_1=l+2\log2-1$（故
+$N(T,2T)=T\ell_1/2\pi+O(l)$）；对固定的 $\lambda\in(0,1]$：
+$L=\lambda l$，$X=e^{L}$，$d=\lfloor LT/2\pi\rfloor$。对
+$f\in C_c^{2}(\mathbb R)$ 置
+$h_f(z)=\widehat f(z)=\int f(u)e^{izu}\,du$；两次分部积分给出
+\begin{equation}\label{e:hdecay}
+|h_f(x+iy)|\le e^{|y|\Lambda_f}
+\min\bigl(\|f\|_1,\|f''\|_1|x+iy|^{-2}\bigr),
+\qquad\operatorname{supp}f\subset[-\Lambda_f,\Lambda_f].
+\end{equation}
+Weil Hermite 形式为
+$W(f,g)=\sum_{\rho}m_\rho h_f(\gamma_\rho)
+\overline{h_g(\gamma_\rho)}$，求和取遍相异非平凡零点
+$\rho=\beta+i\gamma_\rho$（重数 $m_\rho$ 显式记出；由
+\eqref{e:hdecay} 与 $\sum m_\rho|\gamma_\rho|^{-2}<\infty$ 绝对
+收敛）。零点多重集在 $\rho\mapsto1-\bar\rho$ 下不变，故 $W$ 为
+Hermite 形式。取 $s=\tfrac12+i\tau$，定义素数侧密度
+\[
+\mu(\tau)=\frac1{2\pi}\mathrm{Re}\,
+\frac{\Gamma'}{\Gamma}\Bigl(\frac14+\frac{i\tau}2\Bigr)
+-\frac{\log\pi}{2\pi},\quad
+\Pi_X(\tau)=\frac{1}{2\pi(\tfrac14+\tau^{2})}
++\frac1\pi\,\mathrm{Re}\,\frac{X^{s}-1}{s},\quad
+P_X(\tau)=-\frac1\pi\sum_{n\le X}
+\frac{\LL(n)}{\sqrt n}\cos(\tau\log n),
+\]
+以及 $\nu_X=\mu+\Pi_X+P_X$。Weil 显式公式 \cite{Wei52}（按
+\cite[定理~5.12]{IK} 的规范化，作用于 $k=f*\tilde g$，
+$\tilde g(u)=g(-u)$，其变换 $h_k=h_fh_{\bar g}$ 为整函数且满足衰减
+\eqref{e:hdecay}）给出谱形式
+\begin{equation}\label{e:weil}
+W(f,g)=\int_{\mathbb R}h_f(\tau)\overline{h_g(\tau)}\,
+\nu_X(\tau)\,d\tau,
+\qquad\operatorname{supp}f,g\subset[-\tfrac L2,\tfrac L2].
+\end{equation}
+记录 $|\Pi_X(\tau)|\le3\sqrt X/(1+|\tau|)$，
+$|P_X(\tau)|\ll\sqrt X$，$\int_T^{2T}\mu=N(T,2T)+O(l)$ 与
+$\int_T^{2T}\mu^{2}=T\ell_1^{2}/4\pi^{2}+O(l^{2})$（Stirling）。
+
+固定非减函数 $\varrho\in C^{3}(\mathbb R)$，$\varrho=0$ 于
+$(-\infty,0]$，$\varrho=1$ 于 $[1,\infty)$；斜坡宽度
+$1\le w\le L/8$；taper 窗
+$\phi(u)=\varrho\bigl((L/2-|u|)/w\bigr)$：偶函数，
+$0\le\phi\le1$，$\operatorname{supp}\phi=[-L/2,L/2]$，且 $\phi=1$
+于 $[-L/2+w,L/2-w]$。置 $a=\tfrac1L\int\phi^{2}$，
+$b=\tfrac1L\int\phi^{4}$（故 $1-2w/L\le b\le a\le1$），
+$\Phi=\widehat{\phi^{2}}$，并注意窗演算
+\begin{equation}\label{e:windowcalc}
+(L-2w-|y|)_+\;\le\;g(y):=(\phi^{2}\star\phi^{2})(y)
+\;\le\;(L-|y|)_+ .
+\end{equation}
+临界密度的 Gabor 系为 $f_k(u)=\phi(u)e^{-i\tau_ku}$，
+$\tau_k=T+2\pi k/L$，$0\le k<d$；压缩 Weil 矩阵为
+\[
+G_{kl}=W(f_k,f_l)
+=\sum_\rho m_\rho\,\widehat\phi(\gamma_\rho-\tau_k)\,
+\widehat\phi(\gamma_\rho-\tau_l)
+=\int_{\mathbb R}\widehat\phi(\tau-\tau_k)
+\widehat\phi(\tau-\tau_l)\,\nu_X(\tau)\,d\tau,
+\qquad\widetilde G=G/L,
+\]
+由任一表达式知其为实对称矩阵；其归一化迹矩为
+$\mu_k=\operatorname{tr}\widetilde G^{k}/(d\ell_1^{k})$。
+
+\begin{lemma}[Gabor 系的 Poisson 求和]\label{l:gabor}
+对一切 $\tau,\tau'\in\mathbb R$，
+$\sum_{k\in\mathbb Z}\widehat\phi(\tau-\tau_k)
+\widehat\phi(\tau'-\tau_k)=L\,\Phi(\tau-\tau')$；特别地
+$\sum_{k\in\mathbb Z}\widehat\phi(\tau-\tau_k)^{2}=aL^{2}$。
+\end{lemma}
+
+\begin{proof}
+此即 \cite[引理~2.2]{C26}：临界密度 $h=2\pi/L$ 处的 Gabor 系拥有
+平移不变的框架核且无混叠误差，对任何支撑于长度 $L$ 区间的窗均
+成立。
+\end{proof}
+
+\subsection{零点侧：惯性、尾与计数不等式}\label{s:frame:count}
+
+固定 $D_0=T^{1/2}$，$I=(T,2T]$，$I'=(T-D_0,2T+D_0]$，并把 $G=A+E$
+按相异零点 $\gamma\in I'$（矩阵 $A$）与其余（$E$）拆分；二者均实
+对称。把 $\gamma\in I'$ 的相异零点分类：$S_1$（单，线上；计数
+$s_1$）、$S_2$（重，线上；计数 $s_2$）、线外对
+$\{\rho,1-\bar\rho\}$（共 $p$ 对），于是 $\#Z(I')=s_1+s_2+2p$ 且
+$N(I')\ge s_1+2s_2+2p$。
+
+\begin{proposition}[块结构]\label{p:inertiaA}
+$n_+(\widetilde A)\le s_1+s_2+p$ 且
+$\operatorname{rank}\widetilde A\le\#Z(I')$。
+\end{proposition}
+
+\begin{proof}
+此即 \cite[命题~4.1]{C26}：拉回下的 Sylvester 惯性——线上零点
+贡献一个正的 $1\times1$ 块，线外对贡献一个符号差 $(1,1)$ 的双曲
+块，且不需要求值泛函的任何独立性。
+\end{proof}
+
+\begin{proposition}[尾控制]\label{p:tail}
+设 $A_0$ 为满足 $N(t+1)-N(t)\le A_0\log(t+3)$ 的绝对常数
+\cite[定理~9.2]{Tit86}。则对 $T\ge T_0$，
+\[
+\|\widetilde E\|_{\mathrm{op}}\;\le\;\theta_0
+:=4A_0C_1^{2}X^{1/2}\,\frac{\log(4T)}{D_0^{2}}
+\;\ll\;l\,T^{\lambda/2-1},
+\qquad C_1=\|\phi''\|_1=\frac{2\|\varrho''\|_1}{w},
+\]
+且迹范数满足 $\|\widetilde E\|_1\le2\theta_0/L$。
+\end{proposition}
+
+\begin{proof}
+此即 \cite[命题~4.2]{C26}（taper 的 $r^{-2}$-衰减
+\eqref{e:hdecay} 对零点密度界）；此处复述显式 $\theta_0$，因为
+\S\ref{s:trunc} 的截断卸载与第三阶矩的尾步骤要消费它。
+\end{proof}
+
+\begin{proposition}[计数不等式]\label{p:count}
+对每个 $\theta\ge\theta_0$，
+\[
+s_1\;\ge\;2\,n_+^{\theta}(\widetilde G)-N(I'),
+\qquad
+\#Z(I')\;\ge\;n_+^{\theta}(\widetilde G),
+\]
+于是，由 $N(I'\setminus I)\ll D_0l=o(N)$，
+\begin{equation}\label{e:count}
+N_0^{s}(T,2T)\ \ge\ 2\,n_+^{\theta}(\widetilde G)
+-N(T,2T)-2N(I'\setminus I),
+\qquad
+N_d(T,2T)\ \ge\ n_+^{\theta}(\widetilde G)
+-N(I'\setminus I).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+此即 \cite[命题~4.5]{C26}：Weyl 不等式（阈值
+$\theta\ge\theta_0$，命题~\ref{p:tail}）把
+$n_+^{\theta}(\widetilde G)$ 归约到 $n_+(\widetilde A)$，再由
+命题~\ref{p:inertiaA} 与重数计数
+$s_2+p\le\tfrac12(N(I')-s_1)$ 得两式。
+\end{proof}
+
+这些不等式对带形区域内任何在 $\rho\mapsto1-\bar\rho$ 下不变、且
+满足 $N(t+1)-N(t)\ll\log(t+3)$ 的局部有限多重集成立；它们不含
+算术内容。全部算术都在迹矩之中。
+
+\subsection{前两阶矩与梯子记号}\label{s:frame:moments}
+
+\begin{proposition}[前两阶矩]\label{p:mu12}
+$\operatorname{tr}\widetilde G=aL\,N(T,2T)+O(L\sqrt X)$，且
+\[
+\operatorname{tr}\widetilde G^{2}
+=2\pi bL\int_T^{2T}\mu^{2}
++\frac{T}{\pi}\sum_{n\le X}\frac{\LL(n)^{2}}{n}\,
+g(\log n)+O\bigl(Ll\log l\,(l^{2}+X)\bigr).
+\]
+因此在端点极限 $\lambda\to1^-$、$w/L\to0$ 下：$\mu_1\to1$ 且
+$\mu_2\to\tfrac43$。
+\end{proposition}
+
+\begin{proof}
+此即 \cite[命题~5.3 与定理~5.8]{C26}：迹由 Gabor--Poisson 坍缩
+得到，二阶矩由 Montgomery 在带宽 $\le1$ 处对配对相关二阶矩的素数
+侧求值得到，在带内无条件 \cite{Mon73,BGST}。此处复述，因为对角
+$\sum_{n\le X}(\LL(n)^{2}/n)\,g(\log n)
+=\tfrac{L^{3}}{6}(1+O(1/L))$（同一窗自相关
+\eqref{e:windowcalc}）正是第三阶矩账本（定理~\ref{t:m3}）与
+\S\ref{s:cert:model} 模型门所消费的校准。
+\end{proof}
+
+\begin{remark}[端点约定]\label{r:endpoint}
+端点 $\lambda=1$ 是可取的，因为即便 $X\asymp T$，上述每个次要项
+相对主项仍为 $o(1)$；偏好全程幂节省的读者可固定 $\lambda<1$ 再取
+$\lambda\to1^-$，极限相同 \cite[注记~6.1]{C26}。taper 尾
+（\eqref{e:windowcalc} 中的 $2w/L$ 亏损）随 $w/L\to0$ 消失；本文
+所有端点陈述均按此顺序取二重极限（参见 \cite[\S7.1]{C26}）。
+\end{remark}
+
+由命题~\ref{p:mu12} 与 \S\ref{s:cert} 的账本，在端点极限下，
+\begin{equation}\label{e:moments}
+\mu_1\to1,\qquad \mu_2\to\tfrac43,\qquad \mu_3\to2,\qquad
+\mu_4=\tfrac{197}{60}+R+o(1),
+\end{equation}
+其中 $R$ 为移位相关类（\S\ref{s:cert:R}），其模型值恰为
+$-\tfrac1{30}=\tfrac{13}4-\tfrac{197}{60}$。零点侧消费是
+命题~\ref{p:count} 的 Christoffel 函数计数：$\widetilde G$ 超过
+命题~\ref{p:tail} 消失阈值 $\theta_0$ 的特征值个数下界经
+\eqref{e:count} 转化为零点计数，而原点附近的质量界只来自矩数据
+（\S\ref{s:cert}）。在矩序列 $(1,1,\tfrac43,2,\tfrac{13}4)$ 处该
+计数恰给出 $13/18$ 与 $31/36$；它对每个偶阶矩单调、对奇阶矩亏损
+递减。
+
+窗与胞元：窗 $I_m=[X,4X]$ 与 $I_n=(b_2/b_1)I_m$，长度
+$Y\asymp X$（更一般地 $Y\asymp X^{\vartheta}$，
+$\vartheta\in(\tfrac12,1]$）；素数幂模 $b_1,b_2$，
+$g=(b_1,b_2)$，$r=b_1/g$，$q=b_2/g$；位移 $k\le K\asymp
+Y/\max(r,q)$，锁 $|j|\le J\asymp X$；$\e(x)=e^{2\pi ix}$；位置
+格上的加窗素数和
+\[
+S_m(\beta)=\sum_{m\in I_m}\LL(m)\,\e(b_2m\beta),
+\qquad
+S_n(\beta)=\sum_{n\in I_n}\LL(n)\,\e(b_1n\beta).
+\]
+$N_4(k,j)$ 记锁定四元组 $(m,\,m-rk,\,n,\,n-qk)$（约束
+$b_1n-b_2m=j$）的 $\LL^4$-加权计数，$\SSS_4(k,j)\,V(k,j)$ 为其
+奇异级数模型，其中 $V(k,j)$ 为胞元的窗重叠体积——锁约束下联合窗
+内四元组的阿基米德计数，消费规范化后的量级为
+$\asymp Y^{2}/(rq\,\ell_1)$——采用四阶矩胞元账本
+（\S\ref{s:fm:R}）的约定，冻结于复现套件。定义
+$\SSS_{b_1,b_2}(j)=\prod_p\kappa_p$ 的五情形局部表
+$\kappa_p(v_p(j);v_p(b_1),v_p(b_2))$ 已对剩余类计数逐位精确验证，
+且 $\mathbb E_j[\SSS]=1$（\S\ref{s:fm:toolkit}）。
+
+\emph{输入状态。}\cite{C26} 为公开发布的预印本；其框架完全按本节
+所述消费，其自身的解析输入为已发表文献
+\cite{Wei52,IK,Tit86,Mon73,BGST}。单侧路线的平均移位卷积输入为
+Matom\"aki--Radziwi\l{}\l--Tao \cite{MRT}，按已发表结果使用。本文
+各层的形式化状态在 \S\ref{s:verif}(f) 分级：恒等式层、局部律层与
+证书层已在核心 Lean~4 内核编译；解析层未形式化。
+
+\section{证书层}\label{s:cert}
+
+本节给出把梯子带出 \cite[引理~3.2]{C26} 秩--迹不等式之外的证书，
+以及纲领的无条件矩记账，全程机器验证。它提供：带精确 $\kappa(c)$
+交换律的 Chebyshev--Markov 证书；第三阶矩定理；四阶矩的 $197/60$
+分解及双记账对账；以及余类 $R$ 的双壁结构与其审计装置。
+
+\subsection{Chebyshev--Markov 证书与精确交换率}
+
+\begin{lemma}[证书；机器精确验证]\label{l:cert}
+设 $\nu$ 为 $\mathbb R$ 上带矩 $m_k$ 的概率测度。置
+\[
+Q(x)\;=\;\frac{\bigl(x^2-\tfrac{21}{8}x+\tfrac32\bigr)^2}{(3/2)^2}.
+\]
+则 $Q\ge0$，$Q(0)=1$，$Q\ge1$ 于 $(-\infty,0]$，$Q$ 在
+$[0,\tfrac{21}{16}]$ 上递减，且
+\begin{equation}\label{e:EQ}
+\int Q\,d\nu \;=\; \frac{4}{9}\Bigl(m_4-\tfrac{47}{16}\Bigr)
+\;+\;R_Q,\qquad
+R_Q:=\tfrac{4}{9}\Bigl[-\tfrac{21}{4}(m_3-2)
++\tfrac{633}{64}\bigl(m_2-\tfrac43\bigr)
+-\tfrac{63}{8}\,(m_1-1)\Bigr],
+\end{equation}
+故当 $|m_1-1|,|m_2-\tfrac43|,|m_3-2|\le\varepsilon\le1$ 时
+$|R_Q|\le11\varepsilon$。对 $0<\theta\le\tfrac1{100}$，
+\[
+\nu\bigl((-\infty,\theta]\bigr)
+\;\le\;\bigl(1+4\theta\bigr)
+\Bigl[\tfrac{4}{9}\bigl(m_4-\tfrac{47}{16}\bigr)
++11\varepsilon\Bigr].
+\]
+若 $m_1=1$，$m_2=\tfrac43$，$m_3=2$，$m_4\le\tfrac{13}4$，则
+$\nu((-\infty,\theta])\le\tfrac5{36}+O(\theta)$，且此为最优：
+支撑于 $\{0,a,b\}$ 的三原子测度（$a=0.840635\ldots$、
+$b=1.784365\ldots$ 为 $x^2-\tfrac{21}8x+\tfrac32$ 之根）达到之。
+从而在 $m_4\le\tfrac{13}4+c$ 下，\S\ref{s:frame} 的计数给出精确
+线性律
+\[
+\liminf\frac{N_0^{s}}{N}\;\ge\;\frac{13}{18}-\frac{8c}{9},
+\qquad
+\liminf\frac{N_d}{N}\;\ge\;\frac{31}{36}-\frac{4c}{9}.
+\]
+\end{lemma}
+
+\begin{proof}
+非负性显然且 $Q(0)=1$；$x\le0$ 时内层二次式 $\ge\tfrac32$，故
+$Q\ge1$；在 $[0,a]$ 上内层二次式自 $\tfrac32$ 递减过 $0$，且
+$a>\tfrac1{100}$；直接计算给出 $\theta\le\tfrac1{100}$ 时
+$Q(\theta)^{-1}\le1+4\theta$。展开 $Q$ 并取期望，
+\[
+\Bigl(\tfrac32\Bigr)^2\!\int Q\,d\nu
+=m_4-\tfrac{21}4\,m_3+\Bigl(\tfrac{441}{64}+3\Bigr)m_2
+-\tfrac{63}8\,m_1+\tfrac94,
+\]
+代入 $m=(1,\tfrac43,2,m_4)$ 得 $\tfrac49(m_4-\tfrac{47}{16})$；
+所示 $R_Q$ 收集一阶偏差，且
+$\tfrac49(\tfrac{21}4+\tfrac{633}{64}+\tfrac{63}8)\le11$。最优性：
+矩为 $(1,\tfrac43,2,\tfrac{13}4)$ 的三原子测度由原子集上的
+Hankel 递推 $m_{k+1}=\tfrac{21}8m_k-\tfrac32m_{k-1}$ 存在，且 $Q$
+在 $a,b$ 处二重为零。线性律由把质量界代入 \S\ref{s:frame} 的计数
+即得：质量 $\le\tfrac5{36}+\tfrac{4c}9+O(\theta)$，而
+$1-2(\tfrac5{36}+\tfrac{4c}9)=\tfrac{13}{18}-\tfrac{8c}9$，
+$1-(\tfrac5{36}+\tfrac{4c}9)=\tfrac{31}{36}-\tfrac{4c}9$。
+\end{proof}
+
+\begin{remark}\label{r:certlp}
+引理~\ref{l:cert} 的每条恒等式都在复现包中以符号运算（sympy，
+精确有理数）验证（\texttt{certificate\_verification.py}）并在
+认证审计中重跑；根、$5/36$ 求值、$\kappa(c)$ 律与 Hankel 下限
+$m_5^{\mathrm{ext}}=\tfrac{177}{32}=5.53125$、
+$m_6^{\mathrm{ext}}=\tfrac{2469}{256}=9.6445\ldots$ 均精确复现。
+对每个 $c$ 重新优化证书多项式（一个线性规划）可把破纪录阈值从
+$c<0.0559$ 提升到 $c<0.0721$
+（\texttt{moment\_lp\_reopt.py}：$M^{*}=3.3221=\tfrac{13}4
+\times1.0222$）；\S\ref{s:lp} 的矩钉定 LP 就是同一机制在完整矩
+序列上的运行。
+\end{remark}
+
+\subsection{第三阶矩，无条件}\label{s:cert:m3}
+
+\begin{lemma}[精确 $3$-圈共振]\label{l:m3res}
+设 $\lambda\le1$，$n_1,n_2,n_3\le X=T^{\lambda}$ 为素数幂且
+$|\log(n_1n_2/n_3)|\le C/T$。则当 $T\ge T_0(C)$ 时
+$n_1n_2=n_3$；对 $3$-圈的每种符号型有类似结论。
+\end{lemma}
+
+\begin{proof}
+$n_1n_2$ 与 $n_3$ 为正整数且比值为 $e^{O(1/T)}$；若不相等，其
+比值与 $1$ 的偏差至少 $1/n_3\ge T^{-\lambda}$，对大 $T$ 不相容，
+除非 $\lambda=1$；边界情形由 $|n_1n_2-n_3|\ge1$ 对
+$\le Cn_3/T\le C$ 处理：$n_3\le T/(2C)$ 时仍强制相等，而区间
+$n_3\in(T/2C,T]$ 只经 taper 尾进入贡献，后者在规范化极限中消失
+（注记~\ref{r:endpoint}）。
+\end{proof}
+
+\begin{theorem}[第三阶矩]\label{t:m3}
+对每个固定 $\lambda\in(0,1]$ 与可取 taper，$\mu_3$ 随
+$T\to\infty$ 收敛，且其极限在端点极限 $\lambda\to1^-$、
+$\eta\to0^+$ 下趋于 $2$。
+\end{theorem}
+
+\begin{proof}[证明（九类账本；全部细节见存档备忘录
+\texttt{V1\_completion.md}）]
+经 Gabor--Poisson 坍缩（引理~\ref{l:gabor}）后把
+$\operatorname{tr}\widetilde G^{3}$ 对 $3$-圈
+$\Phi(\tau_1-\tau_2)\Phi(\tau_2-\tau_3)\Phi(\tau_3-\tau_1)$
+展开；尾修正由迹-H\"older 分裂
+$\operatorname{tr}(A+E)^3-\operatorname{tr}A^3$ 控制，其中
+$\|E\|_{\mathrm{op}}\le\theta_0\ll lT^{\lambda/2-1}$
+（命题~\ref{p:tail}）且 $\|A\|_F^2=O(d\ell_1^2)$：总计
+$o(d\ell_1^3)$。$\nu_X^{\otimes3}$（$\nu_X=\mu+\Pi_X+P_X$）的
+九个类中：(i) 含 $\Pi_X$ 的每个类在窗上逐点为
+$O(T^{\lambda/2-1})$，可忽略；(ii) 单 $P$ 类由
+$\sum\LL(n)n^{-1/2}\le3\sqrt X$ 为 $O(\sqrt X\,l^{2}L)$；(iii)
+类 $\mu^3$ 等于 $d\ell_1^3(1+O(1/l))$（$\ell_1$-规范化精确到
+$O(1/l)$；实测 $T=600/38400/10^{8}$ 处为
+$1.0048/1.0014/1.0004$）；(iv) 三个 $\mu P^2$ 类各自经
+引理~\ref{l:m3res} 的 $k=2$ 情形加核尾的 Montgomery--Vaughan
+Hilbert 不等式，归约到精确对角
+$\sum_{n\le X}(\LL(n)^2/n)\,w(\log n)$，
+边缘权与 $k=2$ 情形同为 $(L-u)_+$ 形（圈展开的结构常数局部于边与
+槽，故被 $k=2$ 情形钉定，而后者的总量即 Montgomery 求值），且
+$\sum_{n\le X}(\LL^2/n)(L-\log n)=L^3/6\,(1+O(1/L))$：端点处每类
+贡献 $\tfrac13d\ell_1^3(1+o(1))$，三个位置合计为 $1$；(v) 类
+$P^3$ 被引理~\ref{l:m3res} 强制到精确关系 $n_1n_2=n_3$，即单一
+素数的幂，而 $\sum_p\sum_{a+b=c}\log^3p\,p^{-c}=O(1)$ 使其为
+$O(Tl)$。求和：$\mu_3\to1+1=2$。交叉校验：同一常数链的 $k=2$
+实例把 Montgomery 的 $\tfrac13$ 复现到四位；模型门
+$\int O_3C_3=0$ 精确成立（\S\ref{s:cert:model}）；有限高度形状
+$m_3m_1/m_2^2$ 与模型吻合到 $2\%$。两个非标准步骤——
+命题~\ref{p:tail} 的 $k=3$ 尾适配与常数链的局部性加校准钉定——
+已在存档备忘录中写出并按该严谨度消费。
+\end{proof}
+
+\subsection{四阶矩：$197/60$ 账本与类 $R$}\label{s:cert:R}
+
+\begin{proposition}[四阶矩的可求值类]\label{p:m4classical}
+由 $k=4$ 处的同一账本（$81$ 类；$\Pi_X$ 类与单 $P$ 类可忽略；
+成对符号型被引理~\ref{l:m3res} 强制精确；$\{2,2\}$ 配对权为显式
+窗积分），在端点极限下
+\[
+\mu_4\;=\;\underbrace{1}_{\mu^4}
+\;+\;\underbrace{2}_{\mu^2P^2\ \text{对角}}
+\;+\;\underbrace{\tfrac{17}{60}}_{\{2,2\}\ \text{裸配对}}
+\;+\;R\;+\;o(1)\;=\;\tfrac{197}{60}+R+o(1),
+\]
+其中 $\tfrac{17}{60}=2\kappa$，
+$\kappa=\int_{[0,1]^2}xy\,\Sigma_{\mathrm{pair}}O_4
+=\tfrac{17}{120}$（已认证 $4$-圈重叠几何的精确求积），$R$ 为移位
+相关类：受限乘积对 $N_1=b_1m_1\ne N_2=b_2m_2$（所有腿为素数幂
+$\le X$），权 $\LL^4/\sqrt{N_1N_2}$，窗核
+$\widehat W(\Delta)=[\sin2T\Delta-\sin T\Delta]/\Delta$，
+$\Delta=\log N_1/N_2$，及显式重叠几何 $O_4$（行/列不对称；无序
+胞元权 $Q(\beta_1,\beta_2)+Q(\beta_2,\beta_1)$）；$R$-单位
+$=(1/\pi)\Sigma/(d\ell_1^4)$。$R$ 的模型值恰为
+$-\tfrac1{30}=\tfrac{13}4-\tfrac{197}{60}$。
+\end{proposition}
+
+\begin{remark}[记账对账；审计轮 25--26]\label{r:books}
+纲领档案中并存两种记账约定，不可混用。上述\emph{裸对角}约定把
+$\{2,2\}$ 配对记为 $\tfrac{17}{60}$，并把配对级 Montgomery 高原
+（$C_2$ 的 $\min(u,1)$ 饱和）计入 $R$ 内。\emph{正弦模型累积量}
+约定把 $\{2,2\}$ 记为 $2t_{\mathrm{adj}}+t_{\mathrm{opp}}$，连通
+部分另记。既然锚现已认证为精确有理数（\S\ref{s:five:cert}：
+$t_{\mathrm{adj}}=\tfrac7{60}$，$t_{\mathrm{opp}}=\tfrac1{30}$），
+对账精确且对称：
+\[
+\underbrace{\tfrac{17}{60}}_{\text{裸}}
+=\underbrace{\tfrac4{15}}_{2t_{\mathrm{adj}}+t_{\mathrm{opp}}}
++\underbrace{\tfrac1{60}}_{\text{高原}},
+\qquad
+R_{\mathrm{model}}
+=\underbrace{-\tfrac1{60}}_{\text{高原（对对 Wick）}}
++\underbrace{-\tfrac1{60}}_{\text{连通核}}
+=-\tfrac1{30},
+\]
+且 $1+2+\tfrac{17}{60}=\tfrac{197}{60}$、
+$2\cdot\tfrac{17}{120}=\tfrac{17}{60}$ 精确成立。存档网格值
+（$0.2677$、高原 $0.0156$、连通 $-0.0177$；跨约定测量
+$-0.01567$，见 \texttt{m1\_suite.py}）在 $t_{\mathrm{adj}}$ 中
+带有小的网格偏差（曾引 $0.11717$，精确值
+$\tfrac7{60}=0.11667$；登记条目 D7）；精确连通模型值
+$-\tfrac1{60}=-0.01667$ 与累积量引擎的独立网格测量 $-0.01663$
+吻合到 $0.2\%$。本文任何地方消费的总量过去与现在都是精确的
+（$\tfrac{197}{60}$、$-\tfrac1{30}$、$\tfrac{13}4$）；拆分现在也
+精确了。下文各账本均注明所用约定。
+\end{remark}
+
+\subsection{$R$ 的双壁及其直接测量}\label{s:cert:walls}
+
+本小节的一切均为无条件结构或有限高度测量；它是
+\S\S\ref{s:trunc}--\ref{s:four} 证明发展与检验时所对照的审计
+装置。(i)~\emph{两个幽灵引理。}平均场四元组项为 $O(l^{-3})$：
+$u$-Jacobi 行列式与 $1/\sqrt{N_1N_2}$ 精确相消，内核积分为
+$-2[\Si(2T/N)-\Si(T/N)]$，是 $N\asymp T$ 处的边界层；且簇平方
+扇区的光滑部分恒为零，因
+$\int_{\mathbb R}\widehat W_{\mathrm{in}}\,d\Delta=0$。
+(ii)~\emph{两壁。}于是 $R=R_{\mathrm{pp}}+R_{\mathrm{conn}}$：
+顶层尺度 Poisson 对偶格点项承载的边缘层（某条腿在 $X$ 的
+$O(1)$ 内；显式公式区）与主体对象（$s\sim1.5$ 的模型带）。
+(iii)~\emph{分离观测量，三高度认证}：按 $e=l-\max u_i$ 分箱，
+在 $l=5.95/6.64/7.33$ 处：边缘 $-0.0061/-0.0068/-0.0060$（向
+模型 $-0.0156$ 饱和），主体 $+0.0004/-0.0012/-0.0015$（在
+$l\approx6$ 处变号，向 $-0.0177$ 单调）。(iv)~\emph{直接测量。}
+对全部共振四次素数对的中间相遇枚举（精确核、按类分辨、平窗、
+$\lambda=1$）给出
+\[
+\begin{array}{lcccc}
+l & 4.56 & 5.94 & 7.33 & 8.72\\
+R\ (\text{每 }d\ell_1^4) & -0.0008 & -0.0057 & -0.0074 & -0.0101
+\end{array}
+\]
+——每个高度均为负，按全部校准门的 $1/l$-速率演进；双代码路径
+审计表明锐截断 $C=40$ 低估 $|R|$（前两个高度的全核值为
+$-0.0012$ 与 $-0.0098$），故上表为量级下界。同一审计把账本的
+常数链在 $k=2,3,4$ 端到端认证到 $0.05$--$0.8\%$。边缘层的
+$k{=}1$ Poisson 驻相项以闭形式求值（1 区主公式；三高度两 taper
+验证到 $5$--$18\%$）：一个正的衰减瞬态 $\sim c\,l/\ell_1^4$，
+解释近带的迟变号。
+
+\subsection{模型校准}\label{s:cert:model}
+
+自由费米子累积量引擎经 $\operatorname{Tr}\log(1+(e^f-1)K)$ 的
+有序集分拆展开计算正弦过程的 Fourier 场累积量；门：
+$C_2(v)=\min(|v|,1)$ 精确，$\int O_3C_3=0$（由此 $m_3(1)=2$），
+以及 $m_4(1)$ 装配 $3.25103$ 对照 $\tfrac{13}4$（网格误差
+$0.03\%$）。值 $m_4(1)=\tfrac{13}4$ 由三条独立途径钉定（累积量
+装配；GUE 模拟 $m_{1..4}=1.0000,1.3313,1.9913,3.2213(27)$；
+极值常数的 Hankel 强制）。GUE 双窗 Richardson 外推测得模型值
+\begin{equation}\label{e:guebands}
+m_5(1)=5.573\pm0.113,\qquad m_6(1)=10.02\pm0.27
+\end{equation}
+（正弦模型/GUE 测量——出处更正见差异登记册，
+附录~\ref{a:record} 条目 D2），中心值处的六矩证书给出
+$0.7328/0.8664$：梯子只能经奇阶矩的严格正性缺口攀升，因为
+$k\le4$ 极值已有 $m_5=\tfrac{177}{32}$、$m_6=9.6445$。
+\S\ref{s:five} 的装配值落在带 \eqref{e:guebands} 之内。
+
+\section{单侧四阶矩路线：$0.6916$}\label{s:fm}
+
+本节建立对 $R$ 的一个单侧界，足以越过配对相关天花板
+$0.68185$，所用为经典技术加 \cite{MRT} 的平均移位卷积定理。它
+与 \S\S\ref{s:trunc}--\ref{s:four} 的精确求值逻辑独立；保留它
+既因为这是纲领对天花板的首次越过，也因为其架构（胞元、桥、
+聚合、卸载账本）
+被引理 D 的证明所消费。
+
+\begin{theorem}[单侧四阶矩界；等级：认证候选，含
+引理~\ref{l:CL} 的数值分析步骤]\label{t:fm}
+设 $R=R(1)$ 为命题~\ref{p:m4classical} 的类，则
+$\limsup_{T\to\infty}R(1)\le\bar R:=0.0066$。于是由
+\S\ref{s:frame} 的计数在
+$(1,1,\tfrac43,2,\tfrac{13}4+\Delta)$ 处（$\Delta=\bar R+\tfrac1{30}
+=0.039933$），
+\[
+\liminf\frac{N_0^{s}}{N}\ \ge\ 1-2\Lambda_2(0)=0.691615,
+\qquad
+\liminf\frac{N_d}{N}\ \ge\ 1-\Lambda_2(0)=0.845807,
+\]
+其中 $\Lambda_2(0)=\dfrac{5/108+\Delta/3}{1/3+4\Delta/3}
+=0.154193$，且对任意固定原特征 Dirichlet $L$-函数同样成立。任何
+$\bar R\le0.0222$ 都越过 $0.68185$ 天花板；余量按 $R$-单位为
+$0.0156$。
+\end{theorem}
+
+\noindent（早期草稿曾印 $\Lambda_2(0)=0.156293$；认证审计重算
+闭形式，确认定理常数 $0.6916/0.8458$ 正确而该数字过期——差异
+登记 D1，附录~\ref{a:record}。）常数 $\bar R$ 分解为
+$[\mathrm{core}\le-0.0055]+[\varepsilon_{\mathrm{tail}}\le0.0111]
++[\varepsilon_{CL}=0.0010]$，其中 $\varepsilon_{CL}$ 为 core
+序列的收敛松弛允差（引理~\ref{l:CL}）。
+
+\subsection{工具箱：奇异级数、弧恒等式、尾}\label{s:fm:toolkit}
+
+对 $b_1,b_2\ge1$、$j\ne0$，$b_1m_1-b_2m_2=j$ 的局部密度为
+$\SSS_{b_1,b_2}(j)=\prod_p\kappa_p$，五情形表逐位精确验证；
+$\mathbb E_j[\SSS]=1$。其弧展开：
+
+\begin{proposition}[弧恒等式]\label{p:S}
+$\displaystyle
+\SSS_{b_1,b_2}(j)=\sum_{q\ge1}\beta_q\,c_q(j),\qquad
+\beta_q=\frac{\mu(q_1)\mu(q_2)}{\varphi(q_1)\varphi(q_2)},\quad
+q_i=\frac{q}{(q,b_i)}.$
+\end{proposition}
+
+\noindent 在 $b_1=b_2=1$ 处此即 \cite[(66)--(67)]{MRT} 所用的
+经典求值；一般情形由对 $\kappa_p$ 表的同一 $p$-局部比较得出。
+截断尾满足：对 $g=(b_1,b_2)\le(\log M)^{C}$，
+\begin{equation}\label{e:X2}
+\textstyle\sum_{|j|\le H}\bigl(\SSS-\SSS^{(P)}\bigr)^2(j)\;\ll\;
+H\,(\log)^{-B+O(1)},\qquad P=(\log)^{B},
+\end{equation}
+由 $(q_1,q_2)$-分级与 $\sum_{|j|\le H}c_q(j)^2\ll(H+q)
+\varphi(q)$。\emph{卸载账本}（按纲领审计纪律保留）：
+$g>(\log)^{C}$ 的胞元以认证代价弃置——权重份额 $0.71\%$，
+$\le3\times10^{-4}$ $R$-单位。平凡包络
+$\sum_{n\le x}\LL(n)\LL(n+h)\ll\SSS(h)x$（对 $|h|\le x$ 一致）
+为 \cite[推论~3.14]{HR}。
+
+\subsection{覆盖区、中段带、桥与聚合}\label{s:fm:R}
+
+记 $S_i(\alpha)=\sum_{m\sim M_i}\LL(m)\e(b_im\alpha)$。双模结构
+由四条档案引理卸载：主弧律
+$S_i(\alpha)=\frac{\mu(q_i)}{\varphi(q_i)}v_i(\eta)
++O(M_i\exp(-c\sqrt{\log M}))$，$q_i=q/(q,b_i)$（$b$-一致性
+免费）；联合近主点的分类（$q\le\min(P^2g,Pb_1,Pb_2)$，一个与
+$b$ 无关的有限族，其内容即 $(q_1,q_2\le P)$-分级截断
+$\SSS^{(P)}$）；伸缩转移（$\gamma_i=b_i\alpha$ 在\emph{其自身}
+逼近品质下服从 Vaughan 估计）；以及对齐 Gallagher 宽度的光滑
+领口引理。此番卸载后，\cite{MRT} 的 $b=1$ 机器可逐字适用：
+
+\begin{proposition}[{\cite[定理~1.3(i)]{MRT}}，方差形]\label{p:IM}
+对 $X^{8/33+\varepsilon}\le H\le X^{1-\varepsilon}$、任意中心
+$h_0\le X^{1-\varepsilon}$ 与任意 $A$：
+\[
+\sum_{|h-h_0|\le H}\Bigl|\sum_{X<n\le2X}\LL(n)\LL(n+h)-\SSS(h)X
+\Bigr|^2\;\ll_{A,\varepsilon}\;HX^2(\log X)^{-A}.
+\]
+\end{proposition}
+
+\noindent 该类在 $8/33$ 指数处的覆盖份额为 $0.885$（锚定于指数
+$\tfrac13$ 处的存档值 $0.797$）。对中段带，取
+$A(b_2,j)=\sum_m\LL(m)\LL((b_2m+j)/b_1)\mathbf1[b_1\mid b_2m+j]$
+与 $MT=\SSS_{b_1,b_2}(j)\,\mathrm{len}/(b_1b_2)$：
+
+\begin{lemma}[色散换序；精确]\label{l:swaps}
+$\sum_{b_2,j}A^2$、$\sum A\cdot MT$ 与 $\sum MT^2$ 分别精确等于
+结构化位移 $h=qk$ 上的加权孪生和族（外对 $m-m'=rk$）、带上
+$\SSS$-对-$\LL$ 相关，与
+$2J\,E_2(b_1,b_2)(\mathrm{len}/b_1b_2)^2(1+o(1))$，其中
+$E_2=\prod_p\mathbb E_v[\kappa_p^2]$（锚：
+$E_2(1,1)=2\prod_{p>2}(1+(p-1)^{-3})$）。
+\end{lemma}
+
+\begin{lemma}[桥]\label{l:bridge}
+对任意窗 $W$ 与模 $q$：
+$\displaystyle\sum_{k\ne0}\ \sum_{n,n-qk\in W}\LL(n)\LL(n-qk)
+=\sum_{a\bmod q}\Bigl[\psi_W(q,a)^2-\sum_{n\in W,\,n\equiv a}
+\LL(n)^2\Bigr].$
+\end{lemma}
+
+\begin{lemma}[结构化到完整的聚合]\label{l:U}
+设窗 $W$ 长 $Y$，$\mathrm{dev}(h)$ 为 $W$ 上（光滑加权的）孪生
+偏差，$Q$ 为模集合，位移计数 $K_q\le H/q$，
+$H\le Y^{1-\varepsilon}$。若对每个 $A'$ 有
+$\sum_{h\le H}|\mathrm{dev}|^2\ll_{A'}HY^2(\log)^{-A'}$，则对
+每个 $A$
+\[
+\sum_{q\in Q}\sum_{k\le K_q}|\mathrm{dev}(qk)|^2
+\;\ll_A\;HY^2(\log Y)^{-A},
+\]
+对 $Q$ 一致——模的任何因子都不损失。
+\end{lemma}
+
+\begin{proof}
+左端为 $\sum_{h\le H}\nu(h)|\mathrm{dev}(h)|^2$，
+$\nu(h)\le\tau(h)$。在 $\nu\le(\log Y)^{C}$ 处分裂：泛型部分对
+任意-$A'$ 输入付出 $(\log)^{C}$；稀有部分用包络
+$|\mathrm{dev}(h)|\le9\SSS(h)Y$ 与
+$\sum_{h\le H,\tau(h)>V}\tau(h)\ll H(\log)^3/V$（取
+$V=(\log)^{C}$）。取 $C=A+4$，$A'=2A+4$。
+\end{proof}
+
+\noindent 带消费器只在\emph{位移变量}上用一次 Cauchy--Schwarz
+（任何跨族的 Cauchy--Schwarz 都要付出其 Poisson 地板——实测超
+预算 $50$--$60$ 倍——从未使用）。黏合层（焊接权
+$w_k(n)=\sum_{m\in I(n)}\LL(m)\LL(m-rk)$）由主项的精确因子化、
+主弧对黏合的 Abel 求和、以及次弧的除数有界包络
+\cite[命题~5.4，附录~A]{MRT} 闭合。
+
+\subsection{确定性主项与连续极限}\label{s:fm:mains}
+
+记 $\SSS_{b_1,b_2}=\bar D+g_P+g_{\mathrm{tail}}$（$\bar D$ 为
+精确有限局部均值；$g_P$ 为 $q\le P$ 振荡片；$P=40$）。
+
+\begin{lemma}[部分和恒等式]\label{l:PS}
+对每个 $M\ge1$，
+$\displaystyle\sum_{j\le M}(\SSS_{b_1,b_2}-\bar D)(j)=
+-\sum_{d\ge1}d\,\bigl\{\tfrac Md\bigr\}\,
+\gamma^{\mathrm{free}}_d$，其中 $\gamma$ 为显式 Euler 局部量，
+对 $\ell^1$ 权 $d\min(1,M/d)$ 绝对收敛。
+\end{lemma}
+
+\begin{lemma}[有限 $J$ 求值与一致尾]\label{l:E3}
+对每个有限 $J$ 与 $\theta$，
+$\sum_{j\le J}\mathrm{tail}_P(j)\,\mathrm{row}_j(\theta)
+=\sum_{d\ge1}\gamma_d^{>P}\,S_0(d\theta;\lfloor J/d\rfloor)$，
+其中 $S_0(x;K)=\sum_{k\le K}\frac{\sin2xk-\sin xk}{k}$；由此得
+$\theta$-一致界 $\le C_{\mathrm{saw}}\sum_d|\gamma_d^{>P}|$。
+全程不作任何 $J\to\infty$ 换序。
+\end{lemma}
+
+\begin{lemma}[认证锯齿常数]\label{l:S0}
+对一切 $x$ 与 $K\ge1$，$|S_0(x;K)|\le C_{\mathrm{saw}}:=2.10$。
+\end{lemma}
+
+\begin{proof}
+$K\le64$：带 Lipschitz 界 $|\partial_xS_0|\le3K$ 的严格网格验证
+认证 $\max|S_0|\le1.8675$。$K>64$：奇异集附近用正弦积分比较、
+远处用第二中值定理的 Dirichlet 表示给出 $\le2.05$；
+$K=128,512,4096$ 处抽样读数 $1.842,1.849,1.851$，自下方逼近
+$\Si(\pi)=1.85194$。（认证审计重跑：数值逐一相同。）
+\end{proof}
+
+\noindent 把一致尾对认证几何作分区积分给出
+$\varepsilon_{\mathrm{tail}}\le0.0115$（$T=2400$）、$0.0111$
+（$T=4800$），递减；已求值的 core（精确有限形式）为
+$\mathrm{core}(2400)=-0.00549$、$\mathrm{core}(4800)=-0.0064$，
+对管线锚认证（$-0.00545$ 对套件的 $-0.00544$）。
+
+\begin{lemma}[core 的连续极限；等级：证明形态 + 计算常数——见
+下方分级注]\label{l:CL}
+$\mathrm{core}(T)$ 随 $T\to\infty$ 收敛到
+$C_{\mathrm{core}}=\sum_{b_1\le b_2}\frac{\LL(b_1)\LL(b_2)}
+{b_1b_2}F_\infty(b_1,b_2)$——可计算连续锯齿积分的绝对收敛
+级数——且 $|\mathrm{core}(T)-C_{\mathrm{core}}|\ll(\log T)^{-1}$；
+系综坍缩到普适 $(1,1)$-类（Mertens 质量集中于大素数对），其
+斜率与常数为计算而非拟合所得：部分和斜率在相继十倍程上为
+$0.99684\to0.99962\to0.99996$（经典律，恰为 $1$——现已
+\emph{证明}：Dirichlet 级数为 $\zeta(s+1)E(s)$ 且
+$2C_2E(0)=1$，命题~\ref{p:c0}），常数 $c_0=-1.4228$ 现已
+\emph{以闭形式识别}：$c_0=\gamma-2=-1.4227843\ldots$
+（Euler--Mascheroni $\gamma$；命题~\ref{p:c0}，在
+$M=2\times10^{7}$ 处验证到 $10^{-5}$）；$\theta$-阶梯
+$c^{*}=-0.5433$，十倍程稳定，与档案独立值 $-0.55(2)$ 相符
+（在存档 F-QC5 门的钉定中
+$c^{*}=\log\pi+\gamma-2-\overline{\mathrm{osc}}$，故 $c^{*}$
+仍属计算的部分是均值振荡
+$\overline{\mathrm{osc}}\approx0.2652$，此处未作识别）。带
+$1/l$ Richardson 外推（$l=40,60,100,160$）的连续求积给出
+$C_{\mathrm{core}}=-0.0209\pm0.0026$，独立印证档案阶梯
+$-0.020(2)$——两条不相交路线相符至 $4\%$。
+\end{lemma}
+
+\noindent\emph{分级注。}收敛结构（缩放变量 Riemann 和、普适性
+坍缩）是解析论证；坍缩级数的斜率与常数之值、以及
+$C_{\mathrm{core}}$ 的求积，是带明示带宽的计算常数，非认证
+包络。定理~\ref{t:fm} 只对实测递减网格收取保守的
+$\mathrm{core}\le-0.0055+\varepsilon_{CL}$、
+$\varepsilon_{CL}=0.0010$；求积的认证写出是命名的待办项
+（\S\ref{s:verif}）。若代入计算值 $C_{\mathrm{core}}$ 将得
+$\bar R=-0.0098\pm0.0026<0$，即 $0.7031/0.8515$；该升级在本文
+任何地方都\emph{未}被消费。
+
+\subsection{装配}\label{s:fm:assembly}
+
+在 $\lambda=1$、一致全核约定下：
+\[
+R(1)\;\le\;\mathrm{core}(T)+\varepsilon_{\mathrm{tail}}+o(1)
+\;\le\;(-0.0055+0.0010)+0.0111+o(1)\;=\;0.0066+o(1),
+\]
+其中 $o(1)$ 收集 \S\ref{s:fm:R} 的覆盖区、带与低区偏差（低区帽
+在工作点的认证有限高度代价为 $0.0163$，在 LP 预算
+$0.0387+0.0177$ 之内）。把 $\bar R=0.0066$ 送入计数即得
+定理~\ref{t:fm}。\qed
+
+\section{截断卸载}\label{s:trunc}
+
+\begin{lemma}[胞元质量界]\label{l:mass}
+在锁与位移范围内一致地，参数 $\ell_1$ 处 $k$-圈胞元的
+$\LL^{2k}$-加权、消费规范化质量为
+$\ll Y^{2}(\log Y)^{c}\,\ell_1$。
+\end{lemma}
+
+\begin{proof}
+固定胞元后，每个锁定构形由 $(m,k)$ 连同锁的剩余数据确定；窗内
+$(m,k)$ 对的计数 $\ll YK\ll Y^{2}/\max(r,q)$，每个带权
+$\ll(\log Y)^{2k}$，而锁约束在除数有界重数内选出 $n$-范围的
+$1/\ell_1$ 比例；消费规范化（除以账本体积
+$V\asymp Y^{2}/(rq\ell_1)$）至多留下一个因子 $\ell_1$。数值
+账本面测得聚合质量对 $\ell_1$ 基本平坦（拟合指数 $-0.11$），
+远在界内。
+\end{proof}
+
+\begin{lemma}[重数]\label{l:mult}
+胞元参数 $\ell_1=\ell$ 的无序素数幂组个数为
+$\ll_{\varepsilon}\ell^{\varepsilon}$（除数有界）。
+\end{lemma}
+
+\begin{proposition}[截断--消费相容性]\label{p:consume}
+设 $F$ 为被消费的 $k$-圈胞元聚合（$k\ge4$），$F^{(P)}$ 为其
+$\ell_1\le P$ 限制。则
+\[
+\bigl|F-F^{(P)}\bigr|\;\ll_{\varepsilon}\;
+Y^{2}(\log Y)^{c}\,P^{-(k-2)+\varepsilon}
+\qquad\text{（双侧）}.
+\]
+于是对每个 $A_0$ 存在 $B$（任何固定 $B>(c+A_0)/(k-2)$ 即可），
+使得对模 $\le P=(\log X)^{B}$ 证明方差界即等于按消费形式证明之，
+总截断代价 $\ll(\log X)^{-A_0}$：所消费的从来只有
+$\le(\log X)^{B}$ 的模。
+\end{proposition}
+
+\begin{proof}
+权 $\times$ 质量 $\times$ 重数
+$=\ell^{-k}\cdot\ell\cdot\ell^{\varepsilon}$ 对 $\ell>P$ 求和。
+界对绝对值成立，故双侧。存档 D1 层独立认证了 $k=4$ 处的平方余项
+分级（$\mathbb E_j[(F-F^{(P)})^2]\ll P^{-1-\delta}$；尾局部因子
+$t_p^{2}\sim4/p^{2}$）。纲领中并存两种截断，不可混淆：
+\S\ref{s:fm:mains} 的 $C_{\mathrm{full}}$-求积机器内部的锯齿/
+频率截断（其尾承载该极限），与此处的 $\ell_1$-胞元截断（其尾
+平凡地小）；审计轨迹（档案条目 S1）验证了二者的解缠。早期草稿
+把重数写作 $\ell_1$；所示指数用的正是引理~\ref{l:mult} 的除数
+界。
+\end{proof}
+
+\section{局部闭包}\label{s:local}
+
+每个矩阶的局部（mod $p$）结构由仿射锁链支配。固定圈长
+$b\ge2$、素数幂 $P_0=p^{s}$、单位系数 $a_1,\dots,a_b$ 与自由锁
+$j_1,\dots,j_{b-1}\in\mathbb Z/P_0$；由 $n_{t+1}\equiv
+a_tn_t+j_t$ 定义诸点，末锁由循环闭合诱导。记
+$n_t=A_t(n_1+d_t)$，其中 $A_{t+1}=a_tA_t$，$A_1=1$，$d_1=0$；
+则 $d_{t+1}-d_t=j_t/A_{t+1}$ 是 $j_t$ 的单位倍。设 $N(j)$ 为使
+全部 $b$ 个点与 $p$ 互素的 $n_1\in\mathbb Z/P_0$ 计数。
+
+\begin{proposition}[重合计数闭包]\label{p:local}
+对锁向量 $j$ 逐点地，
+\[
+N(j)\;=\;P_0\,\frac{p-D(j)}{p},
+\qquad
+D(j)=\#\{d_t\bmod p:\ t=1,\dots,b\},
+\]
+且对任何锁类 $\mathcal C$，
+\[
+\kappa_b(\mathcal C)
+=\frac{1-\mathbb E[D\mid\mathcal C]/p}{(1-1/p)^{b}},
+\qquad
+\mathbb E_j[\kappa_b]=1\ \text{（精确）}.
+\]
+禁类合并为权 $1/(p-1)$ 的对事件；三重合并在 $O(p^{-2})$ 进入。
+\end{proposition}
+
+\begin{proof}
+因 $A_t$ 为单位，$n_t=A_t(n_1+d_t)$ 与 $p$ 互素当且仅当
+$n_1\not\equiv-d_t\pmod p$；全单位条件恰排除 $D(j)$ 个相异剩余
+$\{-d_t\}$，每个在 $\mathbb Z/P_0$ 中密度 $1/p$，得计数。类
+公式为其对 $(1-1/p)^{b}$ 的平均。均值一恒等式：均匀锁下增量
+独立均匀，故 $(d_2,\dots,d_b)$ 在 $(\mathbb Z/p)^{b-1}$ 上
+均匀，$\mathbb E[D]=p(1-(1-1/p)^{b})$，从而
+$1-\mathbb E[D]/p=(1-1/p)^{b}$。跨锁和 $\sigma$ 的合并要求
+$p\mid\sigma$：单个单位锁不可能；两个单位之和恰在第二个取一个
+值时发生，权 $1/(p-1)$。
+\end{proof}
+
+机器验证（管线 \texttt{face\_local\_closure}；认证审计重跑输出
+逐一相同）：$b=4,5,6$、$p\in\{5,7,11,13\}$、$s\in\{1,2\}$ 的
+每个锁类上全枚举零逐点违例、闭形式吻合到 $2\times10^{-16}$，
+均值一恒等式精确。四阶矩表的 $\kappa_4$ 闭形式为其实例
+（$\kappa_4(0,0)=1-(4-\tfrac2{p-1})/p$）。该命题提供每个圈长的
+奇异级数梳与下文所用的 $j$-平均因子化恒等式。（相应 Lean 草稿
+的初版遗漏了 $d_t=B_tA_t^{-1}$ 中的规范化逆元；精确枚举代理
+随即触发——注册表第 $29$ 次转化——草稿已改正：
+附录~\ref{a:record}。）
+
+\section{引理 D 与精确四阶矩}\label{s:four}
+
+四阶矩求值 $m_4\to13/4$ 以其被消费的截断形式闭合纲领所分离出的
+估计（``引理 D''：平均化、锁分辨的四重相关方差）。其\emph{无
+限制}形式——模直到 $X$ 的幂——仍是公开问题，比
+Barban--Davenport--Halberstam/色散谱系已发表的对角情形深一个
+结构台阶。两个观察把困难从被消费形式中移除：\S\ref{s:trunc}
+的截断卸载，与下述谱框架。
+
+\subsection{框架与 Parseval 恒等式}
+
+由存档且机器验证的桥与黏合恒等式（\S\ref{s:fm:R}），模对的
+$(k,j)$-聚合方差由\emph{伸缩密度} $\rho(\tau)$ 承载：设
+$A_m,A_n$ 为两条位置格序列的自相关，在周期 $N$ 的分析网格上
+（取超过最大位置四倍的二的幂，故无相关回绕），
+\[
+\rho(\tau)\;=\;\sum_{t}A_m(t)\,A_n(t-\tau)
+\;=\;\mathrm{irfft}\bigl(|S_m|^{2}|S_n|^{2}\bigr)(\tau),
+\]
+且锁方差服从\emph{精确}离散 Parseval 恒等式
+\begin{equation}\label{e:pars}
+\sum_{\tau=0}^{N-1}\rho(\tau)^{2}
+=\frac1N\Bigl[\mathrm{dens}_0^{2}
++2\!\!\sum_{0<\beta<N/2}\!\!\mathrm{dens}_\beta^{2}
++\mathrm{dens}_{N/2}^{2}\Bigr],
+\qquad \mathrm{dens}=|S_m|^{2}|S_n|^{2},
+\end{equation}
+在管线中逐位验证（相对 $10^{-16}$；认证审计重跑）。把同一恒等式
+用于 $\rho-\mathrm{Model}$，方差即化为 $\mathrm{dens}$ 到模型梳
+的谱 $L^{2}$-距离。我们按对
+$(\gamma_m,\gamma_n)=(b_2\beta,b_1\beta)\bmod1$ 在截断
+$P^{*}=(\log X)^{B^{*}}$ 处的弧品质给频率 $\beta$ 分类：双主
+（MM）、混合、双次。
+
+\subsection{三片叶}
+
+\begin{lemma}[MM 叶]\label{l:MM}
+设 $\beta$ 为双主区间：$\gamma_m=a/Q+\eta$，$Q\le P^{*}$，
+$|\eta|\le$ 弧宽，$\gamma_n$ 同理。则对每个 $A'$，
+\[
+S_m(\beta)=\frac{\mu(Q)}{\varphi(Q)}\,I_m(\eta)
++O_{A',B^{*}}\!\bigl(Y(\log Y)^{-A'}\bigr),
+\qquad
+I_m(\eta)=\sum_{m\in I_m}\e(m\eta),
+\]
+一致成立，$S_n$ 同理；常数非有效。从而在 MM 区间上逐点
+$\bigl|\mathrm{dens}-\mathrm{comb}\bigr|
+\ll\mathrm{main}\cdot Y(\log Y)^{-A'}+Y^{2}(\log Y)^{-2A'}$，
+其中 $\mathrm{comb}$ 为主项平方之积。
+\end{lemma}
+
+\begin{proof}
+$S_m(\beta)=\sum_m\LL(m)\e(m\gamma_m)$ 是
+$\gamma_m=a/Q+\eta$ 处的加窗单素数和。按 mod $Q$ 剩余类分裂并
+以 \cite[\S22]{Dav}（或 \cite[推论~5.29]{IK}）形式的
+Siegel--Walfisz 定理配合窗内对相位 $\e(m\eta)$ 的分部求和即得
+显示式；常数只依赖 $(A',B^{*})$，经 Siegel 定理为非有效。逐点
+梳比较由展开乘积得出。逐区间面（\texttt{face\_sw}）在六个族上
+测得绝对规范化误差：RMS 由 $T=2400$ 的 $3.6\times10^{-3}$ 降到
+$T=153600$ 的 $3.6\times10^{-4}$。
+\end{proof}
+
+\begin{remark}[非有效性由此进入]\label{r:ineffective}
+这是链中非有效常数进入的唯一之处：Siegel 定理不给出可计算的
+$T_0(A')$，故下游每个定理常数均非有效，而 \S\ref{s:faces} 实测
+的每个有限高度面都带有效常数。两类陈述全程分开分级（见
+\S\ref{s:faces} 的结束注记）；本文其余一切——恒等式、证书、
+局部律、窗演算——都不消费非有效输入。
+\end{remark}
+
+\begin{lemma}[次要叶与混合叶]\label{l:minor}
+对在截断 $P^{*}$ 处为次要的 $\gamma$（由 Dirichlet 逼近，分母
+范围 $((\log X)^{B^{*}},Y(\log X)^{-B^{*}})$），Vaughan 估计
+给出 $|S(\gamma)|^{2}\ll Y^{2}(\log Y)^{-B^{*}/2+c_0}$。于是
+双次谱质量带平方的 $(\log)^{-B^{*}+2c_0}$ 节省，每个混合区间
+至少带单侧节省；混合与次要对谱 $L^{2}$-距离的贡献相对自然
+尺度为 $\ll(\log X)^{-B^{*}/2+c_1}$。尺度记账（像族的良间隔与
+混合大筛/次要上确界分层预算）是经典的，且面检验紧致度
+$24$--$31$ 倍（\texttt{face\_arcs}）。
+\end{lemma}
+
+\begin{lemma}[梳即奇异级数]\label{l:comb}
+引理~\ref{l:MM} 的谱主梳等于截断奇异级数模型：存活频率恰为
+$\tau$-框架中的 CRT 同余组 $t\equiv0\ (b_2)$、
+$t\equiv\tau\ (b_1)$，局部因子与命题~\ref{p:local} 的重合计数
+闭形式吻合；奇异级数越过 $P^{*}$ 的截断尾由标准的
+$\sum_{q>P^{*}}\mu^{2}(q)(q,h)/\varphi(q)^{2}$ 界为
+$\ll(\log X)^{-B^{*}+c}$。该识别连同一个算例模对在
+附录~\ref{a:comb} 中显式展示；$\tau$-分辨模型在十六个族、八个
+高度上以 $0.2$--$4\%$ 跟踪实测轮廓
+（\texttt{face\_dispersion}）。
+\end{lemma}
+
+\subsection{定理}
+
+\begin{theorem}[引理 D，截断形式]\label{t:D}
+设 $B$ 固定，$b_1,b_2\le(\log X)^{B}$ 为素数幂，窗长
+$Y\asymp X^{\vartheta}$，$\vartheta\in(\tfrac12,1]$。则对每个
+$A>0$，
+\[
+\sum_{k\le K}\sum_{|j|\le J}
+\bigl|N_4(k,j)-\SSS_4(k,j)V(k,j)\bigr|^{2}
+\;\ll_{A,B}\;KJV^{2}(\log X)^{-A}.
+\]
+于是配合命题~\ref{p:consume}，$m_4\to13/4$ 双侧成立。
+\end{theorem}
+
+\begin{proof}
+取 $B^{*}=2(A+c_1+B)$ 并把 \eqref{e:pars} 用于
+$\rho-\mathrm{Model}$。谱 $L^{2}$-距离沿弧分类分裂。MM 区间上，
+引理~\ref{l:MM}（取 $A'=A+2B^{*}$）给出逐点相对节省
+$(\log)^{-A'}$，故
+$\sum_{\mathrm{MM}}|\mathrm{dens}-\mathrm{comb}|^{2}
+\ll(\log)^{-2A'+c}\sum\mathrm{main}^{2}$；由引理~\ref{l:comb}，
+梳与模型相对吻合到 $(\log)^{-B^{*}+c}$，被 $B^{*}$ 的选取吸收。
+混合与双次区间由引理~\ref{l:minor} 相对贡献
+$\ll(\log)^{-B^{*}/2+c_1}$。桥与黏合层的 $(k,j)$-聚合常数已
+存档并认证（\S\ref{s:fm:R}）；与 $KJV^{2}$ 的规范化匹配即彼处
+的消费接口。所有界都对绝对值成立，故双侧；所有常数只依赖
+$(A,B)$ 且非有效。先取 $B^{*}$ 再取 $A'$ 的顺序不含循环。
+\end{proof}
+
+\begin{remark}[同余组框架路线；证伪器 r95]\label{rem:prog}
+把方差归约到锁定双模同余组协方差的存档归约提示一条更短的
+论证：把两个同余组误差都按加性特征展开并用 Siegel--Walfisz
+求值。若在模 $(r,q)$ 上分别执行，将产生\emph{不完整}特征和
+（锁把模 $r$ 剩余与模 $q$ 剩余耦合，一个模上的 $a$-和对另一个
+没有正交性）；展开必须提升到联合模
+$M\asymp rq\le(\log X)^{2B}$，在那里它成为与上文平行的完整和
+论证。早期草稿曾给出未提升的概要；已被谱证明取代——其中
+$\tau$-变换跑满整个周期，正交性（引理~\ref{l:comb}）精确。该
+疏失及其更正为前向记录上的证伪器 r95。
+\end{remark}
+
+\begin{corollary}[$13/18$ 梯级]\label{c:1318}
+以非有效常数，
+\[
+\liminf_{T\to\infty}\frac{N_0^{s}(T,2T)}{N(T,2T)}\ge\frac{13}{18},
+\qquad
+\liminf_{T\to\infty}\frac{N_d(T,2T)}{N(T,2T)}\ge\frac{31}{36},
+\]
+且对任意固定原特征 Dirichlet $L$-函数同样成立。
+\end{corollary}
+
+\begin{proof}
+定理~\ref{t:D} 与命题~\ref{p:consume} 给出 $m_4=13/4+o(1)$
+双侧；定理~\ref{t:m3} 给出 $\mu_3\to2$；证书
+（引理~\ref{l:cert}，等价地命题~\ref{p:count} 的 Christoffel
+函数计数在 $(1,1,\tfrac43,2,\tfrac{13}4)$ 处）精确给出 $13/18$
+与 $31/36$，四阶矩单调性把 $m_4\to13/4$ 转为两个 liminf 界。
+Dirichlet $L$-函数情形同 \cite[定理~E]{C26}：框架只用函数方程
+对称 $\rho\mapsto1-\bar\rho$、零点密度界与显式公式，三者对任意
+固定原特征 Dirichlet $L$-函数都可用。常数经引理~\ref{l:MM}
+非有效。
+\end{proof}
+
+\section{第五与第六阶矩}\label{s:five}
+
+\subsection{乘积恒等式}
+
+\begin{proposition}\label{p:prod}
+对共享一窗的位置格 $b$-圈及任意逐格密度 $f_i,g_i$：
+$\sum_jN_f(j)N_g(j)=\sum_t\prod_iC_i(t)$，
+$C_i(t)=\sum_xf_i(x)g_i(x+t)$。特别地，锁方差是格自相关的逐点
+乘积对公共位移求和。
+\end{proposition}
+
+\begin{proof}
+两条链锁向量相同当且仅当相差一个公共位移；链和随即沿位置
+因子化。
+\end{proof}
+
+该恒等式（求值代价 $O(N\log N)$）把 \S\ref{s:four} 的谱论证
+\emph{逐因子}输运到每个圈长：每个因子都是加窗单素数和，故三叶
+闭合（全主区间逐因子 Siegel--Walfisz、任一次要因子 Vaughan、
+梳由命题~\ref{p:local}、截断由命题~\ref{p:consume} 且指数更
+强）逐字适用。机器面：孪生奇异级数乘积模型以 $0.28$--$2.5\%$
+跟踪经验五重乘积（六个模式样，$T=4800$ 到 $76800$，随高度
+改善），六重乘积为 $0.11$--$1.29\%$。
+
+\subsection{配对层坍缩到已认证锚}
+
+Bell$(5)=52$ 与 Bell$(6)=203$ 类账本经机器枚举（类表
+$1/10/15/10/10/5/1$ 与 $1/15/45/15/20/60/10/15/15/6/1$；五边形
+弦 $10+5$；六边形弦 $30+15$；匹配交叉谱 $5/6/3/1$）。冻结槽
+恒等式——单元素块重复一个游走值且不改重叠范围；机器精确——
+把每个配对类归约到四圈几何，其锚现为\emph{精确有理数}
+（\S\ref{s:five:cert}）：$t_{\mathrm{adj}}=\tfrac7{60}$，
+$t_{\mathrm{opp}}=\tfrac1{30}$，
+$\Phi_4=\tfrac14-2t_{\mathrm{adj}}-t_{\mathrm{opp}}=-\tfrac1{60}$
+（正弦模型累积量约定，参见注记~\ref{r:books}）。奇块类由局部律
+消没。于是
+\[
+m_5=\underbrace{1+\tfrac{10}3+10t_{\mathrm{adj}}
++5t_{\mathrm{opp}}+5\Phi_4}_{=\,67/12\ \text{（精确）}}+\ C_5,
+\qquad
+m_6=\tfrac{39}4+6C_5+\{2,2,2\}+\{4,2\}+\{6\},
+\]
+有理部分与锚无关（$t$-几何相消：
+$10t_{\mathrm{adj}}+5\Phi_4+5t_{\mathrm{opp}}=\tfrac54$ 与
+$30t_{\mathrm{adj}}+15t_{\mathrm{opp}}+15\Phi_4=\tfrac{15}4$
+恒等成立——认证审计中符号验证，且已在 Lean 包内核编译，
+\S\ref{s:verif}(f)），其中 $\{2,2,2\}=\tfrac{131}{420}$ 现已
+\emph{精确认证}（命题~\ref{p:t222}），$\{4,2\}=-0.0552(8)$
+（与旁观对联合消费的四圈连通对象），$\{6\}=-0.0078(8)$
+（分组中点网格阶梯，\S\ref{s:conv}）。原写出项 W1--W3 已在
+\S\ref{s:writeouts} 写出。
+
+\subsection{配对层的精确认证}\label{s:five:cert}
+
+\begin{proposition}[精确配对常数]\label{p:t222}
+四圈锚与三弦类为精确有理数
+\[
+t_{\mathrm{adj}}=\tfrac7{60},\quad
+t_{\mathrm{opp}}=\tfrac1{30},\quad
+T_0=\tfrac3{70},\quad T_1=\tfrac1{90},\quad
+T_2=\tfrac1{180},\quad T_3=\tfrac1{70},
+\]
+从而 $\{2,2,2\}=5T_0+6T_1+3T_2+T_3=\tfrac{131}{420}$
+（Touchard--Riordan 重数 $5/6/3/1$）。
+\end{proposition}
+
+\begin{proof}
+每个常数都是显式游走（Bell 账本的弦型游走）之
+$(1-\mathrm{spread})_+\cdot\prod\min(|x_i|,1)$ 在盒上的积分：
+分段多项式被积函数，其全部折结超曲面都是变量在水平
+$\{0,\pm1\}$ 处的 $\{0,\pm1\}$-组合。由于 $0$ 是游走位置且每个
+变量都是位置或两位置之差，支撑落在 $[-1,1]^d$ 内，$\min$-帽
+从不生效。积分随即以有理算术\emph{精确}算出：迭代积分配全断点
+枚举——内层断点首项系数为单位，故一切碰撞与边界结式保持小
+整数形式；每个无折结片上被积函数为次数至多 $2/4/8$（内/中/外
+变量）的多项式，由有理节点的 $5/7/9$ 阶闭 Newton--Cotes 法则
+精确积分。每片积分两次（整片与两半）：次数低于法则阶时两个
+精确有理数必须相同，漏掉任何折结都会造成不合；未出现任何
+不合。$t_{\mathrm{opp}}$ 与 $T_0$ 另有卦限分解的简短闭形式
+求值（附录~\ref{a:cert}），与算法值一致。代码与输出：
+\texttt{certification/exact\_t222.py}。
+\end{proof}
+
+\begin{remark}[锚更正]\label{r:anchor}
+存档锚 $t_{\mathrm{adj}}=0.11717$（轮 69--71 网格）由
+命题~\ref{p:t222} 更正为 $\tfrac7{60}=0.11\overline{6}$：折结
+处 $+0.43\%$ 的矩形法则偏差。下游所消费的一切不变：$m_5$ 与
+$m_6$ 的有理层与锚无关（见上），注记~\ref{r:books} 的对账变为
+精确。三弦类此前猜想性的有理识别现为定理。登记条目 D7、D8。
+\end{remark}
+
+\subsection{写出项 W1--W3}\label{s:writeouts}
+
+审计账本中作为命名写出项携带的三项在此卸下；其预注册面在
+\texttt{certification/writeouts\_verification.py}（全部通过；
+一个面在构造中触发并已转化——附录~\ref{a:record}）。
+
+\begin{lemma}[W2：自由槽因子化]\label{l:W2}
+任何 $b$-圈胞元账本中，锁不受约束的槽精确因子化：胞元聚合等于
+收缩后的 $(b-1)$-圈聚合乘以自由槽的窗质量
+$\sum_{m\in W}\LL(m)$，且
+$\sum_{m\in W}\LL(m)=|W|\bigl(1+O(e^{-c\sqrt{\log X}})\bigr)$。
+\end{lemma}
+
+\begin{proof}
+自由槽位移上的锁和不受限制，故双重和由 Fubini 因子化；游走
+几何侧此即冻结槽恒等式（单元素块重复一个游走值且不改重叠
+范围——机器精确，
+\texttt{face\_o5\_gate}/\texttt{face\_b6\_frame}）。质量求值为
+带经典误差项的素数定理 \cite[\S18]{Dav}；消费规范化把它除掉。
+面验证活族上的精确 Fubini 恒等式与高度处的 PNT 质量
+（$X=2\times10^{5}$ 处 $1.00041$）。
+\end{proof}
+
+\begin{lemma}[W3：三对因子化]\label{l:W3}
+六阶矩账本的 $\{2,2,2\}$ 类聚合等于三个对主项之积对联合重叠
+体积，误差聚合在消费规范化下 $\ll_A KJ'V'^2(\log X)^{-A}$。
+\end{lemma}
+
+\begin{proof}
+六个位置构成三条不相交仿射对链。$p$-局部密度由 CRT 与
+命题~\ref{p:local} 沿三链因子化（槽不相交；合并修正即局部律
+已记账的对事件），故奇异级数模型为三个孪生级数之积。阿基米德
+耦合只经联合窗重叠（游走几何 $O_6$）进入，而后者是
+命题~\ref{p:t222} 的认证精确层。与对主项之积的偏差由谱输运的
+$k=2$ 实例三次应用控制：由命题~\ref{p:prod}，分辨方差沿三链
+因子化，每个因子都是加窗单素数和，\S\ref{s:four} 的三叶闭合
+以命题~\ref{p:consume} 的指数施于每个因子。面在
+$X=6\times10^{4}$ 处以 $1.9\%$（四个位移模式中位数）跟踪乘积
+模型。
+\end{proof}
+
+\begin{proposition}[W1：分辨多维梳]\label{p:W1}
+对带 $b-1$ 个锁坐标的 $b$-圈，分辨伸缩密度
+$\rho(\tau_1,\dots,\tau_{b-1})$ 服从多维梳识别：模型梳支撑于
+乘积 CRT 同余组（每坐标一条同余式，如引理~\ref{l:comb}），
+局部因子为命题~\ref{p:local} 的 $\kappa_b$-值、模外为孪生级数
+因子；且到梳的分辨谱 $L^2$-距离服从定理~\ref{t:D} 的界，指数
+相同。
+\end{proposition}
+
+\begin{proof}
+由命题~\ref{p:prod}，分辨方差由联合分析网格上的乘积
+$\prod_i|S_i|^2$ 承载，多重 $\tau$-变换在每个坐标上完整，故
+$(b-1)$-维 Parseval 恒等式按坐标成立（面精确验证，
+$1.2\times10^{-16}$）。\S\ref{s:four} 的频率分类逐因子适用：
+全主区间上每个因子服从引理~\ref{l:MM}；任一次要因子由
+引理~\ref{l:minor} 闭合；每个坐标的梳识别是引理~\ref{l:comb}，
+其 CRT 同余组现按坐标运行（每坐标完整正交，因每个变换覆盖其
+整个周期）。定理~\ref{t:D} 的论证随即带 $b-1$ 个分类指标逐字
+重复；截断指数随 $k$ 增强（命题~\ref{p:consume}）。先前所述的
+夹逼（聚合面在上、分辨四圈情形在下）被包含：聚合实例即
+$\tau$-求和情形，分辨四圈情形即引理~\ref{l:comb} 本身。分辨梳
+面（算例 $5$-圈族）直接展示 CRT 类对比。
+\end{proof}
+
+\subsection{连通值}\label{s:five:conn}
+
+$C_5=\int O_5C_5^{\mathrm{Urs}}=0.0278(1)$：分组中点网格阶梯
+（\S\ref{s:conv} 协议）在 $dv=0.05/0.04/0.032$ 处为
+$0.02784/0.02781/0.02780$，单调收敛；$O$-加权积分盒精确。六圈
+连通值 $\{6\}=-0.0078(8)$：同协议中点阶梯。（早期端点网格求值
+$C_5=0.0275(5)$、$\{6\}=-0.0100(12)$ 已退役：端点网格在
+$b\ge6$ 粗档上符号翻转——登记条目，第 32 次转化——而中点
+网格单调收敛；四圈锚更正为精确有理数（\S\ref{s:five:cert}）亦
+为同一审计所迫。）涨落由逐因子方差引理控制
+（定理~\ref{t:D} 的输运；分辨多维梳展示由聚合面与分辨四圈情形
+夹逼——现为命题~\ref{p:W1}）。端到端面：装配的
+$m_5=5.6111(1)$ 与 $m_6=10.1657(18)$ 均落在正弦模型带
+\eqref{e:guebands} 内。
+
+\emph{分级注。}\S\ref{s:five:cert} 认证之后，仍以数值携带的
+常数恰为三个：$C_5$、$\{4,2\}$、$\{6\}$——维数 $4$、$4$、$5$
+的显式分段多项式积分在明示双侧带宽下的求值，非认证包络。由
+\S\ref{s:conv} 的维数定理，三者均为有理多面体体积的有限有理
+组合，故为\emph{有理数}；命题~\ref{p:t222} 的精确积分算法原样
+适用，只是迭代层数与连通被积函数的有序分拆计数使计算更重。其
+闭形式求值是既定的下一步计算（N1 项，\S\ref{s:verif}）。本文
+头条经 \S\ref{s:lp} 的精确对偶证书\emph{连带}带宽消费这些
+常数，故声明恰为：\emph{在三个连通常数落于其明示带宽内的前提
+下，所述界成立}。
+
+\subsection{卷积演算、有理性与中点协议}\label{s:conv}
+
+连通常数另有一个结构性表示，既确定其算术性质，也决定数值
+协议。记 $W$ 为单位方窗自相关、$B$ 为正弦核盒；累积量被积函数
+由这两个轮廓的迭代卷积组装而成。三条结果（推导与验证门见复现
+包的 \texttt{cyclic\_cumulant} 与 \texttt{midpoint\_ladder}
+引擎）：
+
+\emph{(i) 迹/卷积恒等式。}$b=2$ 处连通积分有闭形式：
+$\int O_2C_2=1-\|W\star\widehat B\|^{2}=\tfrac13$ 精确——下文
+一切的校准门（F-TRACE）；$b=3,4$ 实例把命题~\ref{p:t222} 的
+精确配对值复现到 $3\times10^{-14}$。
+
+\emph{(ii) 分拆-循环累积量公式（F-CYC）。}对 $b$-圈连通类，
+\[
+C_b(v)\;=\;\sum_{P\vdash[b]}(-1)^{|P|-1}
+\sum_{\text{$P$ 的循环序}}
+\operatorname{ov}\bigl(\text{并块-}w\text{ 游走}\bigr),
+\]
+内和取遍块的相异循环排列，$\operatorname{ov}$ 为并块游走的
+重叠体积——在 $b=3,4,5$ 处对直接 Ursell 被积函数验证到
+$3\times10^{-14}$。
+
+\emph{(iii) 维数与有理性。}(ii) 的每个 $(P,\sigma)$-项中游走
+约束消去一个积分变量（$(m-1)$-维性），所得区域是由附录
+~\ref{a:cert}(A1) 的单位系数超平面族 $\mathcal H$ 切出的多面体
+的有限并，被积函数为有理系数多项式。故每项都是有理数，从而
+$C_5$、$\{4,2\}$ 与 $\{6\}$ 也是——正是给出
+$t_{\mathrm{adj}}=\tfrac7{60}$ 与 $\{2,2,2\}=\tfrac{131}{420}$
+闭形式的同一论证。把这三个余下常数与命题~\ref{p:t222} 分开的
+只是精确积分的片数，不是其种类（N1 项，\S\ref{s:verif}）。
+
+\emph{中点协议。}为 (i)--(iii) 跑的数值阶梯揭示了一个网格
+病理，记为注册表第 $32$ 次转化（附录~\ref{a:record}，D10）：
+折结被积函数上的端点网格在 $b\ge6$ 粗档上符号翻转，而中点
+网格——从不采样于折结集 $\mathcal H$ 上——单调收敛。本文的
+全部连通常数都由分组中点网格阶梯求值，在 $b=4$ 处对
+命题~\ref{p:t222} 的精确值校准（吻合到阶梯自身带宽），早期的
+端点网格采纳值已退役。
+
+\section{消费与定理~\ref{t:main} 的证明}\label{s:lp}
+
+在 $(m_1,\dots,m_4)=(1,\tfrac43,2,\tfrac{13}4)$ 双侧钉定后
+（定理~\ref{t:m3}、定理~\ref{t:D}、\eqref{e:moments}），记
+$C_5=0.0278+\delta$，$|\delta|\le0.0001$：五、六阶矩约束为
+\[
+m_5\;\ge\;M_5(\delta):=\tfrac{67}{12}+0.0278+\delta,
+\qquad
+m_6\;\le\;M_6(\delta):=\tfrac{39}4+\tfrac{131}{420}
++6(0.0278+\delta)-0.0552-0.0078+0.0018,
+\]
+同一 $\delta$ 进入两式（相关带记账：$m_6$ 的 $6C_5$ 项随
+$m_5$ 的 $C_5$ 项联动；独立 $m_6$ 带宽 $0.0018$ 逐项为
+$0.0002+0.0008+0.0008$，对应冻结槽输运、$\{4,2\}$ 与
+$\{6\}$——原 $\{2,2,2\}$ 带宽贡献已被命题~\ref{p:t222}
+退役）。消费不再是数值线性规划而是精确证书：
+
+\begin{lemma}[精确对偶证书]\label{l:dual}
+设 $a=\tfrac{27}{50}$，$b=\tfrac{263}{200}$，$c=\tfrac{103}{50}$，
+\[
+P(x)\;=\;\frac{\bigl[(x-a)(x-b)(x-c)\bigr]^{2}}{(abc)^{2}}
+\;=\;\sum_{k=0}^{6}y_kx^{k}.
+\]
+则 $P\ge0$ 于 $\mathbb R$（完全平方），$P(0)=y_0=1$，
+$y_5<0$，$y_6>0$。于是对 $[0,\infty)$ 上\emph{任何}概率测度
+$\nu$——无支撑界——只要 $m_1=1$，$m_2=\tfrac43$，$m_3=2$，
+$m_4=\tfrac{13}4$，$m_5\ge M_5$，$m_6\le M_6$：
+\[
+\nu(\{0\})\;\le\;\int P\,d\nu
+\;=\;\sum_{k\le4}y_km_k+y_5m_5+y_6m_6
+\;\le\;\sum_{k\le4}y_km_k+y_5M_5+y_6M_6\;=:\;w_0(M_5,M_6),
+\]
+且 $w_0$ 对 $(M_5,M_6)$ 仿射，故在 $\delta$-带上于角点取最大
+（$\mathrm dw_0/\mathrm d\delta=y_5+6y_6<0$，故最坏角为
+$\delta=-0.0001$：$M_5=\tfrac{168331}{30000}$，
+$M_6=\tfrac{42701}{4200}$）。在彼处精确有理算术给出
+\[
+w_0\;=\;\tfrac{1153107070889}{11233957316589}
+\;=\;0.10264\ldots,
+\qquad
+1-2w_0\;\ge\;0.7947,\qquad 1-w_0\;\ge\;0.8973 .
+\]
+\end{lemma}
+
+\begin{proof}
+非负性与 $P(0)=1$ 由闭形式立得；符号条件
+$y_5=-2(a{+}b{+}c)\cdot(ab{+}bc{+}ca)\ldots$ 由正根展开得出
+（认证包中显示；去分母展开、角点求值与最终不等式已在核心
+Lean~4 内核验证，\texttt{lean/RhGate/Certificate.lean}，并由
+\texttt{certification/certify\_lp.py} 以精确有理算术独立
+验证）。质量界是引理~\ref{l:cert} 的 Chebyshev--Markov 机制在
+六次的实例：$y_5<0$ 转换下矩界，$y_6>0$ 转换上矩界。原子
+$(a,b,c)$ 提取自数值 LP 极值（一个收拢的四原子测度）并有理化；
+任何有理三元组都给出有效界，故 LP 求解器退出信任基础。
+\end{proof}
+
+定理~\ref{t:main} 经 \S\ref{s:frame} 的消费机制得出。诸梯级：
+仅 $m_4$ 给出 $13/18$、$31/36$（推论~\ref{c:1318}，
+引理~\ref{l:cert} 的证书 $Q$，首项系数为正——亦无支撑界）。
+Dirichlet $L$-函数情形逐字相同。所有常数非有效。\qed
+
+\begin{corollary}[纯符号梯级]\label{c:signs}
+若三个连通常数仅满足 $C_5\ge0$、$\{4,2\}\le0$ 与 $\{6\}\le0$
+（且 $C_5\le0.1$），则由附录~\ref{a:cert}(A5) 的再优化精确
+证书，
+\[
+\liminf\frac{N_0^{s}}{N}\;\ge\;0.7403,\qquad
+\liminf\frac{N_d}{N}\;\ge\;0.8701 .
+\]
+符号认证是比包络粗糙得多的目标；完整回报曲线列于附录
+~\ref{a:cert}(A5)。
+\end{corollary}
+
+\begin{remark}[被修复的中间梯级；登记 D6]\label{r:rung}
+本研究早期阶段曾从四、五阶矩链单独引出中间梯级
+（$0.7295/0.8647$），称``不消费六阶矩信息''。认证审计发现该
+梯级按原述不成立：只有 $m_5$ 的\emph{下}界而无 $m_6$（或
+支撑）信息时，无界支撑上的原点质量问题毫无改进——高度
+$\Lambda$ 处质量 $\varepsilon=c/\Lambda^{4}$ 可在对
+$m_1,\dots,m_4$ 代价趋零的情况下任意抬高 $m_5$，且审计的 LP
+在支撑范围 $8/20/60/200$ 处退化
+$0.73144\to0.72580\to0.72340\to0.72257\to\tfrac{13}{18}$。任何
+关于五阶矩下界的对偶证书都需要被正 $x^6$-系数支配的负
+$x^5$-系数，即六阶矩（或支撑）信息\emph{必需}。故该梯级降级：
+其原述形式只在附加 $m_6$ 帽时成立，而此时被引理~\ref{l:dual}
+包含。完整证书不受影响（$y_6>0$）。
+\end{remark}
+
+\medskip
+\noindent\emph{带模型审计注。}审计先跑了\emph{反}相关变体
+（$m_5$ 的 $\delta$ 以相反符号进入 $m_6$）得 $0.78972$；上文的
+相关形式才是正确记账，因为 $C_5$ 是同时移动两个约束的单一
+未知量。两次运行都入册（D3），故头条对带模型的敏感度在案：在
+（不正确、双重保守的）反相关记账下头条将为 $0.7897/0.8949$。
+
+\section{数值验证}\label{s:faces}
+
+独立管线（\texttt{pipeline/}；\texttt{numpy}、\texttt{scipy}）
+数分钟内重跑全部门。中心高度表（十六个互素模族）：
+
+\begin{center}
+\begin{tabular}{lcccccccc}
+$T$ & 2400 & 4800 & 9600 & 19200 & 38400 & 57600 & 76800 & 153600\\
+\hline
+色散 ($10^{-3}$) & 8.39 & 5.19 & 4.16 & 4.06 & 3.87 & 1.84
+& 1.29 & 1.04\\
+跟踪 (\%) & 1.5 & 1.0 & 0.7 & 0.9 & 0.8 & 0.4 & 0.2 & 0.2\\
+\end{tabular}
+\end{center}
+
+\noindent（全程几何均值每倍频 $0.706$：纯平均律
+$2^{-1/2}$）。其余面：局部闭包精确（零违例，七个构形）；
+Parseval 精确；逐区间 Siegel--Walfisz 面全程降十倍；
+Bell(5)/Bell(6) 门精确；五重、六重乘积面各高度全绿；良间隔零
+违例；混合尺度控制 $24$--$31$ 倍高度稳定；消费 LP 网格稳定。
+注册表：$194$ 项预注册检查，$160$ 项通过，$34$ 项触发并转化，
+全部前向记录（第 $31$--$34$ 次转化属于修正常数轮与 Lean
+编译，\S\ref{s:verif}(f)，附录~\ref{a:record}）。
+
+2026 年 8 月 16 日的认证审计重跑了：完整矩链门套件
+（$T=9600$，全部通过，$72$ 秒：色散 $4.163\times10^{-3}$、
+跟踪中位数 $0.73\%$、SW RMS $1.599\times10^{-3}$、紧致度
+$24.8$--$31.3$ 倍、五重 $0.06$--$1.29\%$、六重
+$0.01$--$0.73\%$、LP 在已退役端点常数下两网格
+$0.79454/0.89727$；修正常数重跑给出 $0.79472/0.89736$）；四阶
+矩恒等式套件（$T=9600$，全部通过，$48$ 秒）；\S\ref{s:fm} 的
+常数套件（\texttt{m1\_suite.py validate}：$6/6$ 局部因子、
+$100/100$ 向量筛、锚与跨约定差复现；core $-0.00545$ 对档案
+$-0.00544$；$\alpha$-截断 $-0.00491$）；锯齿认证
+（\texttt{sawtooth\_cert}：网格 $1.8675$，抽样
+$1.8419/1.8494/1.8512$，证书 $2.100$）；连续求积门
+（\texttt{quadrature\_cert}：几何尾比率 $0.500$ 认证，
+$c_0=-1.4228$ 十倍程稳定）；及 \S\ref{s:cert} 的证书套件
+（\texttt{certificate\_verification.py} 精确；
+\texttt{moment\_lp\_reopt} $0.0721$；
+\texttt{mu3\_ledger\_gates}；\texttt{cumulant\_engine} 门
+$C_2$ 精确、$\int O_3C_3=0$）。消费 LP 的独立重实现（不同
+代码，HiGHS 后端）复现了 \S\ref{s:lp} 记录的每个梯级。
+
+第二轮认证（同日）加入：精确配对层积分
+（\texttt{exact\_t222.py}：命题~\ref{p:t222} 全部值、双方案
+同一有理数、闭形式交叉核验、猜想有理数吻合）；精确对偶证书
+（\texttt{certify\_lp.py}：展开、两个带角、最终不等式，全部
+精确）；写出面（\texttt{writeouts\_verification.py}：自由槽
+Fubini 精确、窗质量 $1.00041$、三对乘积模型中位数 $0.9814$、
+分辨 Parseval $1.2\times10^{-16}$、分辨 CRT 对比——一个面在
+构造中触发并转化，注册表第 $30$ 次）；以及
+注记~\ref{r:rung} 背后的支撑范围探针。
+
+修正常数轮重跑了：$C_5$、$\{4,2\}$、$\{6\}$ 的分组中点网格
+阶梯（\S\ref{s:conv}；带检查点引擎，$b=4$ 对
+命题~\ref{p:t222} 精确校准）；修正角点处的精确对偶证书
+（\texttt{certify\_lp.py}：展开、两个带角、最终不等式，全部
+精确，最坏角 $w_0=\tfrac{1153107070889}{11233957316589}$）；
+卷积迹门（F-TRACE：$b=2$ 精确 $\tfrac13$，$b=3,4$ 到
+$3\times10^{-14}$）；以及——纲领首次——恒等式层在维护者
+工具链上的真实 Lean 内核编译（\S\ref{s:verif}(f)）。
+
+\begin{remark}[有效的面，非有效的定理]
+面是带有效常数的有限高度测量；定理常数（经 Siegel）非有效。
+面验证精确恒等式层、模型识别、以及证明所预言的定性平均行为；
+它们不能也不去验证渐近性。两类证据全程分开。
+\end{remark}
+
+\section{验证状态}\label{s:verif}
+
+\emph{声明等级：认证候选。}链 = 经典输入（Siegel--Walfisz
+\cite{Dav,IK}、Vaughan、奇异级数截断、\S\ref{s:fm} 的
+\cite{MRT}）+ 存档认证引理（桥、黏合、聚合、D1 截断、消费
+接口、锚证书：\S\ref{s:fm}）+
+\S\S\ref{s:cert}、\ref{s:local}--\ref{s:five} 的机器验证
+恒等式 + \S\ref{s:five:conn} 的数值连通常数 +
+\S\ref{s:frame} 的消费层。分层等级：
+
+\emph{(a) 机器精确或精确有理，认证审计中复验。}证书代数
+（引理~\ref{l:cert}）与 $\kappa(c)$ 律；局部闭包
+（命题~\ref{p:local}）；Parseval 与乘积恒等式；Bell 账本与
+冻结槽恒等式；无锚的 $67/12$ 与 $39/4$；$197/60$ 账本算术与
+现已完全精确的双记账对账（注记~\ref{r:books}）；精确配对层
+常数 $t_{\mathrm{adj}}=\tfrac7{60}$、
+$t_{\mathrm{opp}}=\tfrac1{30}$、$\{2,2,2\}=\tfrac{131}{420}$
+（命题~\ref{p:t222}，附录~\ref{a:cert}）；精确对偶证书
+（引理~\ref{l:dual}）——消费步不含 LP 求解器、网格或支撑
+界；锯齿常数 $C_{\mathrm{saw}}=2.10$（网格加解析认证）。
+
+\emph{(b) 认证候选解析层（Lean 前、评审前）。}九类 $\mu_3$
+账本（两个非标准步骤在存档备忘录写出）；截断卸载；引理 D 的
+谱证明（定理~\ref{t:D}）——其次要/混合区间尺度记账在种类上
+经典、按写出级携带并有面检验预算——及其到 $k=5,6$ 的逐因子
+输运，含已写出的 W1--W3（\S\ref{s:writeouts}），均按本层等级
+证明；\S\ref{s:fm} 的覆盖区/带/黏合链。冻结链之前有五轮对抗
+审计（档案轮 r93、r95、r100、r102）。
+
+\emph{(c) 写出项。}已卸下：W1（命题~\ref{p:W1}）、W2
+（引理~\ref{l:W2}）、W3（引理~\ref{l:W3}），各有预注册面。
+W2 完整（初等）；W1 与 W3 按 (b) 层等级证明，因其消费同一
+谱输运。
+
+\emph{(d) 数值常数，尚非认证包络。}N1（已缩减，且现知有理）：
+$C_5$、$\{4,2\}$、$\{6\}$（带明示带宽的分组中点网格阶梯，
+\S\ref{s:five:conn}；每个都由 \S\ref{s:conv} 的维数定理证明为
+有理数，故认证意味着识别一个分数而非包住一个实数）；既定路线
+为命题~\ref{p:t222} 的精确积分算法（同一折结结构；因维数与
+有序分拆计数而更重——集群规模，机械性质）。附录
+~\ref{a:cert}(A5) 的\emph{证书族}使回报分级且即插即用：任何
+未来包络都产出精确证书，纯符号认证已给出 $0.740/0.870$。N2
+（部分卸下）：求积斜率已证恰为 $1$，其常数已闭形式识别
+$c_0=\gamma-2$（命题~\ref{p:c0}），几何尾已认证；仍属计算的
+是 $c^{*}$ 内的均值振荡 $\overline{\mathrm{osc}}$ 与普适坍缩
+速率写出。任何地方只消费保守项 $\varepsilon_{CL}$
+（引理~\ref{l:CL}）。N1 完全认证将把定理~\ref{t:main} 升到
+推论~\ref{c:1318} 的等级；N2 则把定理~\ref{t:fm} 升到
+$0.7031/0.8515$。
+
+\emph{(e) 输入。}\cite{C26}：\S\ref{s:frame} 的框架（矩阵、
+块结构、尾、计数、前两阶矩）——本纲领公开发布的预印本，未经
+独立同行评审；其自身解析输入为已发表文献。直接消费的已发表
+文献：\cite{Wei52} 与 \cite[定理~5.12]{IK}（显式公式）、
+\cite[定理~9.2]{Tit86}（零点密度）、\cite{Mon73,BGST}（素数
+侧配对相关求值，带内无条件）、\cite{MRT}、\cite{HR}、
+\cite{Dav}。
+
+\emph{(f) 形式化状态。}恒等式层现已在维护者机器上\emph{编译
+并内核检验}：核心 Lean~4（工具链
+\texttt{leanprover/lean4:v4.33.0}，无 \texttt{mathlib}），包
+\texttt{lean/RhGate/}，附构建日志。编译内容：无锚装配恒等式
+$m_4=\tfrac{13}4$、$m_5$-部分 $=\tfrac{67}{12}$、$m_6$ 对层
+$=\tfrac{39}4$，作为全称量化的有理恒等式（任意锚
+$t_{\mathrm a},t_{\mathrm o}$——\texttt{Anchors.lean}）；消费
+算术 $\tfrac{13}{18}$、$\tfrac{31}{36}$；以及 $b=4$、$p=5$ 处
+经全部 $125$ 个锁类完整内核枚举的重合计数局部律
+（\texttt{LocalClosure.lean}——该定理\emph{无公理}；其余仅用
+\texttt{propext}、\texttt{Classical.choice}、
+\texttt{Quot.sound}）。零 \texttt{sorry}。编译本身触发了一项
+注册检查并成为第 $33$ 次转化：草稿证明调用了 \texttt{ring} 与
+$\mathbb Q$ 上的 \texttt{decide}，二者在核心 Lean 中皆不可用
+（\texttt{ring} 是 \texttt{mathlib} 策略；核心 \texttt{Rat}
+算术不可内核归约，\texttt{decide} 卡在
+\texttt{instDecidableEqRat}）；受影响的五个证明全部以核心
+\texttt{grind} 策略修复，陈述不变（附录~\ref{a:record}）。
+第二次同机编译（8 月 16 日 20:09）覆盖了证书层：
+\texttt{Certificate.lean}（引理~\ref{l:dual} 的去分母展开
+恒等式、非负性、规范化、$w_0$ 的两个角点求值、角点选取不等式
+$y_5+6y_6<0$——故绑定角的\emph{选取}本身经内核检验——头条
+不等式 $1-2w_0\ge\tfrac{7947}{10000}$、
+$1-w_0\ge\tfrac{8973}{10000}$、附录~\ref{a:cert}(A6) 的首一
+展开、精确 $\{2,2,2\}$ 算术与锚实例化恒等式）与
+\texttt{LocalClosure2.lean}（$b=4$、$p=7$ 与 $b=5$、$p=5$ 处
+局部律：$343$ 与 $625$ 个锁类，$\mathbb N$ 上内核
+\texttt{decide}——均\emph{无公理}）。此次编译再次触发注册表
+（第 $34$ 次转化）：\texttt{grind} 的环/线性核把平方
+$(\cdot)^2$ 当作不透明原子，无法闭合完全平方非负性；修复为
+\emph{核心}有序环引理
+\texttt{Lean.Grind.OrderedRing.sq\_nonneg}（term 模式，陈述
+不变，仍无 mathlib）。编译前草稿
+\texttt{SOSCertificate.lean}——其头条常数携带已退役端点网格
+角点——已从包中移除，以杜绝 $0.7946$/$0.7947$ 头条定理并存；
+其仍有效内容并入 \texttt{Certificate.lean}，草稿保存于纲领
+档案。每条陈述均经精确有理算术（\texttt{certify\_lp.py}）或
+完整 \texttt{Python} 枚举代理核验（零偏差）。Lean 所认证的
+仅是有理算术层：矩钉定、测度论 Chebyshev--Markov 步骤与解析
+链仍按 (b)--(e) 层分级。截断、谱与消费\emph{分析}未形式化；
+解析层——其依赖 \cite{C26} 的框架——的形式化分级为待办。
+\cite{C26} 随文的形式化包独立于本仓库；本文的编译覆盖恰如上
+所述。
+
+\emph{(g) 门。}按纲领的验证门，纪录性声明须待 (i) N1 认证
+分数（可选 N2）、(ii) 恒等式与证书层连同队列 Q1--Q6 的已编译
+Lean 形式化（二者现已编译，\S\ref{s:verif}(f)；解析层待办）、
+(iii) 外部评审。全程不用黎曼假设、零密度输入、配对相关猜想或
+Kloosterman 技术。本文不涉及 RH 本身。
+
+\section*{致谢}
+
+本文的数学发展——\S\ref{s:frame} 的框架、证书演算、引理 D 的
+谱证明、矩识别、卷积演算、复现包与 Lean 包——由大语言模型
+Claude（Anthropic）完成，其工作处于作者指导的研究纲领之内，
+遵循 \S\ref{s:verif} 与附录~\ref{a:record} 所述证伪器优先的
+验证纪律。作者设定目标、仲裁决策、在自有工具链上编译并审计
+Lean 包，并对内容承担全部学术责任。本文以两三定理 \cite{C26}
+（同一研究纲领的预印本）为基础。
+
+\appendix
+
+\section{梳识别及一个算例模对}\label{a:comb}
+
+$\tau$-框架中 $\rho(\tau)$ 的模型由孪生奇异级数组装：以
+$\SSS$ 为 Hardy--Littlewood 级数
+$\SSS(h)=2C_2\prod_{p\mid h,\,p>2}\frac{p-1}{p-2}$（$h$ 偶）、
+窗重叠计数 $V_m,V_n$ 与精确对角片，
+\[
+\mathrm{Model}(\tau)=\!\!\sum_{\substack{t\equiv0\ (b_2)\\
+t\equiv\tau\ (b_1)\\ t\notin\{0,\tau\}}}\!\!
+\SSS\!\Bigl(\frac{t}{b_2}\Bigr)\SSS\!\Bigl(\frac{t-\tau}{b_1}\Bigr)
+V_m\!\Bigl(\frac{t}{b_2}\Bigr)V_n\!\Bigl(\frac{t-\tau}{b_1}\Bigr)
++\ \text{对角项}.
+\]
+CRT 同余组 $t\equiv0\ (b_2)$、$t\equiv\tau\ (b_1)$ 是联合框架
+的\emph{完整}正交性：位移 $t$ 有贡献当且仅当它同时是 $m$-侧的
+$b_2$-格孪生位移、且偏移 $\tau$ 后是 $n$-侧的 $b_1$-格孪生
+位移；因 $\tau$-变换跑满整个周期，不出现不完整和。$\SSS$ 在
+素数 $p\mid b_1b_2$ 处的局部因子恰为命题~\ref{p:local} 在
+$b=4$ 处的 $\kappa$-值；$p\nmid b_1b_2$ 处为孪生因子。
+
+\emph{算例对} $(b_1,b_2)=(5,3)$：$M=15$，对
+$\tau\equiv\tau_0$，存活位移为单一剩余类
+$t\equiv t_0(\tau)\ (15)$，$t_0=3\cdot(2\tau\bmod5)\bmod15$
+（此处 $3^{-1}\equiv2\ (5)$）。例如 $\tau=1$ 给出
+$t\equiv6\ (15)$：模型对 $t=6,21,36,\dots$ 及负支求和
+$\SSS(t/3)\SSS((t-1)/5)V_mV_n$，另加 $3\mid\tau$ 时的对角
+$t=\tau$ 项与 $5\mid\tau$ 时的 $t=0$ 项（此处皆无）。这正是
+\texttt{face\_dispersion} 所构造的；其与实测轮廓在全部十六个
+族、八个高度上 $0.2$--$4\%$ 的吻合即引理~\ref{l:comb} 的数值
+面。在圈长 $5$ 与 $6$ 处，同一完整正交逻辑给出 \S\ref{s:five}
+的乘积模型梳（聚合面 $0.1$--$2.5\%$ 全绿）。
+
+\section{出处、研究记录与差异登记册}\label{a:record}
+
+\subsection*{研究记录}
+
+本文的数学在一个交互式研究纲领（2026 年 8 月）中发展，其工作
+纪律为证伪器优先：每个结构性断言在采纳前都注册数值检查，每次
+触发都在前向记录上转化，完整轨迹——轮次日志、备忘录、断言
+账本、更正历史、脚本——保存于随复现包的纲领档案。链的四个
+阶段（\S\ref{s:cert}、\S\ref{s:fm}、
+\S\S\ref{s:trunc}--\ref{s:four}、
+\S\S\ref{s:five}--\ref{s:lp}）各自在对抗审计轮下闭合，然后
+\S\ref{s:verif} 的认证审计冻结此处呈现的链。
+
+\subsection*{塑造本文的转化}
+
+注册表触发并转化的检查中有六项直接塑造了数学：求值转移修复
+（包络从不向极限输运；r61）；约化协方差的模型扣除更正
+（r80）；混合尺度预算（两次触发，r88）；$\tau$-框架教训
+（固定截断弧统计从不自平均；Parseval 恒等式由此进入；r90）；
+同余组框架的不完整和疏失（r95，注记~\ref{rem:prog}）；以及从
+内部梯级移除未证六阶矩帽（定理~\ref{t:main} 引用的中间值恰好
+消费其链所证明的内容）。第 29 次转化（r103）是
+\S\ref{s:local} 的 Lean 草稿逆元遗漏。
+
+\subsection*{认证审计差异登记册（2026 年 8 月 16 日）}
+
+\begin{itemize}
+\item[D1.] \S\ref{s:fm} 早期草稿装配段印
+$\Lambda_2(0)=0.156293$；$\bar R=0.0066$ 处闭形式给出
+$0.154193$，定理常数 $0.6916/0.8458$ 与后者一致。已在
+\S\ref{s:fm} 更正；定理不受影响。\emph{对主定理影响：无。}
+\item[D2.] 早期草稿把带 $5.573\pm0.113$、$10.02\pm0.27$ 归为
+``在 $2\times10^{7}$ 个 zeta 零点上''的测量；复现包恰好从
+GUE 双窗 Richardson 外推导出这些数字
+（\texttt{gue\_bands.py}、\texttt{m5m6\_bands.py}），且记录中
+不存在该规模的 zeta 零点数据集。本文把带归于正弦模型/GUE
+测量 \eqref{e:guebands}。若存在 zeta 零点测量，它不在记录中
+也未被消费。\emph{影响：仅归属；常数无变。}
+\item[D3.] 消费 LP 带模型：相关对反相关 $\delta$-记账
+（$0.79454$ 对 $0.78972$）；相关形式正确，
+\texttt{face\_lp\_full} 实现的即是它；两者皆入册
+（\S\ref{s:lp}）。\emph{影响：反相关变体双重保守；头条
+不变。}
+\item[D4.] $m_4$+$m_5$ 梯级：早期阶段引 $0.7295/0.8647$；
+审计的独立 LP 在同一约束、有界支撑下给出 $0.73144/0.86572$。
+被 D6 取代：该梯级无论如何降级。\emph{影响：对主链无
+（降级梯级未被消费）。}
+\item[D5.] 形式化措辞：早期纲领文件称 \cite{C26} 已
+``Lean 形式化''；该陈述关乎 \cite{C26} 随文的形式化包，本
+仓库中不存在其编译产物（\S\ref{s:verif}(f)）。本文的编译覆盖
+恰如 (f) 所分级。\emph{影响：仅分级措辞。}
+\item[D6.] 中间 $m_4$+$m_5$ 梯级（$0.7295/0.8647$，早期
+阶段）在无六阶矩信息时于无界支撑上不成立：审计 LP 随支撑范围
+增大退化至 $13/18$（$R=8\to200$ 时 $0.73144\to0.72257$），且
+五阶矩下界的对偶证书必然消费 $x^6$-信息。梯级降级并修复
+（注记~\ref{r:rung}）；主链不受影响（引理~\ref{l:dual} 中
+$y_6>0$）。\emph{影响：移除一个中间梯级；头条不受影响。}
+\item[D7.] 存档四圈锚 $t_{\mathrm{adj}}=0.11717$（轮
+69--71；早期草稿与 \texttt{m1\_suite} 引用）带 $+0.43\%$ 矩形
+法则网格偏差：精确值为 $\tfrac7{60}=0.11667$
+（命题~\ref{p:t222}）。下游总量不受影响（$m_5$/$m_6$ 有理层
+无锚）；饱和拆分三元组 $0.2677/0.0156/{-0.0177}$ 变为精确的
+$\tfrac4{15}/\tfrac1{60}/{-\tfrac1{60}}$
+（注记~\ref{r:books}），与累积量引擎独立值 $-0.01663$ 吻合更
+好。\emph{影响：有理层无（无锚）；更正存档锚。}
+\item[D8.] 三弦类的有理识别
+$T_0,\dots,T_3=\tfrac3{70},\tfrac1{90},\tfrac1{180},\tfrac1{70}$
+（审计账本中记为猜想、未消费）现已证明
+（命题~\ref{p:t222}）；$\{2,2,2\}=\tfrac{131}{420}$ 被精确
+消费，其带宽贡献退役。\emph{影响：收紧 $m_6$；贡献于头条。}
+\item[D9.] 连续求积常数 $c_0=-1.4228$（``计算而非拟合''）
+已闭形式识别：$c_0=\gamma-2$（命题~\ref{p:c0}）。审计在档案
+张量筛 $\gamma$-数组与原始 Euler 闭形式之间定位了一个 $d=2$
+差异（$\widetilde\gamma_2=C_2-1$ 对 $\gamma_2=C_2$，常数恰
+移 $-2$）；这是档案的奇偶均值约定（$q=2$ 弧块记入
+$\bar D$），非错误——原始约定常数为 $\gamma$，两种约定现均
+随转化记录在案。部分和斜率-$1$ 律（此前为测量值
+$0.99996$）已精确证明。\emph{影响：N2 部分卸下；主定理不受
+影响。}
+\item[D10.] 先前连通常数背后的端点网格阶梯触发其加密面：
+$b\ge6$ 粗档端点求值\emph{符号翻转}（$b=6$、$dv=0.4$ 处
+$+0.036$ 对真值 $-0.010$），存档采纳值 $C_5=0.0275(5)$、
+$\{4,2\}=-0.0548(10)$、$\{6\}=-0.0100(12)$ 继承了系统性
+偏移。分组\emph{中点}网格阶梯（\S\ref{s:conv}）在 $b=4$ 处对
+命题~\ref{p:t222} 精确校准、单调收敛，给出 \S\ref{s:lp} 消费
+的修正值 $C_5=0.0278(1)$、$\{4,2\}=-0.0552(8)$、
+$\{6\}=-0.0078(8)$（注册表第 $32$ 次转化；第 $31$ 次为 D7 的
+锚更正，同一审计独立所迫）。\emph{影响：直接——这些正是头条
+消费的常数；定理值在更正下 $0.7946\to0.7947$。}
+\item[D11.] Lean 草稿文件声称其 $\mathbb Q$-陈述核心可判定
+（``decide on $\mathbb Q$''）并使用 \texttt{ring}；维护者
+编译表明二者在核心 Lean~4.33 中均不可用（\texttt{ring} 属
+\texttt{mathlib}；\texttt{instDecidableEqRat} 不作内核
+归约）。五个证明以 \texttt{grind} 修复，陈述不变；构建随即
+成功（注册表第 $33$ 次转化；\S\ref{s:verif}(f)）。
+\emph{影响：仅证明；陈述不变。}
+\item[D12.] 第二次编译在 \texttt{cert\_nonneg} 上触发：
+\texttt{grind} 把平方 $(\cdot)^2$ 指派为不透明原子（其诊断
+输出在猜该原子的值），无法导出完全平方非负性；修复为核心
+\texttt{Lean.Grind.OrderedRing.sq\_nonneg}（注册表第 $34$ 次
+转化）。审计还发现被取代的草稿 \texttt{SOSCertificate.lean}
+静默处于构建根之外、却在已退役常数处声明同名头条定理；该文件
+已从包中移除（内容并入；草稿保存于纲领档案），构建现覆盖目录
+内每个 \texttt{.lean} 文件。\emph{影响：仅证明与打包；陈述
+不变。}
+\item[D13.] 与 \cite{C26} 的引用关系在前向记录上反转两次：
+一个中间修订在 \cite{C26} 尚未公开发布时把框架连证明并入
+正文；本修订恢复 \cite{C26} 为被引基础并移除重复证明，只保留
+陈述（\S\ref{s:frame}）。\emph{影响：归因与行文；数学内容
+无变。}
+\end{itemize}
+
+\noindent 注册表第 $30$ 次转化发生于认证审计期间：W1 分辨梳
+面的第一版把 $b_1b_2$ 的原始倍数当作在同余组上而触发；更正后
+的面实现逐坐标 CRT 类（\S\ref{s:writeouts}）。前向记录于
+\texttt{writeouts\_verification.py}。第 $31$--$34$ 次即上文
+D7、D10、D11 与 D12。
+
+\subsection*{复现}
+
+随文附统一复现清单（\texttt{REPRODUCTION.md}）：环境、每套件
+一条命令、含 2026 年 8 月 16 日重跑值的预期输出、以及每个引用
+常数到其再生脚本的映射。全套短集在单 CPU 上十五分钟内跑完
+（可选长门三十分钟；精确 $\{2,2,2\}$ 认证两小时内）。
+
+\section{精确认证层}\label{a:cert}
+
+\subsection*{A1. 精确积分算法}
+
+每个配对层常数都是积分
+$\int_{[-1,1]^{d}}(1-\mathrm{spread}(p_1,\dots,p_b))_+\,
+\prod_i|x_i|\,dx$，其中游走位置 $p_j$ 为弦变量的
+$\{0,1\}$-组合且 $0$ 是位置（故支撑强制 $|x_i|\le1$，$C_2$
+因子的 $\min(|\cdot|,1)$-帽从不生效）。被积函数分段多项式；其
+折结集含于超平面族
+\[
+\mathcal H=\bigl\{p_i-p_j=c\bigr\}_{i<j,\ c\in\{0,\pm1\}}
+\cup\bigl\{x_i=0,\pm1\bigr\},
+\]
+系数全在 $\{-1,0,1\}$ 且最内变量首项系数为单位。迭代积分：内层
+积分在枚举出的内层断点之间精确算出；因首项系数为单位，断点
+本身是外层变量的小整数线性形式，部分积分的片结构只在 (i)
+直接折结、(ii) 两个内层断点碰撞、(iii) 断点--边界碰撞处
+改变——每层都有显式枚举的结式族。每个无折结片上（部分）
+被积函数是内/中/外变量次数至多 $2/4/8$ 的多项式，由有理节点的
+$5/7/9$ 阶闭 Newton--Cotes 法则精确积分，全程精确有理算术。
+\emph{自检}：每片以同一法则对整片及其两半各积一次；次数低于
+法则阶时二者都是精确积分，两个有理数必须\emph{相同}，枚举漏掉
+的折结会在所在片上强制不合。任何运行的任何层未出现不合。独立
+交叉核验：闭形式卦限求值（A2）与档案浮点网格阶梯（与认证
+有理数 $10^{-6}$-吻合）。
+
+\subsection*{A2. 闭形式交叉核验}
+
+$T_0$（位置 $\{0,v,w,u\}$）：全正卦限
+$\int_{[0,1]^3}(1-\max(v,w,u))vwu=\tfrac1{56}$（排序后积分）；
+一负卦限给 $\int_0^1t(1-t)^5/20\,dt=\tfrac1{840}$；对轨道
+求和，$T_0=2\cdot\tfrac1{56}+6\cdot\tfrac1{840}=\tfrac3{70}$。
+$t_{\mathrm{opp}}$（位置 $\{0,v,v{+}w,w\}$）：同一分解给出
+精确的 $\tfrac1{30}$，印证存档精确锚。$t_{\mathrm{adj}}$：两个
+同号象限各给 $\tfrac1{20}$，两个混号象限各给 $\tfrac1{120}$：
+$t_{\mathrm{adj}}=\tfrac{14}{120}=\tfrac7{60}$（而非存档网格值
+$0.11717$；登记 D7）。
+
+\subsection*{A3. 认证值}
+
+\[
+t_{\mathrm{adj}}=\tfrac7{60},\quad
+t_{\mathrm{opp}}=\tfrac1{30},\quad
+T_0=\tfrac3{70},\quad
+T_1=\tfrac1{90},\quad
+T_2=\tfrac1{180},\quad
+T_3=\tfrac1{70},\quad
+\{2,2,2\}=\tfrac{131}{420},
+\]
+以及 $\Phi_4=-\tfrac1{60}$、饱和 $\{2,2\}=\tfrac4{15}$、高原
+$=\tfrac1{60}$、连通模型 $=-\tfrac1{60}$
+（注记~\ref{r:books}）。代码：
+\texttt{certification/exact\_t222.py}（各类分开运行；每片
+双方案同一有理数检查）。
+
+\subsection*{A4. 连续求积常数的闭形式（N2，部分卸下）}
+
+\begin{proposition}[$c_0=\gamma-2$]\label{p:c0}
+设 $\gamma_d$ 为部分和恒等式（引理~\ref{l:PS}）在 $(1,1)$ 类
+的自由系数。则 $\gamma_d$ 有精确 Euler 闭形式
+\[
+\gamma_{2m}=C_2\prod_{p\mid m}\frac1{p(p-2)}
+\quad(m\ \text{奇无平方因子}),\qquad
+\gamma_d=0\ \text{其余},
+\]
+且在原始约定下
+$\sum_{d\le M}d\gamma_d=\log M+\gamma+o(1)$；在档案约定下
+（$q=2$ 弧块记入奇偶均值，
+$\widetilde\gamma_2=\gamma_2-\beta_2=C_2-1$），
+\[
+c_0\;=\;\gamma-2\;=\;-1.4227843\ldots
+\]
+\end{proposition}
+
+\begin{proof}
+(i)~闭形式：由弧恒等式（命题~\ref{p:S}）在 $b_1=b_2=1$，
+$\beta_q=\mu(q)^2/\varphi(q)^2$，
+$\gamma_d=\sum_e\mu(e)\beta_{de}$ 沿素数因子化，局部权
+$f_0(p)=1-(p-1)^{-2}$、$f_1(p)=(p-1)^{-2}$、$f_{v\ge2}=0$；
+$f_0(2)=0$ 强制 $2\,\|\,d$，乘积组装为所示（$C_2$ 为孪生素数
+常数）。(ii)~常数：$\sum_{d\le M}d\gamma_d
+=2C_2\sum_{m\le M/2}\prod_{p\mid m}\tfrac1{p-2}$，其
+Dirichlet 级数为 $\zeta(s+1)E(s)$，
+$E(0)=\prod_p(1-\tfrac1p)\prod_{p>2}(1+\tfrac1{p-2})
+=\tfrac1{2C_2}$（斜率 $2C_2E(0)=1$ 精确）且
+$E'(0)/E(0)=\sum_p\tfrac{\log p}{p-1}
+-\sum_{p>2}\tfrac{\log p}{p-1}=\log2$（$p$-和除 $p=2$ 成对
+相消）；二重极点留数给出
+$2C_2[E(0)(\log\tfrac M2+\gamma)+E'(0)]=\log M+\gamma$。
+(iii)~约定移位：档案张量筛（\texttt{tail\_bound}）与闭形式在
+\emph{每个} $d$ 处一致，仅 $d=2$ 例外——档案类-$d$ 替换记
+$\widetilde\gamma_2=C_2-1$（$q=2$ 块移入奇偶均值）；这使
+$\sum d\gamma_d$ 恰移 $-2$。数值验证
+（\texttt{n2\_c0\_certification.py}）：原始和收敛到 $\gamma$，
+偏差在 $M=10^4/10^5/2\times10^7$ 处为
+$9.4\times10^{-4}/6.3\times10^{-5}/9.2\times10^{-6}$；存档测量
+$-1.42279$（$M=1.6\times10^{7}$）与 $\gamma-2$ 吻合到
+$10^{-5}$；部分和恒等式与其 $d>M$ 尾闭合
+（$M=2\times10^5$、$D=2\times10^{7}$ 处
+$\mathrm{LHS}-\mathrm{RHS}-\mathrm{tail}=-0.010$，与剩余截断
+一致）。
+\end{proof}
+
+\noindent 于是引理~\ref{l:CL} 的``计算常数''归结为：斜率
+$=1$（已证）、$c_0=\gamma-2$（闭形式）、认证几何尾
+$T_\Gamma$（比率 $0.500$）、以及 $c^{*}$ 内仅剩的计算件
+$\overline{\mathrm{osc}}$。N2 由此部分卸下；余下为
+$\overline{\mathrm{osc}}$ 的识别（或认证包络）与普适坍缩速率
+写出。
+
+\subsection*{A5. N1 证书族及其回报曲线}
+
+精确对偶证书可对任何假想认证包络
+$C_5\in[c_-,c_+]$、$\{4,2\}\le u_{42}$、$\{6\}\le u_{6}$ 再
+优化（相关记账：单一未知量 $C_5$ 同时进入 $m_5$ 与 $m_6$；
+最坏情形是仿射族的角点）。精确有理证书
+（\texttt{certificate\_family.py}，每场景再优化原子）：
+
+\begin{center}
+\begin{tabular}{lcc}
+场景（4D/5D 精确积分所认证的内容） &
+$1-2w_0\ge$ & $1-w_0\ge$\\
+\hline
+当前带宽（$\pm0.0001$；$u_{42},u_6$ 取带顶） &
+$0.79472$ & $0.89736$\\
+包络宽 $0.01$ & $0.77418$ & $0.88709$\\
+包络宽 $0.04$ & $0.74299$ & $0.87149$\\
+仅符号：$C_5\ge0$、$\{4,2\}\le0$、$\{6\}\le0$ &
+$0.74031$ & $0.87016$\\
+无连通信息 & $13/18$ & $31/36$\\
+\end{tabular}
+\end{center}
+
+\noindent 交付证书的敏感度（精确）：
+$\partial(\text{头条})/\partial c_-=+7.32$，
+$\partial/\partial c_+=-5.61$，
+$\partial/\partial(u_{42}{+}u_6)=-0.93$。特别地，三个连通常数
+的\emph{纯符号}认证——比包络粗糙得多——已认证
+$0.740/0.870$，既定的 4D/5D 精确计算在每个可及宽度上都有分级
+回报。由已认证 3D 运行的计算规格：精确积分器成本为每层
+（片数$\times$节点数）（3D 下每层 $\approx40$--$400$，
+$\le90$ 个折结形式）；$C_5$ 与 $\{4,2\}$ 被积函数在同一
+$\{0,\pm1\}$-折结族上分别携带 $\le541$ 与
+$\le75\times$（旁观）个重叠项，多一层迭代（$\{6\}$：两
+层），故运行属集群规模而非笔记本规模。
+
+\subsection*{A6. 精确对偶证书}
+
+引理~\ref{l:dual} 的多项式展开（分子，首一）为
+\[
+x^6-\tfrac{783}{100}x^5+\tfrac{975601}{40000}x^4
+-\tfrac{19203237}{500000}x^3+\tfrac{1599367847}{50000000}x^2
+-\tfrac{16571397771}{1250000000}x
++\tfrac{534950348409}{250000000000},
+\]
+其中 $(abc)^2=\tfrac{534950348409}{250000000000}$，故
+$y_0=1$、$y_5=-\tfrac{783}{100}(abc)^{-2}<0$、
+$y_6=(abc)^{-2}>0$。修正常数处的角点求值（精确）：
+$w_0(\delta{=}-0.0001)=\tfrac{1153107070889}{11233957316589}$
+（绑定），$w_0(\delta{=}+0.0001)
+=\tfrac{1151185570889}{11233957316589}$。
+
+\emph{原子的构造。}三元组
+$(a,b,c)=(\tfrac{27}{50},\tfrac{263}{200},\tfrac{103}{50})$
+提取自矩问题的原始极值测度后有理化；其有效性不依赖于提取
+过程。具体地：(i) 离散化线性规划（在 $m_1,\dots,m_4$ 钉定、
+$m_5\ge M_5$、$m_6\le M_6$ 约束下极大化原点质量；网格
+$dx=0.001$）的最优测度在绑定角支撑于四个原子
+$\{0,\ 0.5385,\ 1.3195,\ 2.0645\}$——互补松弛强制最优对偶
+多项式在三个非原点原子处二重为零，决定形状
+$P=[(x-a)(x-b)(x-c)]^{2}/(abc)^{2}$；(ii) 原子有理化为距极值
+支撑 $5\times10^{-3}$ 内的低高度分数；(iii) \emph{任何}正有理
+三元组都产出有效证书——$P$ 为完全平方故 $P\ge0$；规范化给
+$P(0)=1$；首一分子的 $x^{5}$-系数 $-2(a{+}b{+}c)<0$、
+$x^{6}$-系数 $1>0$，故 $y_5<0<y_6$ 自动成立——于是 LP 求解
+器、网格与提取全部退出信任基础，剩下的只是所选三元组处
+$w_0$ 的精确有理求值，即引理~\ref{l:dual}（内核已验证）。
+有理化的舍入代价在头条上为 $6\times10^{-6}$（同一角点 LP
+最优 $0.794716$ 对认证值 $0.794710$）。验证：
+\texttt{certification/certify\_lp.py}；Lean：
+\texttt{lean/RhGate/Certificate.lean}，内核编译
+（\S\ref{s:verif}(f)）：去分母恒等式、此首一展开、非负性、
+两个角点、角点选取符号 $y_5+6y_6<0$ 与头条；零
+\texttt{sorry}。
+
+\begin{thebibliography}{99}
+
+\bibitem{BGST} S.~A.~C.~Baluyot, D.~A.~Goldston,
+A.~I.~Suriajaya, and C.~L.~Turnage-Butterbaugh, \emph{Pair
+correlation of zeros of the Riemann zeta function I: proportions
+of simple zeros and critical zeros}, arXiv:2501.14545 (2025).
+
+\bibitem{GS} D.~A.~Goldston and A.~I.~Suriajaya, \emph{Zeta zeros
+on the critical line}, arXiv:2511.20059 (2025).
+
+\bibitem{BCY11} H.~M.~Bui, J.~B.~Conrey, and M.~P.~Young,
+\emph{More than 41\% of the zeros of the zeta function are on the
+critical line}, Acta Arith.\ \textbf{150} (2011), 35--64.
+
+\bibitem{C26} Claude (Anthropic), \emph{More than two thirds
+of the zeros of the Riemann zeta function lie on the critical
+line}, preprint, August 2026,
+\url{https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf}.
+
+\bibitem{Con89} J.~B.~Conrey, \emph{More than two fifths of the
+zeros of the Riemann zeta function are on the critical line},
+J.\ reine angew.\ Math.\ \textbf{399} (1989), 1--26.
+
+\bibitem{Dav} H.~Davenport, \emph{Multiplicative Number Theory},
+3rd ed., Springer GTM 74, 2000.
+
+\bibitem{Fen12} S.~Feng, \emph{Zeros of the Riemann zeta function
+on the critical line}, J.\ Number Theory \textbf{132} (2012),
+511--542.
+
+\bibitem{HR} H.~Halberstam and H.-E.~Richert, \emph{Sieve
+Methods}, Academic Press, 1974.
+
+\bibitem{IK} H.~Iwaniec and E.~Kowalski, \emph{Analytic Number
+Theory}, AMS Colloquium Publ.\ 53, 2004.
+
+\bibitem{Lev74} N.~Levinson, \emph{More than one third of zeros
+of Riemann's zeta-function are on $\sigma=1/2$}, Adv.\ Math.\
+\textbf{13} (1974), 383--436.
+
+\bibitem{MRT} K.~Matom\"aki, M.~Radziwi\l{}\l, and T.~Tao,
+\emph{Correlations of the von Mangoldt and higher divisor
+functions I. Long shift ranges}, Proc.\ London Math.\ Soc.\ (3)
+\textbf{118} (2019), 284--350.
+
+\bibitem{Mon73} H.~L.~Montgomery, \emph{The pair correlation of
+zeros of the zeta function}, Proc.\ Sympos.\ Pure Math.\
+\textbf{24} (1973), 181--193.
+
+\bibitem{Mon75} H.~L.~Montgomery, \emph{Distribution of the zeros
+of the Riemann zeta function}, Proc.\ ICM Vancouver 1974, vol.~1,
+379--381.
+
+\bibitem{PRZZ} K.~Pratt, N.~Robles, A.~Zaharescu, and
+D.~Zeindler, \emph{More than five-twelfths of the zeros of
+$\zeta$ are on the critical line}, Res.\ Math.\ Sci.\ \textbf{7}
+(2020), no.~2.
+
+\bibitem{Sel42} A.~Selberg, \emph{On the zeros of Riemann's
+zeta-function}, Skr.\ Norske Vid.-Akad.\ Oslo I (1942), no.~10.
+
+\bibitem{Tit86} E.~C.~Titchmarsh, \emph{The Theory of the
+Riemann Zeta-Function}, 2nd ed.\ (revised by D.~R.~Heath-Brown),
+Oxford University Press, 1986.
+
+\bibitem{Wei52} A.~Weil, \emph{Sur les ``formules explicites''
+de la th\'eorie des nombres premiers}, Comm.\ S\'em.\ Math.\
+Univ.\ Lund (1952), 252--265.
+
+\end{thebibliography}
+\end{document}

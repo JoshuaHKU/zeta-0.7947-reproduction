@@ -1,0 +1,6 @@
+name = "RhGate08"
+defaultTargets = ["RhGate08"]
+
+[[lean_lib]]
+name = "RhGate08"
+roots = ["Anchors", "LocalClosure", "LocalClosure2", "Certificate"]

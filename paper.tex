@@ -1,0 +1,2606 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\LL}{\Lambda}
+\newcommand{\SSS}{\mathfrak{S}}
+\newcommand{\e}{\mathrm{e}}
+\newcommand{\Si}{\mathrm{Si}}
+\title{\bf More than $0.7947$ of the zeros of the Riemann zeta
+function are simple and on the critical
+line\thanks{Verification status (read this first): the chain of
+this paper consists of classical inputs, machine-verified
+identities, certified constants, and numerically evaluated
+connected constants carrying stated two-sided bands. Its claim
+grade is \emph{certified-candidate}, not record: the certified
+closed forms of $C_5$, $\{4,2\}$ and $\{6\}$ remain open ---
+though each is proved RATIONAL (a finite signed sum of rational
+polytope volumes, \S\ref{s:conv}), giving the designated
+exact-integration route an explicit representation --- the Lean
+formalization covers the identity and certificate layers only
+(kernel-compiled, core Lean~4, zero \texttt{sorry};
+\S\ref{s:verif}(f)), the analytic layer is unformalized, and no
+external review has taken place. The three write-out items
+W1--W3 are written out (\S\ref{s:writeouts}), the pairing-layer
+constants are certified as exact rationals (\S\ref{s:five:cert},
+Appendix~\ref{a:cert}), and the consumption step is backed by an
+exact rational dual certificate valid on unbounded support
+(Lemma~\ref{l:dual}). The precise grading of every layer, the
+discrepancy register, and the program's verification gate
+(formalization and external review precede any record claim) are
+in \S\ref{s:verif} and Appendix~\ref{a:record}.}}
+\author{Hongyi Yang\\[2pt]
+\small University of Toronto\\
+\small \texttt{hongy.yang@mail.utoronto.ca}
+\and Shihua Yang\\[2pt]
+\small The University of Hong Kong\\
+\small \texttt{u3590485@connect.hku.hk}}
+\date{August 2026}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let $N(T,2T)$ count the nontrivial zeros of $\zeta(s)$ with
+ordinates in $(T,2T]$, and $N_0^{s}$, $N_d$ those simple and on
+the critical line, respectively distinct. Subject to the
+verification grading stated below and in \S\ref{s:verif}, we
+establish, with ineffective constants,
+\[
+\liminf_{T\to\infty}\frac{N_0^{s}}{N}\;\ge\;0.7947,
+\qquad
+\liminf_{T\to\infty}\frac{N_d}{N}\;\ge\;0.8973,
+\]
+and the same for any fixed primitive Dirichlet $L$-function; en
+route, the rungs $0.6916/0.8458$ (one-sided fourth-moment
+remainder, via Matom\"aki--Radziwi\l{}\l--Tao),
+and $13/18=0.7222$, $31/36=0.8611$ (exact fourth moment). The proof
+evaluates
+the third through sixth trace moments of the Gabor-compressed
+Weil matrix of \cite{C26} --- $m_3=2$ and $m_4=\tfrac{13}4$
+exactly, $m_5=\tfrac{67}{12}+C_5$ and $m_6=10.1657(18)$, the
+remainders being connected sine-kernel Ursell constants --- and consumes them through a
+moment-pinned linear program built on an explicit
+Chebyshev--Markov certificate --- an
+\emph{exact rational} dual certificate, valid on unbounded
+support. The fourth-moment engine (``Lemma D'') is proved in the
+truncated form the program consumes: the cell ledger is
+$\ell_1$-truncated at $(\log X)^{B}$ with power-saving tails, the
+lock variance transports by exact product and Parseval identities
+to a spectral frame in which every factor is a windowed single
+prime sum at a rational of logarithmic denominator, and the
+Siegel--Walfisz theorem plus Vaughan's estimate close all bins
+--- no dispersion method and no large-modulus technology
+anywhere. The local main terms at every cycle length are pinned
+by a four-line coincidence-counting closed form; the Bell$(5)$
+and Bell$(6)$ ledgers collapse onto four-cycle anchors, now
+certified as exact rationals ($t_{\mathrm{adj}}=\tfrac7{60}$,
+$t_{\mathrm{opp}}=\tfrac1{30}$,
+$\{2,2,2\}=\tfrac{131}{420}$: exact polyhedral integration,
+Appendix~\ref{a:cert}), through machine-exact frozen-slot
+identities. \emph{Claim grading}: the identity, certificate and
+pairing-constant layers are machine-verified or exact-rational;
+the write-out items W1--W3
+are written out in \S\ref{s:writeouts}; the analytic chain is
+certified-candidate; the three connected
+constants $C_5=0.0278(1)$, $\{4,2\}=-0.0552(8)$ and
+$\{6\}=-0.0078(8)$ are midpoint-grid ladder evaluations with
+stated bands (\S\ref{s:conv}), proved rational by the polytope
+dimension theorem of \S\ref{s:conv} but not yet evaluated in
+closed form; the consumption layer (inertia, tail, counting)
+is that of \cite{C26}, recalled in \S\ref{s:frame}.
+The consumption step itself is exact: a rational sum-of-squares
+dual certificate, kernel-checked in core Lean~4 (twenty theorems across the
+identity, local-law and certificate layers, zero
+\texttt{sorry}). A standalone reproduction and
+certification package accompanies the paper; a falsifier registry
+($194$ pre-registered checks, $34$ fired and converted, all
+forward-recorded) documents the research trail.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}\label{s:intro}
+
+That a positive proportion of the nontrivial zeros of $\zeta(s)$
+lie on the critical line is due to Selberg \cite{Sel42}; Levinson
+\cite{Lev74} obtained the proportion $\tfrac13$, Conrey
+\cite{Con89} reached $\tfrac25$, and the record along Levinson's
+method stands at $\kappa>5/12$ \cite{PRZZ} (see also
+\cite{BCY11,Fen12}). Very recently the two-thirds theorem
+\cite{C26} proceeded by a different route: a linear-algebraic
+reading of Montgomery's pair-correlation sum, in which spectral
+information is read from trace moments of a Gabor compression
+$\widetilde G$ of Weil's Hermitian form, and the first two
+moments alone --- both computable unconditionally from
+Montgomery's prime-side evaluation at bandwidth $\lambda\le1$
+\cite{Mon73,BGST} --- already yield the proportion $2/3-o(1)$
+(and $0.6725$ with the Montgomery--Taylor window \cite{Mon75}).
+The present paper extends that framework to the third through
+sixth moments. By \cite[Rem.~1.1]{C26} no certificate consuming
+only the bandwidth-one data can exceed $0.68185$; the route past
+the ceiling identified there (\S7.5(f) of \cite{C26}) is the
+fourth moment,
+$\operatorname{tr}\widetilde G^{4}=d\ell_1^{4}(13/4+o(1))$, worth
+$13/18$.
+
+This paper climbs that ladder in four stages, in a single
+text with one notation, one bibliography, one verification
+ledger, and one claim grading: the certificate calculus and the
+third moment (\S\ref{s:cert}), a logically independent
+one-sided fourth-moment route reaching $0.6916$ (\S\ref{s:fm}),
+the exact fourth moment worth $13/18$
+(\S\S\ref{s:trunc}--\ref{s:four}), and the fifth and sixth
+moments with their consumption
+(\S\S\ref{s:five}--\ref{s:lp}), reaching the theorem
+below.
+
+\begin{theorem}[Main theorem; grade: certified-candidate, see
+\S\ref{s:verif}]\label{t:main}
+With ineffective constants,
+\[
+\liminf_{T\to\infty}\frac{N_0^{s}(T,2T)}{N(T,2T)}\ge 0.7947,
+\qquad
+\liminf_{T\to\infty}\frac{N_d(T,2T)}{N(T,2T)}\ge 0.8973,
+\]
+and the same holds for the zeros of any fixed primitive Dirichlet
+$L$-function. En route, each rung consuming exactly what its
+chain establishes: $m_4\to13/4$ two-sidedly (hence
+$13/18-\varepsilon$ and $31/36-\varepsilon$), and, by the
+logically independent one-sided route of \S\ref{s:fm},
+$0.6916/0.8458$. (An intermediate fourth-and-fifth-moment rung considered at
+an earlier stage of this research is repaired and demoted in
+\S\ref{s:lp}: without sixth-moment information it is not
+supported on unbounded spectral support --- register item D6.)
+\end{theorem}
+
+The dependency structure of Theorem~\ref{t:main} is graded
+explicitly in \S\ref{s:verif}: the $13/18$ rung rests on the
+classical-technology proof of Lemma D (\S\ref{s:four}) and
+the consumption layer of \cite{C26} (recalled in
+\S\ref{s:frame}); the $0.7947$ headline
+additionally consumes the three connected Ursell constants of
+\S\ref{s:five} as numerical evaluations with stated two-sided
+bands (the pairing layer is exact, \S\ref{s:five:cert}). Nothing in this paper bears on the Riemann Hypothesis
+itself: proportion statements are insensitive to $o(N)$ off-line
+zeros: the inputs (functional equation, explicit formula, mean
+values of Dirichlet polynomials of length $\le T$) are satisfied
+by objects for which the analogue of RH is false, and the
+argument produces lower bounds only \cite[\S1.5]{C26}.
+
+\subsection*{Relation to \cite{C26}, and what is new}
+
+This paper is built on \cite{C26} and consumes its framework
+without repetition: the compressed Weil matrix, the zero-side
+block structure, the tail estimate, and the first two trace
+moments are used exactly as established there
+(\S\ref{s:frame}). The advance is fourfold. \emph{(i) The
+moment ladder}: \cite{C26} consumes only
+$\mu_1\to1$, $\mu_2\to\tfrac43$; this paper evaluates
+$\mu_3\to2$ and $\mu_4\to\tfrac{13}4$ exactly, and
+$\mu_5$, $\mu_6$ up to three connected constants with proved
+rationality (\S\S\ref{s:cert}--\ref{s:five}). \emph{(ii)
+The truncation technology}: the $\ell_1$-truncated cell ledger
+with Siegel--Walfisz/Vaughan closure (\S\ref{s:trunc}), absent
+from \cite{C26}, is what makes the higher moments computable
+with classical tools. \emph{(iii) The consumption}: the
+rank--trace inequality of \cite[Lem.~3.2]{C26} --- the matrix
+form of $m^{2}\ge2m-1$ --- is replaced by an exact
+Chebyshev--Markov dual certificate at degree six
+(\S\ref{s:lp}), the analogue of $m^{2}\ge3m-2$ and beyond,
+valid on unbounded support with exact rational corners.
+\emph{(iv) The verification apparatus}: pre-registered
+falsifier checks, a forward-only discrepancy register, and a
+kernel-compiled Lean layer (\S\ref{s:verif}), replacing the
+traditional single-grade presentation of \cite{C26}. The
+constants rise from $2/3$ and $\tfrac56$ (distinct) to
+$0.7947$ and $0.8973$.
+
+\subsection*{Relation to the pair-correlation route}
+
+Baluyot, Goldston, Suriajaya and Turnage-Butterbaugh \cite{BGST}
+showed that Montgomery's pair-correlation method yields
+two-thirds-type conclusions under hypotheses weaker than RH, and
+Goldston--Suriajaya \cite{GS} reach the two-thirds constant
+itself conditionally; those are conditional statements about the
+\emph{zeros'} pair correlation. The present route is disjoint,
+and unconditional: it consumes the average behaviour of
+$2k$-point correlations of $\LL\star\LL$ --- prime-side
+objects, controlled by the Siegel--Walfisz theorem and Vaughan's
+estimate alone --- through the compressed-matrix framework, with
+no hypothesis on the zeros. The two-thirds threshold, previously
+reached only under such hypotheses, is crossed here
+unconditionally with margin ($0.7947>2/3$), and the additional
+information consumed relative to the bandwidth-one data is
+exactly the third-through-sixth moment chain of
+\S\S\ref{s:cert}--\ref{s:five}.
+
+\subsection*{The method in one page}
+
+The moments $m_k$ of the spectral measure of $\widetilde G$ are
+carried by $k$-cycle ledgers: cells indexed by prime-power
+modulus tuples and lock (offset) vectors, weighted
+$1/(d\ell_1^{k})$, with window-overlap volumes supplying a walk
+geometry. The consumption is an explicit Chebyshev--Markov
+certificate (\S\ref{s:cert}): mass near the origin of the
+spectral measure is bounded by moment data alone, with exact
+exchange rates. Three observations reduce the moment evaluations
+to classical tools.
+
+\emph{Truncation (\S\ref{s:trunc}).} The $1/\ell_1^{k}$ weights
+discharge all cells with $\ell_1>(\log X)^{B}$ trivially and
+two-sidedly; only logarithmic moduli remain.
+
+\emph{The spectral frame (\S\ref{s:four}, \S\ref{s:five}).} The
+lock variance of a $k$-cycle obeys exact identities --- at $k=4$
+a discrete Parseval identity; at every $k$ the \emph{product
+identity} $\sum_j N_k(j)^2=\sum_t A_1(t)\cdots A_k(t)$ (two
+chains share a lock vector iff they differ by a common shift) ---
+which exhibit it as a spectral $L^2$-distance whose every factor
+is a \emph{windowed single prime sum}. At logarithmic moduli
+every main-term frequency is a rational of logarithmic
+denominator: the Siegel--Walfisz theorem gives an arbitrary
+log-power saving pointwise on the doubly-major bins, Vaughan's
+estimate closes the minor and mixed bins, and the singular-series
+comb is identified exactly by the local law below. The apparent
+``twin hardness'' of locked correlations dissolves: no per-lock
+evaluation is ever attempted.
+
+\emph{The local law and the anchor collapse (\S\ref{s:local},
+\S\ref{s:five}).} The mod-$p$ structure of every cycle length is
+an affine lock chain, whose density obeys a coincidence-counting
+closed form proved in four lines and verified exhaustively. The
+Bell$(5)=52$ and Bell$(6)=203$ class ledgers of the fifth and
+sixth moments then collapse onto the certified four-cycle
+anchors through machine-exact frozen-slot identities; the only
+genuinely new constants above $m_4$ are the connected Ursell
+values.
+
+\subsection*{Verification discipline and contributions}
+
+The research program behind this paper operates falsifier-first:
+every structural claim carries a pre-registered numerical check;
+corrections are recorded forward, never edited away; claims are
+graded. Thirty-four of the registry's checks have fired and been
+converted --- several of them shaping this paper directly
+(Appendix~\ref{a:record}). The chain's grade, its named
+write-out items, and the results of the certification audit are
+stated in \S\ref{s:verif}; per the program's verification gate,
+Lean formalization and external review precede any record claim.
+The mathematical development of this paper was carried out by
+Claude (Anthropic), a large language model, within a research
+program directed by the authors, who specified objectives,
+verification discipline, and publication decisions, and who take
+full academic responsibility for the content. In accordance with
+prevailing journal authorship policies, the model is not listed
+as an author; its role is stated here and in the
+Acknowledgements. The theorem claims of this paper are advanced
+\emph{at the stated grade}: as certified candidates, not as
+established records.
+
+\section{Framework and notation, following
+\cite{C26}}\label{s:frame}
+
+The construction of the compressed Weil matrix $\widetilde G$
+--- Weil's Hermitian form, the test family, the zero-side block
+structure, the tail estimate, and the first two trace moments
+--- is exactly that of the two-thirds paper \cite{C26}
+(\S\S2--5 there). This section recalls the notation and states
+the five results of \cite{C26} that the moment ladder consumes;
+proofs are in \cite{C26}, whose own analytic imports are the
+published literature \cite{Wei52,IK,Tit86,Mon73,BGST}. Our
+contribution begins with the third moment
+(\S\ref{s:cert}).
+
+\subsection{Weil's form, the test family, and
+$\widetilde G$}\label{s:frame:G}
+
+Throughout, $l=\log(T/2\pi)$, $\ell_1=l+2\log2-1$ (so
+$N(T,2T)=T\ell_1/2\pi+O(l)$), and for fixed
+$\lambda\in(0,1]$: $L=\lambda l$, $X=e^{L}$,
+$d=\lfloor LT/2\pi\rfloor$. For $f\in C_c^{2}(\mathbb R)$
+put $h_f(z)=\widehat f(z)=\int f(u)e^{izu}\,du$; two
+integrations by parts give
+\begin{equation}\label{e:hdecay}
+|h_f(x+iy)|\le e^{|y|\Lambda_f}
+\min\bigl(\|f\|_1,\|f''\|_1|x+iy|^{-2}\bigr),
+\qquad\operatorname{supp}f\subset[-\Lambda_f,\Lambda_f].
+\end{equation}
+Weil's Hermitian form is
+$W(f,g)=\sum_{\rho}m_\rho h_f(\gamma_\rho)
+\overline{h_g(\gamma_\rho)}$, the sum over distinct
+nontrivial zeros $\rho=\beta+i\gamma_\rho$ (multiplicity
+$m_\rho$ explicit; absolutely convergent by \eqref{e:hdecay}
+and $\sum m_\rho|\gamma_\rho|^{-2}<\infty$). The zero
+multiset is invariant under $\rho\mapsto1-\bar\rho$, so $W$
+is Hermitian. With $s=\tfrac12+i\tau$ define the prime-side
+densities
+\[
+\mu(\tau)=\frac1{2\pi}\mathrm{Re}\,
+\frac{\Gamma'}{\Gamma}\Bigl(\frac14+\frac{i\tau}2\Bigr)
+-\frac{\log\pi}{2\pi},\quad
+\Pi_X(\tau)=\frac{1}{2\pi(\tfrac14+\tau^{2})}
++\frac1\pi\,\mathrm{Re}\,\frac{X^{s}-1}{s},\quad
+P_X(\tau)=-\frac1\pi\sum_{n\le X}
+\frac{\LL(n)}{\sqrt n}\cos(\tau\log n),
+\]
+and $\nu_X=\mu+\Pi_X+P_X$. Weil's explicit formula
+\cite{Wei52} (in the normalization of
+\cite[Thm.~5.12]{IK}, applied to $k=f*\tilde g$,
+$\tilde g(u)=g(-u)$, whose transform $h_k=h_fh_{\bar g}$ is
+entire with the decay \eqref{e:hdecay}) gives the spectral
+form
+\begin{equation}\label{e:weil}
+W(f,g)=\int_{\mathbb R}h_f(\tau)\overline{h_g(\tau)}\,
+\nu_X(\tau)\,d\tau,
+\qquad\operatorname{supp}f,g\subset[-\tfrac L2,\tfrac L2].
+\end{equation}
+We record $|\Pi_X(\tau)|\le3\sqrt X/(1+|\tau|)$,
+$|P_X(\tau)|\ll\sqrt X$, $\int_T^{2T}\mu=N(T,2T)+O(l)$ and
+$\int_T^{2T}\mu^{2}=T\ell_1^{2}/4\pi^{2}+O(l^{2})$
+(Stirling).
+
+Fix a nondecreasing $\varrho\in C^{3}(\mathbb R)$ with
+$\varrho=0$ on $(-\infty,0]$, $\varrho=1$ on $[1,\infty)$,
+a ramp width $1\le w\le L/8$, and the taper
+$\phi(u)=\varrho\bigl((L/2-|u|)/w\bigr)$: even,
+$0\le\phi\le1$, $\operatorname{supp}\phi=[-L/2,L/2]$,
+$\phi=1$ on $[-L/2+w,L/2-w]$. Put $a=\tfrac1L\int\phi^{2}$,
+$b=\tfrac1L\int\phi^{4}$ (so $1-2w/L\le b\le a\le1$),
+$\Phi=\widehat{\phi^{2}}$, and note the window calculus
+\begin{equation}\label{e:windowcalc}
+(L-2w-|y|)_+\;\le\;g(y):=(\phi^{2}\star\phi^{2})(y)
+\;\le\;(L-|y|)_+ .
+\end{equation}
+The Gabor system at critical density is
+$f_k(u)=\phi(u)e^{-i\tau_ku}$, $\tau_k=T+2\pi k/L$,
+$0\le k<d$, and the compressed Weil matrix is
+\[
+G_{kl}=W(f_k,f_l)
+=\sum_\rho m_\rho\,\widehat\phi(\gamma_\rho-\tau_k)\,
+\widehat\phi(\gamma_\rho-\tau_l)
+=\int_{\mathbb R}\widehat\phi(\tau-\tau_k)
+\widehat\phi(\tau-\tau_l)\,\nu_X(\tau)\,d\tau,
+\qquad\widetilde G=G/L,
+\]
+real symmetric by either expression; its normalized trace
+moments are
+$\mu_k=\operatorname{tr}\widetilde G^{k}/(d\ell_1^{k})$.
+
+\begin{lemma}[Poisson summation for the Gabor
+system]\label{l:gabor}
+For all $\tau,\tau'\in\mathbb R$,
+$\sum_{k\in\mathbb Z}\widehat\phi(\tau-\tau_k)
+\widehat\phi(\tau'-\tau_k)=L\,\Phi(\tau-\tau')$; in
+particular $\sum_{k\in\mathbb Z}
+\widehat\phi(\tau-\tau_k)^{2}=aL^{2}$.
+\end{lemma}
+
+\begin{proof}
+This is \cite[Lem.~2.2]{C26}: the Gabor system at critical
+density $h=2\pi/L$ has a translation-invariant frame kernel
+with no aliasing error, for any window supported in an interval
+of length $L$.
+\end{proof}
+
+\subsection{The zero side: inertia, tail, and the counting
+inequality}\label{s:frame:count}
+
+Fix $D_0=T^{1/2}$, $I=(T,2T]$, $I'=(T-D_0,2T+D_0]$, and split
+$G=A+E$ over distinct zeros with $\gamma\in I'$ (matrix $A$)
+and the rest ($E$); both are real symmetric. Classify the
+distinct zeros with $\gamma\in I'$: $S_1$ (simple, on-line;
+$s_1$), $S_2$ (multiple, on-line; $s_2$), and off-line pairs
+$\{\rho,1-\bar\rho\}$ ($p$ of them), so
+$\#Z(I')=s_1+s_2+2p$ and $N(I')\ge s_1+2s_2+2p$.
+
+\begin{proposition}[Block structure]\label{p:inertiaA}
+$n_+(\widetilde A)\le s_1+s_2+p$ and
+$\operatorname{rank}\widetilde A\le\#Z(I')$.
+\end{proposition}
+
+\begin{proof}
+This is \cite[Prop.~4.1]{C26}: Sylvester inertia under
+pull-back --- an on-line zero contributes a positive $1\times1$
+block, an off-line pair a hyperbolic block of signature $(1,1)$,
+and no independence of the evaluation functionals is needed.
+\end{proof}
+
+\begin{proposition}[Tail]\label{p:tail}
+Let $A_0$ be an absolute constant with
+$N(t+1)-N(t)\le A_0\log(t+3)$ \cite[Thm.~9.2]{Tit86}. Then
+for $T\ge T_0$,
+\[
+\|\widetilde E\|_{\mathrm{op}}\;\le\;\theta_0
+:=4A_0C_1^{2}X^{1/2}\,\frac{\log(4T)}{D_0^{2}}
+\;\ll\;l\,T^{\lambda/2-1},
+\qquad C_1=\|\phi''\|_1=\frac{2\|\varrho''\|_1}{w},
+\]
+and the trace norm satisfies
+$\|\widetilde E\|_1\le2\theta_0/L$.
+\end{proposition}
+
+\begin{proof}
+This is \cite[Prop.~4.2]{C26} (the taper's $r^{-2}$-decay
+\eqref{e:hdecay} against the zero-density bound); we restate the
+explicit $\theta_0$ because the truncation discharge of
+\S\ref{s:trunc} and the third-moment tail step consume it.
+\end{proof}
+
+\begin{proposition}[Counting inequality]\label{p:count}
+For every $\theta\ge\theta_0$,
+\[
+s_1\;\ge\;2\,n_+^{\theta}(\widetilde G)-N(I'),
+\qquad
+\#Z(I')\;\ge\;n_+^{\theta}(\widetilde G),
+\]
+hence, with $N(I'\setminus I)\ll D_0l=o(N)$,
+\begin{equation}\label{e:count}
+N_0^{s}(T,2T)\ \ge\ 2\,n_+^{\theta}(\widetilde G)
+-N(T,2T)-2N(I'\setminus I),
+\qquad
+N_d(T,2T)\ \ge\ n_+^{\theta}(\widetilde G)
+-N(I'\setminus I).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+This is \cite[Prop.~4.5]{C26}: Weyl's inequality (at threshold
+$\theta\ge\theta_0$, Proposition~\ref{p:tail}) reduces
+$n_+^{\theta}(\widetilde G)$ to $n_+(\widetilde A)$, and
+Proposition~\ref{p:inertiaA} with the multiplicity count
+$s_2+p\le\tfrac12(N(I')-s_1)$ gives both displays.
+\end{proof}
+
+These inequalities hold for any locally finite multiset in the
+strip invariant under $\rho\mapsto1-\bar\rho$ with
+$N(t+1)-N(t)\ll\log(t+3)$; they contain no arithmetic. All
+the arithmetic is in the trace moments.
+
+\subsection{The first two moments, and
+notation for the ladder}\label{s:frame:moments}
+
+\begin{proposition}[First two moments]\label{p:mu12}
+$\operatorname{tr}\widetilde G=aL\,N(T,2T)+O(L\sqrt X)$, and
+\[
+\operatorname{tr}\widetilde G^{2}
+=2\pi bL\int_T^{2T}\mu^{2}
++\frac{T}{\pi}\sum_{n\le X}\frac{\LL(n)^{2}}{n}\,
+g(\log n)+O\bigl(Ll\log l\,(l^{2}+X)\bigr).
+\]
+Consequently, in the endpoint regime $\lambda\to1^-$,
+$w/L\to0$: $\mu_1\to1$ and $\mu_2\to\tfrac43$.
+\end{proposition}
+
+\begin{proof}
+This is \cite[Prop.~5.3 and Thm.~5.8]{C26}: the trace by the
+Gabor--Poisson collapse, the second moment by Montgomery's
+prime-side evaluation of the pair-correlation second moment at
+bandwidth $\le1$, unconditional in the band
+\cite{Mon73,BGST}. We restate it because the diagonal
+$\sum_{n\le X}(\LL(n)^{2}/n)\,g(\log n)
+=\tfrac{L^{3}}{6}(1+O(1/L))$, with the same window
+autocorrelation \eqref{e:windowcalc}, is the calibration
+consumed by the third-moment ledger (Theorem~\ref{t:m3}) and
+by the model gates of \S\ref{s:cert:model}.
+\end{proof}
+
+\begin{remark}[Endpoint conventions]\label{r:endpoint}
+The endpoint $\lambda=1$ is admissible because every secondary
+term above is $o(1)$ relative to the mains even at $X\asymp T$;
+a reader preferring a power saving throughout may keep
+$\lambda<1$ fixed and let $\lambda\to1^-$, with the same
+limits \cite[Rem.~6.1]{C26}. The taper tail (the $2w/L$ deficit
+in \eqref{e:windowcalc}) vanishes as $w/L\to0$; all endpoint
+statements in this paper take the double limit in this order
+(cf.\ \cite[\S7.1]{C26}).
+\end{remark}
+
+By Proposition~\ref{p:mu12} and the ledger of \S\ref{s:cert},
+in the endpoint regime,
+\begin{equation}\label{e:moments}
+\mu_1\to1,\qquad \mu_2\to\tfrac43,\qquad \mu_3\to2,\qquad
+\mu_4=\tfrac{197}{60}+R+o(1),
+\end{equation}
+where $R$ is the shifted-correlation class (\S\ref{s:cert:R}),
+of model value exactly $-\tfrac1{30}=\tfrac{13}4-\tfrac{197}{60}$.
+The zero-side consumption is the Christoffel-function count of
+Proposition~\ref{p:count}: a lower bound on the number of
+eigenvalues of $\widetilde G$ exceeding the vanishing threshold
+$\theta_0$ of Proposition~\ref{p:tail} converts into the zero
+counts \eqref{e:count}, and the mass bound near the origin comes
+from the moment data alone (\S\ref{s:cert}). At the moment sequence
+$(1,1,\tfrac43,2,\tfrac{13}4)$ the count gives $13/18$ and
+$31/36$ exactly; it is monotone in each even moment and
+decreasing in the odd-moment deficits.
+
+Windows and cells: windows $I_m=[X,4X]$ and $I_n=(b_2/b_1)I_m$ of
+length $Y\asymp X$ (more generally $Y\asymp X^{\vartheta}$,
+$\vartheta\in(\tfrac12,1]$); prime-power moduli $b_1,b_2$ with
+$g=(b_1,b_2)$, $r=b_1/g$, $q=b_2/g$; shifts $k\le K\asymp
+Y/\max(r,q)$ and locks $|j|\le J\asymp X$; $\e(x)=e^{2\pi ix}$;
+windowed prime sums on the position lattices
+\[
+S_m(\beta)=\sum_{m\in I_m}\LL(m)\,\e(b_2m\beta),
+\qquad
+S_n(\beta)=\sum_{n\in I_n}\LL(n)\,\e(b_1n\beta).
+\]
+$N_4(k,j)$ denotes the $\LL^4$-weighted count of locked
+quadruples $(m,\,m-rk,\,n,\,n-qk)$ with $b_1n-b_2m=j$, and
+$\SSS_4(k,j)\,V(k,j)$ its singular-series model, where
+$V(k,j)$ is the window-overlap volume of the cell --- the
+archimedean count of quadruples in the joint window under the
+lock constraint, of size $\asymp Y^{2}/(rq\,\ell_1)$ after
+consumption normalization --- with the conventions of the
+fourth-moment cell ledger (\S\ref{s:fm:R}), frozen in the
+reproduction suite. The five-case local table
+$\kappa_p(v_p(j);v_p(b_1),v_p(b_2))$ defining
+$\SSS_{b_1,b_2}(j)=\prod_p\kappa_p$ is verified digit-exact
+against residue counting, with $\mathbb E_j[\SSS]=1$
+(\S\ref{s:fm:toolkit}).
+
+\emph{Import status.} \cite{C26} is a publicly posted
+preprint; its framework is consumed exactly as stated in this
+section, and its own analytic imports are the published
+literature \cite{Wei52,IK,Tit86,Mon73,BGST}. The averaged
+shifted-convolution input of the one-sided route is
+Matom\"aki--Radziwi\l{}\l--Tao \cite{MRT}, used as
+published. The formalization status of the paper's layers is
+graded in \S\ref{s:verif}(f): the identity, local-law and
+certificate layers are kernel-compiled in core Lean~4; the
+analytic layer is not formalized.
+
+\section{The certificate layer}\label{s:cert}
+
+This section presents the certificate that carries the ladder
+beyond the rank--trace inequality of \cite[Lem.~3.2]{C26}, and
+the program's unconditional moment bookkeeping, machine-verified
+throughout. It supplies: the Chebyshev--Markov certificate with
+its exact $\kappa(c)$ laws; the third-moment theorem; the
+$197/60$ decomposition of the fourth moment with the
+two-bookkeeping reconciliation; and the two-wall structure of the
+remaining class $R$, with its audit apparatus.
+
+\subsection{The Chebyshev--Markov certificate and the exact
+exchange rates}
+
+\begin{lemma}[Certificate; machine-verified exactly]\label{l:cert}
+Let $\nu$ be a probability measure on $\mathbb R$ with moments
+$m_k$. Put
+\[
+Q(x)\;=\;\frac{\bigl(x^2-\tfrac{21}{8}x+\tfrac32\bigr)^2}{(3/2)^2}.
+\]
+Then $Q\ge0$, $Q(0)=1$, $Q\ge1$ on $(-\infty,0]$, $Q$ is
+decreasing on $[0,\tfrac{21}{16}]$, and
+\begin{equation}\label{e:EQ}
+\int Q\,d\nu \;=\; \frac{4}{9}\Bigl(m_4-\tfrac{47}{16}\Bigr)
+\;+\;R_Q,\qquad
+R_Q:=\tfrac{4}{9}\Bigl[-\tfrac{21}{4}(m_3-2)
++\tfrac{633}{64}\bigl(m_2-\tfrac43\bigr)
+-\tfrac{63}{8}\,(m_1-1)\Bigr],
+\end{equation}
+so $|R_Q|\le11\varepsilon$ if $|m_1-1|,|m_2-\tfrac43|,
+|m_3-2|\le\varepsilon\le1$. For $0<\theta\le\tfrac1{100}$,
+\[
+\nu\bigl((-\infty,\theta]\bigr)
+\;\le\;\bigl(1+4\theta\bigr)
+\Bigl[\tfrac{4}{9}\bigl(m_4-\tfrac{47}{16}\bigr)
++11\varepsilon\Bigr].
+\]
+If $m_1=1$, $m_2=\tfrac43$, $m_3=2$, $m_4\le\tfrac{13}4$, then
+$\nu((-\infty,\theta])\le\tfrac5{36}+O(\theta)$, and this is
+sharp: the three-atom measure supported on $\{0,a,b\}$, with
+$a=0.840635\ldots$, $b=1.784365\ldots$ the roots of
+$x^2-\tfrac{21}8x+\tfrac32$, attains it. Consequently, under
+$m_4\le\tfrac{13}4+c$ the counts of \S\ref{s:frame} give the
+exact linear laws
+\[
+\liminf\frac{N_0^{s}}{N}\;\ge\;\frac{13}{18}-\frac{8c}{9},
+\qquad
+\liminf\frac{N_d}{N}\;\ge\;\frac{31}{36}-\frac{4c}{9}.
+\]
+\end{lemma}
+
+\begin{proof}
+Nonnegativity is clear and $Q(0)=1$; for $x\le0$ the inner
+quadratic is $\ge\tfrac32$, so $Q\ge1$; on $[0,a]$ the inner
+quadratic decreases from $\tfrac32$ through $0$ and $a>\tfrac1{100}$;
+a direct computation gives $Q(\theta)^{-1}\le1+4\theta$ for
+$\theta\le\tfrac1{100}$. Expanding $Q$ and taking expectations,
+\[
+\Bigl(\tfrac32\Bigr)^2\!\int Q\,d\nu
+=m_4-\tfrac{21}4\,m_3+\Bigl(\tfrac{441}{64}+3\Bigr)m_2
+-\tfrac{63}8\,m_1+\tfrac94,
+\]
+and substituting $m=(1,\tfrac43,2,m_4)$ gives
+$\tfrac49(m_4-\tfrac{47}{16})$; the displayed $R_Q$ collects the
+first-order deviations, and
+$\tfrac49(\tfrac{21}4+\tfrac{633}{64}+\tfrac{63}8)\le11$. For
+sharpness, the three-atom measure with moments
+$(1,\tfrac43,2,\tfrac{13}4)$ exists by the Hankel recurrence
+$m_{k+1}=\tfrac{21}8m_k-\tfrac32m_{k-1}$ on the atom set, and $Q$
+vanishes doubly at $a,b$. The linear laws follow by inserting the
+mass bound into the counts of \S\ref{s:frame} exactly as in the
+proof display of \eqref{e:EQ}: mass
+$\le\tfrac5{36}+\tfrac{4c}9+O(\theta)$, and
+$1-2(\tfrac5{36}+\tfrac{4c}9)=\tfrac{13}{18}-\tfrac{8c}9$,
+$1-(\tfrac5{36}+\tfrac{4c}9)=\tfrac{31}{36}-\tfrac{4c}9$.
+\end{proof}
+
+\begin{remark}\label{r:certlp}
+Every identity of Lemma~\ref{l:cert} is verified symbolically
+(sympy, exact rationals) in the reproduction package
+(\texttt{certificate\_verification.py}) and re-run in the
+certification audit; the roots, the $5/36$ evaluation, the $\kappa(c)$
+laws, and the Hankel floors $m_5^{\mathrm{ext}}=\tfrac{177}{32}
+=5.53125$, $m_6^{\mathrm{ext}}=\tfrac{2469}{256}=9.6445\ldots$
+reproduce exactly. Re-optimizing the certificate polynomial for
+each $c$ (a linear program) improves the record-breaking
+threshold from $c<0.0559$ to $c<0.0721$
+(\texttt{moment\_lp\_reopt.py}: $M^{*}=3.3221=\tfrac{13}4
+\times1.0222$); the moment-pinned LP of \S\ref{s:lp} is the same
+mechanism run at the full moment sequence.
+\end{remark}
+
+\subsection{The third moment, unconditionally}\label{s:cert:m3}
+
+\begin{lemma}[Exact $3$-cycle resonances]\label{l:m3res}
+Let $\lambda\le1$ and let $n_1,n_2,n_3\le X=T^{\lambda}$ be prime
+powers with $|\log(n_1n_2/n_3)|\le C/T$. Then for $T\ge T_0(C)$,
+$n_1n_2=n_3$; the analogous statement holds for every sign
+pattern of the $3$-cycle.
+\end{lemma}
+
+\begin{proof}
+$n_1n_2$ and $n_3$ are positive integers with ratio $e^{O(1/T)}$;
+if distinct, their ratio differs from $1$ by at least
+$1/n_3\ge T^{-\lambda}$, incompatible for large $T$ unless
+$\lambda=1$; the borderline is handled by $|n_1n_2-n_3|\ge1$
+versus $\le Cn_3/T\le C$: for $n_3\le T/(2C)$ equality is again
+forced, and the range $n_3\in(T/2C,T]$ contributes only through
+the taper tail, which vanishes in the normalized limit
+(Remark~\ref{r:endpoint}).
+\end{proof}
+
+\begin{theorem}[Third moment]\label{t:m3}
+For every fixed $\lambda\in(0,1]$ and admissible taper, $\mu_3$
+converges as $T\to\infty$, and its limit tends to $2$ in the
+endpoint limit $\lambda\to1^-$, $\eta\to0^+$.
+\end{theorem}
+
+\begin{proof}[Proof (nine-class ledger; full details in the
+archived memo \texttt{V1\_completion.md})]
+Expand $\operatorname{tr}\widetilde G^{3}$ against the $3$-cycle
+$\Phi(\tau_1-\tau_2)\Phi(\tau_2-\tau_3)\Phi(\tau_3-\tau_1)$ after
+the Gabor--Poisson collapse (Lemma~\ref{l:gabor}); the tail
+correction is controlled by the trace-H\"older splitting
+$\operatorname{tr}(A+E)^3-\operatorname{tr}A^3$ with
+$\|E\|_{\mathrm{op}}\le\theta_0\ll lT^{\lambda/2-1}$
+(Proposition~\ref{p:tail}) and $\|A\|_F^2=O(d\ell_1^2)$:
+$o(d\ell_1^3)$ in total. Of the nine classes of
+$\nu_X^{\otimes3}$, $\nu_X=\mu+\Pi_X+P_X$: (i) every class
+containing $\Pi_X$ is $O(T^{\lambda/2-1})$ pointwise on the
+window, negligible; (ii) single-$P$ classes are
+$O(\sqrt X\,l^{2}L)$ by $\sum\LL(n)n^{-1/2}\le3\sqrt X$; (iii)
+the class $\mu^3$ equals $d\ell_1^3(1+O(1/l))$ (the
+$\ell_1$-normalization is exact to $O(1/l)$; measured
+$1.0048/1.0014/1.0004$ at $T=600/38400/10^{8}$); (iv) each of
+the three $\mu P^2$ classes reduces, by the $k=2$ case of
+Lemma~\ref{l:m3res} plus the Montgomery--Vaughan Hilbert
+inequality for the kernel tails, to the exact diagonal
+$\sum_{n\le X}(\LL(n)^2/n)\,w(\log n)$ with the same
+$(L-u)_+$-shaped edge weight as at $k=2$ (structure constants of
+the cycle expansion are local to edges and slots, hence pinned by
+the $k=2$ case, where the total is Montgomery's evaluation), and
+$\sum_{n\le X}(\LL^2/n)(L-\log n)=L^3/6\,(1+O(1/L))$: each class
+contributes $\tfrac13d\ell_1^3(1+o(1))$ at the endpoint, the
+three positions summing to $1$; (v) the class $P^3$ is forced by
+Lemma~\ref{l:m3res} onto exact relations $n_1n_2=n_3$, i.e.\
+powers of a single prime, and $\sum_p\sum_{a+b=c}\log^3p\,p^{-c}
+=O(1)$ makes it $O(Tl)$. Summing: $\mu_3\to1+1=2$. Cross-checks:
+the $k=2$ instance of the same constant chain reproduces
+Montgomery's $\tfrac13$ to four digits; the model gate
+$\int O_3C_3=0$ is exact (\S\ref{s:cert:model}); the
+finite-height shape $m_3m_1/m_2^2$ matches the model to $2\%$.
+Two nonstandard steps --- the $k=3$ tail adaptation of
+Proposition~\ref{p:tail} and the locality-plus-calibration fixing of
+the constant chain --- are written out in the archived memo and
+are consumed at that rigor.
+\end{proof}
+
+\subsection{The fourth moment: the $197/60$ ledger and the class
+$R$}\label{s:cert:R}
+
+\begin{proposition}[Evaluable classes of the fourth
+moment]\label{p:m4classical}
+By the identical ledger at $k=4$ ($81$ classes; $\Pi_X$- and
+single-$P$ classes negligible; paired sign patterns forced exact
+by Lemma~\ref{l:m3res}; $\{2,2\}$-pairing weights explicit window
+integrals),
+\[
+\mu_4\;=\;\underbrace{1}_{\mu^4}
+\;+\;\underbrace{2}_{\mu^2P^2\ \mathrm{diag}}
+\;+\;\underbrace{\tfrac{17}{60}}_{\{2,2\}\ \mathrm{bare\
+pairings}}\;+\;R\;+\;o(1)\;=\;\tfrac{197}{60}+R+o(1)
+\]
+in the endpoint regime, where $\tfrac{17}{60}=2\kappa$ with
+$\kappa=\int_{[0,1]^2}xy\,\Sigma_{\mathrm{pair}}O_4
+=\tfrac{17}{120}$ (exact quadrature of the certified $4$-cycle
+overlap geometry), and $R$ is the shifted-correlation class:
+pairs of restricted products $N_1=b_1m_1\ne N_2=b_2m_2$ (all legs
+prime powers $\le X$), weight $\LL^4/\sqrt{N_1N_2}$, window
+kernel $\widehat W(\Delta)=[\sin2T\Delta-\sin T\Delta]/\Delta$ at
+$\Delta=\log N_1/N_2$, and the explicit overlap geometry $O_4$
+(row/column asymmetric; unordered-cell weight
+$Q(\beta_1,\beta_2)+Q(\beta_2,\beta_1)$); $R$-units
+$=(1/\pi)\Sigma/(d\ell_1^4)$. The model value of $R$ is exactly
+$-\tfrac1{30}=\tfrac{13}4-\tfrac{197}{60}$.
+\end{proposition}
+
+\begin{remark}[Bookkeeping reconciliation; audit
+rounds 25--26]\label{r:books}
+Two bookkeeping conventions coexist in the program archive and
+must not be mixed. The \emph{bare-diagonal} convention above
+books the $\{2,2\}$ pairings at $\tfrac{17}{60}$ and carries the
+pair-level Montgomery plateau (the $\min(u,1)$ saturation of
+$C_2$) inside $R$. The \emph{sine-model cumulant} convention
+books $\{2,2\}$ as $2t_{\mathrm{adj}}+t_{\mathrm{opp}}$ with the
+connected part separate. With the anchors now certified as exact
+rationals (\S\ref{s:five:cert}: $t_{\mathrm{adj}}=\tfrac7{60}$,
+$t_{\mathrm{opp}}=\tfrac1{30}$), the reconciliation is exact and
+symmetric:
+\[
+\underbrace{\tfrac{17}{60}}_{\text{bare}}
+=\underbrace{\tfrac4{15}}_{2t_{\mathrm{adj}}+t_{\mathrm{opp}}}
++\underbrace{\tfrac1{60}}_{\text{plateau}},
+\qquad
+R_{\mathrm{model}}
+=\underbrace{-\tfrac1{60}}_{\text{plateau (pair-of-pairs Wick)}}
++\underbrace{-\tfrac1{60}}_{\text{connected core}}
+=-\tfrac1{30},
+\]
+and $1+2+\tfrac{17}{60}=\tfrac{197}{60}$,
+$2\cdot\tfrac{17}{120}=\tfrac{17}{60}$ exactly. The archived
+grid values ($0.2677$, plateau $0.0156$, connected $-0.0177$;
+cross-convention measurement $-0.01567$ in
+\texttt{m1\_suite.py}) carried a small grid bias in
+$t_{\mathrm{adj}}$ (quoted $0.11717$, exact $\tfrac7{60}
+=0.11667$; register item D7); the exact connected model value
+$-\tfrac1{60}=-0.01667$ agrees with the cumulant engine's
+independent grid measurement $-0.01663$ to $0.2\%$. The totals
+consumed anywhere in this paper were and remain exact
+($\tfrac{197}{60}$, $-\tfrac1{30}$, $\tfrac{13}4$); the split is
+now exact too. All ledgers below state which convention they use.
+\end{remark}
+
+\subsection{The two walls of $R$, and its direct
+measurement}\label{s:cert:walls}
+
+Everything in this subsection is unconditional structure or
+finite-height measurement; it is the audit apparatus against
+which the proofs of \S\S\ref{s:trunc}--\ref{s:four} were
+developed and checked. (i)~\emph{Two ghost lemmas.} The
+mean-field quadruple term is $O(l^{-3})$: the $u$-Jacobian
+cancels $1/\sqrt{N_1N_2}$ exactly and the inner kernel integral
+is $-2[\Si(2T/N)-\Si(T/N)]$, a boundary layer at $N\asymp T$; and
+the smooth part of the cluster-squared sector vanishes
+identically, since $\int_{\mathbb R}\widehat W_{\mathrm{in}}\,
+d\Delta=0$. (ii)~\emph{Two walls.} Consequently
+$R=R_{\mathrm{pp}}+R_{\mathrm{conn}}$: an edge layer carried by
+Poisson-dual lattice terms at top scale (some leg within $O(1)$
+of $X$; the explicit-formula regime) and a bulk object (model
+bands at $s\sim1.5$). (iii)~\emph{Separation observable,
+certified at three heights}: binning by $e=l-\max u_i$ gives, at
+$l=5.95/6.64/7.33$: edge $-0.0061/-0.0068/-0.0060$ (saturating
+toward the model $-0.0156$) and bulk $+0.0004/-0.0012/-0.0015$
+(sign turn at $l\approx6$, monotone toward $-0.0177$).
+(iv)~\emph{Direct measurement.} Meet-in-middle enumeration of all
+resonant quartic prime pairs (exact kernels, class-resolved, flat
+window, $\lambda=1$) gives
+\[
+\begin{array}{lcccc}
+l & 4.56 & 5.94 & 7.33 & 8.72\\
+R\ (\text{per }d\ell_1^4) & -0.0008 & -0.0057 & -0.0074 & -0.0101
+\end{array}
+\]
+--- negative at every height, trending at the $1/l$-rate of all
+calibration gates; a two-code-path audit showed the sharp cutoff
+$C=40$ understates $|R|$ (full-kernel $-0.0012$ and $-0.0098$ at
+the first two heights), so these are magnitude lower bounds. The
+same audit certified the ledger's constant chain end-to-end at
+$k=2,3,4$ to $0.05$--$0.8\%$. The $k{=}1$ Poisson stationary term
+of the edge layer is evaluated in closed form (zone-1 master
+formula; validated at three heights and two tapers to
+$5$--$18\%$): a positive decaying transient $\sim c\,l/\ell_1^4$
+explaining the late sign turn of the near band.
+
+\subsection{Model calibration}\label{s:cert:model}
+
+The free-fermion cumulant engine computes the Fourier-field
+cumulants of the sine process by the ordered-set-partition
+expansion of $\operatorname{Tr}\log(1+(e^f-1)K)$; gates:
+$C_2(v)=\min(|v|,1)$ exactly, $\int O_3C_3=0$ (whence $m_3(1)=2$),
+and the $m_4(1)$ assembly $3.25103$ against $\tfrac{13}4$ (grid
+error $0.03\%$). The value $m_4(1)=\tfrac{13}4$ is pinned three
+independent ways (cumulant assembly; GUE simulation
+$m_{1..4}=1.0000,1.3313,1.9913,3.2213(27)$; Hankel forcing from
+the extremal constants). GUE double-window Richardson
+extrapolation measures the model values
+\begin{equation}\label{e:guebands}
+m_5(1)=5.573\pm0.113,\qquad m_6(1)=10.02\pm0.27,
+\end{equation}
+(sine-model/GUE measurement --- see the discrepancy register,
+Appendix~\ref{a:record}, item D2, for the provenance correction
+of an earlier attribution), and the six-moment certificate at the
+central values gives $0.7328/0.8664$: the ladder climbs only
+through the odd moments' strict-positivity gaps, since the
+$k\le4$ extremal already has $m_5=\tfrac{177}{32}$,
+$m_6=9.6445$. The assembled values of \S\ref{s:five} lie inside
+the bands \eqref{e:guebands}.
+
+\section{The one-sided fourth-moment route:
+$0.6916$}\label{s:fm}
+
+This section establishes a one-sided bound on $R$ sufficient to
+cross the pair-correlation ceiling $0.68185$, by classical
+technology plus the averaged shifted-convolution theorem of
+\cite{MRT}. It is logically
+independent of the exact evaluation of
+\S\S\ref{s:trunc}--\ref{s:four} and is retained both as the
+program's first crossing of the ceiling and because its
+architecture (cells, bridge, aggregation, discharge ledger) is
+consumed by the Lemma D proof.
+
+\begin{theorem}[One-sided fourth-moment bound; grade:
+certified-candidate with the numerical-analysis step of
+Lemma~\ref{l:CL}]\label{t:fm}
+With $R=R(1)$ the class of Proposition~\ref{p:m4classical},
+$\limsup_{T\to\infty}R(1)\le\bar R:=0.0066$. Consequently, by the
+count of \S\ref{s:frame} at
+$(1,1,\tfrac43,2,\tfrac{13}4+\Delta)$, $\Delta=\bar R+\tfrac1{30}
+=0.039933$,
+\[
+\liminf\frac{N_0^{s}}{N}\ \ge\ 1-2\Lambda_2(0)=0.691615,
+\qquad
+\liminf\frac{N_d}{N}\ \ge\ 1-\Lambda_2(0)=0.845807,
+\]
+where $\Lambda_2(0)=\dfrac{5/108+\Delta/3}{1/3+4\Delta/3}
+=0.154193$, and the same for any fixed primitive Dirichlet
+$L$-function. Any $\bar R\le0.0222$ crosses the $0.68185$
+ceiling; the margin is $0.0156$ in $R$-units.
+\end{theorem}
+
+\noindent(An earlier draft printed $\Lambda_2(0)=0.156293$;
+the certification audit recomputed the closed form and found the
+stated theorem constants $0.6916/0.8458$ correct and that figure
+stale --- discrepancy register D1, Appendix~\ref{a:record}.) The
+constant $\bar R$ decomposes as $[\mathrm{core}\le-0.0055]+
+[\varepsilon_{\mathrm{tail}}\le0.0111]+[\varepsilon_{CL}=0.0010]$,
+where $\varepsilon_{CL}$ is a convergence-slack allowance for the
+core sequence (Lemma~\ref{l:CL}).
+
+\subsection{Toolkit: singular series, arc identity,
+tails}\label{s:fm:toolkit}
+
+For $b_1,b_2\ge1$, $j\ne0$ the local density of
+$b_1m_1-b_2m_2=j$ is $\SSS_{b_1,b_2}(j)=\prod_p\kappa_p$ with the
+five-case table verified digit-exact; $\mathbb E_j[\SSS]=1$. Its
+arc expansion:
+
+\begin{proposition}[Arc identity]\label{p:S}
+$\displaystyle
+\SSS_{b_1,b_2}(j)=\sum_{q\ge1}\beta_q\,c_q(j),\qquad
+\beta_q=\frac{\mu(q_1)\mu(q_2)}{\varphi(q_1)\varphi(q_2)},\quad
+q_i=\frac{q}{(q,b_i)}.$
+\end{proposition}
+
+\noindent At $b_1=b_2=1$ this is the classical evaluation used in
+\cite[(66)--(67)]{MRT}; the general case follows by the same
+$p$-local comparison against the $\kappa_p$ table. The truncation
+tail obeys, for $g=(b_1,b_2)\le(\log M)^{C}$,
+\begin{equation}\label{e:X2}
+\textstyle\sum_{|j|\le H}\bigl(\SSS-\SSS^{(P)}\bigr)^2(j)\;\ll\;
+H\,(\log)^{-B+O(1)},\qquad P=(\log)^{B},
+\end{equation}
+by the $(q_1,q_2)$-grading and $\sum_{|j|\le H}c_q(j)^2\ll(H+q)
+\varphi(q)$. \emph{Discharge ledger} (kept, per the program's
+audit discipline): cells with $g>(\log)^{C}$ are discarded at
+certified cost $0.71\%$ weight share, $\le3\times10^{-4}$
+$R$-units. The trivial envelope
+$\sum_{n\le x}\LL(n)\LL(n+h)\ll\SSS(h)x$ uniformly for
+$|h|\le x$ is \cite[Cor.~3.14]{HR}.
+
+\subsection{Covered zone, middle band, bridge and
+aggregation}\label{s:fm:R}
+
+Write $S_i(\alpha)=\sum_{m\sim M_i}\LL(m)\e(b_im\alpha)$. The
+two-modulus structure is discharged by four archive lemmas
+(rounds 38--40): the major-arc law
+$S_i(\alpha)=\frac{\mu(q_i)}{\varphi(q_i)}v_i(\eta)
++O(M_i\exp(-c\sqrt{\log M}))$ with $q_i=q/(q,b_i)$
+($b$-uniformity free); the classification of joint near-major
+points ($q\le\min(P^2g,Pb_1,Pb_2)$, a finite $b$-independent
+family whose content is the $(q_1,q_2\le P)$-graded truncation
+$\SSS^{(P)}$); the dilation transfer ($\gamma_i=b_i\alpha$ obeys
+Vaughan's estimate in \emph{its own} approximation quality); and
+a smoothing-collar lemma aligning the Gallagher width. After this
+discharge the $b=1$ machinery of \cite{MRT} applies verbatim:
+
+\begin{proposition}[{\cite[Thm.~1.3(i)]{MRT}}, variance
+form]\label{p:IM}
+For $X^{8/33+\varepsilon}\le H\le X^{1-\varepsilon}$, any center
+$h_0\le X^{1-\varepsilon}$, and any $A$:
+\[
+\sum_{|h-h_0|\le H}\Bigl|\sum_{X<n\le2X}\LL(n)\LL(n+h)-\SSS(h)X
+\Bigr|^2\;\ll_{A,\varepsilon}\;HX^2(\log X)^{-A}.
+\]
+\end{proposition}
+
+\noindent The covered share of the class at the $8/33$ exponent
+is $0.885$ (anchored at the archived $0.797$ at exponent
+$\tfrac13$). For the middle band, with
+$A(b_2,j)=\sum_m\LL(m)\LL((b_2m+j)/b_1)\mathbf1[b_1\mid b_2m+j]$
+and $MT=\SSS_{b_1,b_2}(j)\,\mathrm{len}/(b_1b_2)$:
+
+\begin{lemma}[Dispersion swaps; exact]\label{l:swaps}
+$\sum_{b_2,j}A^2$, $\sum A\cdot MT$ and $\sum MT^2$ are, exactly,
+weighted twin-sum families over the structured shifts $h=qk$
+(outer pairs $m-m'=rk$), the $\SSS$-against-$\LL$ correlation on
+the strip, and $2J\,E_2(b_1,b_2)(\mathrm{len}/b_1b_2)^2(1+o(1))$
+respectively, where $E_2=\prod_p\mathbb E_v[\kappa_p^2]$ (anchor:
+$E_2(1,1)=2\prod_{p>2}(1+(p-1)^{-3})$).
+\end{lemma}
+
+\begin{lemma}[Bridge]\label{l:bridge}
+For any window $W$ and modulus $q$:
+$\displaystyle\sum_{k\ne0}\ \sum_{n,n-qk\in W}\LL(n)\LL(n-qk)
+=\sum_{a\bmod q}\Bigl[\psi_W(q,a)^2-\sum_{n\in W,\,n\equiv a}
+\LL(n)^2\Bigr].$
+\end{lemma}
+
+\begin{lemma}[Structured-to-full aggregation]\label{l:U}
+Let $W$ have length $Y$, $\mathrm{dev}(h)$ the (smoothly
+weighted) twin deviation on $W$, $Q$ a set of moduli with shift
+counts $K_q\le H/q$, $H\le Y^{1-\varepsilon}$. If
+$\sum_{h\le H}|\mathrm{dev}|^2\ll_{A'}HY^2(\log)^{-A'}$ for every
+$A'$, then for every $A$
+\[
+\sum_{q\in Q}\sum_{k\le K_q}|\mathrm{dev}(qk)|^2
+\;\ll_A\;HY^2(\log Y)^{-A},
+\]
+uniformly in $Q$ --- no factor of the moduli is lost.
+\end{lemma}
+
+\begin{proof}
+The left side is $\sum_{h\le H}\nu(h)|\mathrm{dev}(h)|^2$ with
+$\nu(h)\le\tau(h)$. Split at $\nu\le(\log Y)^{C}$: the generic
+part costs $(\log)^{C}$ against the arbitrary-$A'$ input; on the
+rare part use the envelope $|\mathrm{dev}(h)|\le9\SSS(h)Y$ with
+$\sum_{h\le H,\tau(h)>V}\tau(h)\ll H(\log)^3/V$ at
+$V=(\log)^{C}$. Choose $C=A+4$, $A'=2A+4$.
+\end{proof}
+
+\noindent The band consumer applies a single Cauchy--Schwarz
+\emph{in the shift variable only} (any Cauchy--Schwarz across the
+family pays its Poisson floor, measured $50$--$60\times$ over
+budget, and is never used). The glue layer (welding weight
+$w_k(n)=\sum_{m\in I(n)}\LL(m)\LL(m-rk)$) closes by the exact
+factorization of main terms, Abel summation against the glue for
+the major arcs, and the divisor-bounded envelopes of
+\cite[Prop.~5.4, App.~A]{MRT} for the minor arcs.
+
+\subsection{Deterministic mains and the continuum
+limit}\label{s:fm:mains}
+
+Write $\SSS_{b_1,b_2}=\bar D+g_P+g_{\mathrm{tail}}$ ($\bar D$ the
+exact finite local mean; $g_P$ the $q\le P$ oscillating piece;
+$P=40$).
+
+\begin{lemma}[Partial-sum identity]\label{l:PS}
+For every $M\ge1$,
+$\displaystyle\sum_{j\le M}(\SSS_{b_1,b_2}-\bar D)(j)=
+-\sum_{d\ge1}d\,\bigl\{\tfrac Md\bigr\}\,
+\gamma^{\mathrm{free}}_d$, with explicit Euler-local $\gamma$,
+absolutely convergent against the $\ell^1$ weights
+$d\min(1,M/d)$.
+\end{lemma}
+
+\begin{lemma}[Finite-$J$ evaluation and uniform
+tail]\label{l:E3}
+For every finite $J$ and $\theta$,
+$\sum_{j\le J}\mathrm{tail}_P(j)\,\mathrm{row}_j(\theta)
+=\sum_{d\ge1}\gamma_d^{>P}\,S_0(d\theta;\lfloor J/d\rfloor)$
+with $S_0(x;K)=\sum_{k\le K}\frac{\sin2xk-\sin xk}{k}$; hence the
+$\theta$-uniform bound $\le C_{\mathrm{saw}}\sum_d
+|\gamma_d^{>P}|$. No $J\to\infty$ interchange is performed
+anywhere.
+\end{lemma}
+
+\begin{lemma}[Certified sawtooth constant]\label{l:S0}
+$|S_0(x;K)|\le C_{\mathrm{saw}}:=2.10$ for all $x$ and $K\ge1$.
+\end{lemma}
+
+\begin{proof}
+For $K\le64$: rigorous grid verification with the Lipschitz bound
+$|\partial_xS_0|\le3K$ certifies $\max|S_0|\le1.8675$. For
+$K>64$: the Dirichlet representation with the sine-integral
+comparison near the singular set and the second mean value
+theorem away from it gives $\le2.05$; samples at $K=128,512,4096$
+read $1.842,1.849,1.851$, approaching $\Si(\pi)=1.85194$ from
+below. (Re-run in the certification audit: identical values.)
+\end{proof}
+
+\noindent Zone-integrating the uniform tail against the certified
+geometry gives $\varepsilon_{\mathrm{tail}}\le0.0115$
+($T=2400$), $0.0111$ ($T=4800$), decreasing; the evaluated core
+(exact finite forms) is $\mathrm{core}(2400)=-0.00549$,
+$\mathrm{core}(4800)=-0.0064$, certified against the pipeline
+anchor ($-0.00545$ vs the suite's $-0.00544$).
+
+\begin{lemma}[Continuum limit of the core; grade: proof shape
+with computed constants --- see the grading note
+below]\label{l:CL}
+$\mathrm{core}(T)$ converges as $T\to\infty$ to
+$C_{\mathrm{core}}=\sum_{b_1\le b_2}\frac{\LL(b_1)\LL(b_2)}
+{b_1b_2}F_\infty(b_1,b_2)$, an absolutely convergent series of
+computable continuum sawtooth integrals, with
+$|\mathrm{core}(T)-C_{\mathrm{core}}|\ll(\log T)^{-1}$; the
+ensemble collapses onto the universal $(1,1)$-class (Mertens mass
+concentrates on pairs of large primes), whose slope and constant
+are computed, not fitted: partial-sum slopes
+$0.99684\to0.99962\to0.99996$ over successive decades (classical
+law, exactly $1$ --- now \emph{proved}: the Dirichlet series is
+$\zeta(s+1)E(s)$ with $2C_2E(0)=1$, Proposition~\ref{p:c0}),
+and the constant $c_0=-1.4228$ is now \emph{identified in closed
+form}: $c_0=\gamma-2=-1.4227843\ldots$ (Euler--Mascheroni
+$\gamma$; Proposition~\ref{p:c0}, verified to $10^{-5}$ at
+$M=2\times10^{7}$); $\theta$-ladder $c^{*}=-0.5433$,
+decade-stable, matching the archive's independent $-0.55(2)$
+($c^{*}=\log\pi+\gamma-2-\overline{\mathrm{osc}}$ in the pin of
+the archived F-QC5 gate, so the remaining computed piece of
+$c^{*}$ is the mean oscillation
+$\overline{\mathrm{osc}}\approx0.2652$, not identified here). The continuum quadrature with Richardson
+extrapolation in $1/l$ ($l=40,60,100,160$) yields
+$C_{\mathrm{core}}=-0.0209\pm0.0026$, independently confirming
+the archive ladder $-0.020(2)$ --- two disjoint routes at $4\%$.
+\end{lemma}
+
+\noindent\emph{Grading note.} The convergence structure
+(scaled-variable Riemann sum, universality collapse) is an
+analytic argument; the values of the collapsed series' slope and
+constant, and the quadrature of $C_{\mathrm{core}}$, are
+computed constants with stated bands, not certified enclosures.
+Theorem~\ref{t:fm} charges only the conservative
+$\mathrm{core}\le-0.0055+\varepsilon_{CL}$,
+$\varepsilon_{CL}=0.0010$, against the measured decreasing grid;
+the certification write-out of the quadrature is a named open
+item (\S\ref{s:verif}). Substituting the computed
+$C_{\mathrm{core}}$ would give $\bar R=-0.0098\pm0.0026<0$,
+hence $0.7031/0.8515$; that upgrade is \emph{not} consumed
+anywhere in this paper.
+
+\subsection{Assembly}\label{s:fm:assembly}
+
+At $\lambda=1$, uniform full-kernel convention:
+\[
+R(1)\;\le\;\mathrm{core}(T)+\varepsilon_{\mathrm{tail}}+o(1)
+\;\le\;(-0.0055+0.0010)+0.0111+o(1)\;=\;0.0066+o(1),
+\]
+the $o(1)$ collecting the covered-zone, band and low-zone
+deviations of \S\ref{s:fm:R} (the low-zone cap's certified
+finite-height price at the operating point is $0.0163$, inside
+the LP budget $0.0387+0.0177$). Feeding $\bar R=0.0066$ into the
+count gives Theorem~\ref{t:fm}.\qed
+
+\section{The truncation discharge}\label{s:trunc}
+
+\begin{lemma}[Cell-mass bound]\label{l:mass}
+Uniformly in the lock and shift ranges, the $\LL^{2k}$-weighted,
+consumption-normalized mass of the $k$-cycle cells at parameter
+$\ell_1$ is $\ll Y^{2}(\log Y)^{c}\,\ell_1$.
+\end{lemma}
+
+\begin{proof}
+For a fixed cell, each locked configuration is determined by
+$(m,k)$ together with the residue data of the lock; the count of
+$(m,k)$ pairs in the windows is $\ll YK\ll Y^{2}/\max(r,q)$, each
+carrying weight $\ll(\log Y)^{2k}$, and the lock constraint
+selects a $1/\ell_1$-proportion of the $n$-range up to
+divisor-bounded multiplicity; the consumption normalization
+(division by the ledger volumes $V\asymp Y^{2}/(rq\ell_1)$)
+leaves at most one factor $\ell_1$. The numerical ledger face
+measures the aggregate mass essentially flat in $\ell_1$ (fitted
+exponent $-0.11$), well inside the bound.
+\end{proof}
+
+\begin{lemma}[Multiplicity]\label{l:mult}
+The number of unordered prime-power tuples with cell parameter
+$\ell_1=\ell$ is $\ll_{\varepsilon}\ell^{\varepsilon}$
+(divisor-bounded).
+\end{lemma}
+
+\begin{proposition}[Truncation--consumption
+compatibility]\label{p:consume}
+Let $F$ denote the consumed $k$-cycle cell aggregate, $k\ge4$,
+and $F^{(P)}$ its restriction to $\ell_1\le P$. Then
+\[
+\bigl|F-F^{(P)}\bigr|\;\ll_{\varepsilon}\;
+Y^{2}(\log Y)^{c}\,P^{-(k-2)+\varepsilon}
+\qquad\text{two-sidedly.}
+\]
+Hence for every $A_0$ there is $B$ (any fixed $B>(c+A_0)/(k-2)$
+suffices) such that proving the variance bound for moduli
+$\le P=(\log X)^{B}$ proves it in the consumed form, with total
+truncation cost $\ll(\log X)^{-A_0}$: only moduli
+$\le(\log X)^{B}$ are ever consumed.
+\end{proposition}
+
+\begin{proof}
+Weight $\times$ mass $\times$ multiplicity
+$=\ell^{-k}\cdot\ell\cdot\ell^{\varepsilon}$ summed over
+$\ell>P$. The bound is on absolute values, hence two-sided. The
+archived D1 layer independently certifies the squared-remainder
+grading at $k=4$ ($\mathbb E_j[(F-F^{(P)})^2]\ll P^{-1-\delta}$;
+tail locals $t_p^{2}\sim4/p^{2}$). Two truncations coexist in the
+program and must not be confused: the sawtooth/frequency
+truncation inside the $C_{\mathrm{full}}$-quadrature machinery of
+\S\ref{s:fm:mains}, whose tail carries that limit, and the
+present $\ell_1$-cell truncation, whose tail is trivially small;
+the audit trail (archive rounds 91--93, item S1) verified the
+disentanglement. An earlier draft stated the multiplicity as
+$\ell_1$; the divisor bound of Lemma~\ref{l:mult} is what the
+displayed exponent uses.
+\end{proof}
+
+\section{The local closure}\label{s:local}
+
+The local (mod $p$) structure of every moment order is governed
+by affine lock chains. Fix a cycle length $b\ge2$, a prime power
+$P_0=p^{s}$, unit coefficients $a_1,\dots,a_b$, and free locks
+$j_1,\dots,j_{b-1}\in\mathbb Z/P_0$; define points by
+$n_{t+1}\equiv a_tn_t+j_t$, the last lock induced by cyclic
+closure. Write $n_t=A_t(n_1+d_t)$ where $A_{t+1}=a_tA_t$,
+$A_1=1$, $d_1=0$; then $d_{t+1}-d_t=j_t/A_{t+1}$ is a unit
+multiple of $j_t$. Let $N(j)$ count the $n_1\in\mathbb Z/P_0$
+with all $b$ points prime to $p$.
+
+\begin{proposition}[Coincidence-counting closure]\label{p:local}
+Pointwise in the lock vector $j$,
+\[
+N(j)\;=\;P_0\,\frac{p-D(j)}{p},
+\qquad
+D(j)=\#\{d_t\bmod p:\ t=1,\dots,b\},
+\]
+and for any class $\mathcal C$ of locks,
+\[
+\kappa_b(\mathcal C)
+=\frac{1-\mathbb E[D\mid\mathcal C]/p}{(1-1/p)^{b}},
+\qquad
+\mathbb E_j[\kappa_b]=1\ \text{exactly.}
+\]
+Forbidden-class merges are pair events of weight $1/(p-1)$;
+triple merges enter at $O(p^{-2})$.
+\end{proposition}
+
+\begin{proof}
+Since $A_t$ is a unit, $n_t=A_t(n_1+d_t)$ is prime to $p$ iff
+$n_1\not\equiv-d_t\pmod p$; the all-unit condition excludes
+exactly the $D(j)$ distinct residues $\{-d_t\}$, each of density
+$1/p$ in $\mathbb Z/P_0$, giving the count. The class formula is
+its average against $(1-1/p)^{b}$. For the mean-one identity:
+under uniform locks the increments are independent uniform, so
+$(d_2,\dots,d_b)$ is uniform on $(\mathbb Z/p)^{b-1}$ and
+$\mathbb E[D]=p(1-(1-1/p)^{b})$, whence
+$1-\mathbb E[D]/p=(1-1/p)^{b}$. A merge across a gap of lock-sum
+$\sigma$ requires $p\mid\sigma$: impossible for a single unit
+lock; for a sum of two units it occurs for exactly one value of
+the second, weight $1/(p-1)$.
+\end{proof}
+
+Machine verification (pipeline, \texttt{face\_local\_closure};
+re-run in the certification audit with identical output): zero pointwise
+violations over full enumerations and closed-form match to
+$2\times10^{-16}$ for every lock class at $b=4,5,6$,
+$p\in\{5,7,11,13\}$, $s\in\{1,2\}$, with the mean-one identity
+exact. The $\kappa_4$ closed forms of the fourth-moment table are
+instances ($\kappa_4(0,0)=1-(4-\tfrac2{p-1})/p$). The proposition
+supplies the singular-series combs at every cycle length and the
+$j$-averaged factorization identities used below. (A first draft
+of the corresponding Lean seed omitted the normalising inverse in
+$d_t=B_tA_t^{-1}$; the exact-enumeration proxy fired --- registry
+r103, the $29$th conversion --- and the seed was corrected:
+Appendix~\ref{a:record}.)
+
+\section{Lemma D and the exact fourth moment}\label{s:four}
+
+The fourth-moment evaluation $m_4\to13/4$ closes the estimate
+isolated by the program (``Lemma D'': the averaged, lock-resolved
+quadruple-correlation variance) in its consumed, truncated form.
+In its \emph{unrestricted} form --- moduli up to a power of $X$
+--- it remains open, one structural step beyond the published
+diagonal cases of the Barban--Davenport--Halberstam/dispersion
+lineage. Two observations remove the difficulty from the consumed
+form: the truncation discharge of \S\ref{s:trunc}, and the
+spectral frame below.
+
+\subsection{The frame and the Parseval identity}
+
+By the archived, machine-verified bridge and glue identities
+(\S\ref{s:fm:R}), the $(k,j)$-aggregated variance for a modulus
+pair is carried by the \emph{dilated density} $\rho(\tau)$: with
+$A_m,A_n$ the autocorrelations of the two position-lattice
+sequences, on the analysis grid of period $N$ (a power of two
+exceeding four times the largest position, so no correlation
+wraps),
+\[
+\rho(\tau)\;=\;\sum_{t}A_m(t)\,A_n(t-\tau)
+\;=\;\mathrm{irfft}\bigl(|S_m|^{2}|S_n|^{2}\bigr)(\tau),
+\]
+and the lock-variance obeys the \emph{exact} discrete Parseval
+identity
+\begin{equation}\label{e:pars}
+\sum_{\tau=0}^{N-1}\rho(\tau)^{2}
+=\frac1N\Bigl[\mathrm{dens}_0^{2}
++2\!\!\sum_{0<\beta<N/2}\!\!\mathrm{dens}_\beta^{2}
++\mathrm{dens}_{N/2}^{2}\Bigr],
+\qquad \mathrm{dens}=|S_m|^{2}|S_n|^{2},
+\end{equation}
+verified bitwise in the pipeline ($10^{-16}$ relative; re-run in
+the certification audit). The same identity applied to
+$\rho-\mathrm{Model}$ turns the variance into the spectral
+$L^{2}$-distance of $\mathrm{dens}$ from the model comb. We
+classify the frequencies $\beta$ by the arc quality of the pair
+$(\gamma_m,\gamma_n)=(b_2\beta,b_1\beta)\bmod1$ at cutoff
+$P^{*}=(\log X)^{B^{*}}$: both major (MM), mixed, or both minor.
+
+\subsection{The three leaves}
+
+\begin{lemma}[MM leaf]\label{l:MM}
+Let $\beta$ be a doubly major bin: $\gamma_m=a/Q+\eta$,
+$Q\le P^{*}$, $|\eta|\le$ arc width, and likewise $\gamma_n$.
+Then, for every $A'$,
+\[
+S_m(\beta)=\frac{\mu(Q)}{\varphi(Q)}\,I_m(\eta)
++O_{A',B^{*}}\!\bigl(Y(\log Y)^{-A'}\bigr),
+\qquad
+I_m(\eta)=\sum_{m\in I_m}\e(m\eta),
+\]
+uniformly, and the same for $S_n$; the constants are ineffective.
+Consequently, on the MM bins,
+$\bigl|\mathrm{dens}-\mathrm{comb}\bigr|
+\ll\mathrm{main}\cdot Y(\log Y)^{-A'}+Y^{2}(\log Y)^{-2A'}$
+pointwise, where $\mathrm{comb}$ is the product of the squared
+main terms.
+\end{lemma}
+
+\begin{proof}
+$S_m(\beta)=\sum_m\LL(m)\e(m\gamma_m)$ is a windowed single prime
+sum at $\gamma_m=a/Q+\eta$. Splitting into progressions mod $Q$
+and applying the Siegel--Walfisz theorem in the form
+\cite[\S22]{Dav} (or \cite[Cor.~5.29]{IK}) with partial summation
+in the window against the phase $\e(m\eta)$ gives the display;
+the constants depend only on $(A',B^{*})$ and are ineffective
+through Siegel's theorem. The pointwise comb comparison follows
+by expanding the product. The per-bin face
+(\texttt{face\_sw}) measures the absolutely normalised error
+across six families: RMS $3.6\times10^{-3}$ at $T=2400$ falling
+to $3.6\times10^{-4}$ at $T=153600$.
+\end{proof}
+
+\begin{remark}[Ineffectivity enters here]\label{r:ineffective}
+This is the single point where ineffective constants enter the
+chain: Siegel's theorem gives no computable $T_0(A')$, so every
+theorem constant downstream is ineffective, while every
+finite-height face measured in \S\ref{s:faces} carries
+effective constants. The two kinds of statement are graded
+separately throughout (see the closing remark of
+\S\ref{s:faces}); nothing else in the paper --- the identities,
+the certificate, the local law, the window calculus --- consumes
+an ineffective input.
+\end{remark}
+
+\begin{lemma}[Minor and mixed leaves]\label{l:minor}
+For $\gamma$ minor at cutoff $P^{*}$ (denominator range
+$((\log X)^{B^{*}},Y(\log X)^{-B^{*}})$ by Dirichlet
+approximation), $|S(\gamma)|^{2}\ll Y^{2}(\log Y)^{-B^{*}/2+c_0}$
+by Vaughan's estimate. Hence the doubly-minor spectral mass
+carries a $(\log)^{-B^{*}+2c_0}$ saving squared, and each mixed
+bin at least the one-sided saving; the mixed and minor
+contributions to the spectral $L^{2}$-distance are
+$\ll(\log X)^{-B^{*}/2+c_1}$ relative to the natural size. The
+size bookkeeping (well-spacing of image families and the hybrid
+large-sieve/minor-sup stratum budget) is classical and is
+face-checked at $24$--$31\times$ tightness
+(\texttt{face\_arcs}).
+\end{lemma}
+
+\begin{lemma}[The comb is the singular series]\label{l:comb}
+The spectral main comb of Lemma~\ref{l:MM} equals the truncated
+singular-series model: the surviving frequencies are exactly the
+CRT progression $t\equiv0\ (b_2)$, $t\equiv\tau\ (b_1)$ in the
+$\tau$-frame, and the local factors match the
+coincidence-counting closed form of Proposition~\ref{p:local};
+the truncation tail of the singular series beyond $P^{*}$ is
+$\ll(\log X)^{-B^{*}+c}$ by the standard
+$\sum_{q>P^{*}}\mu^{2}(q)(q,h)/\varphi(q)^{2}$ bound. The
+identification is displayed explicitly, with a worked modulus
+pair, in Appendix~\ref{a:comb}; the $\tau$-resolved model tracks
+the measured profile at $0.2$--$4\%$ across sixteen families and
+eight heights (\texttt{face\_dispersion}).
+\end{lemma}
+
+\subsection{The theorem}
+
+\begin{theorem}[Lemma D, truncated form]\label{t:D}
+Let $B$ be fixed, $b_1,b_2\le(\log X)^{B}$ prime powers, windows
+of length $Y\asymp X^{\vartheta}$, $\vartheta\in(\tfrac12,1]$.
+Then for every $A>0$,
+\[
+\sum_{k\le K}\sum_{|j|\le J}
+\bigl|N_4(k,j)-\SSS_4(k,j)V(k,j)\bigr|^{2}
+\;\ll_{A,B}\;KJV^{2}(\log X)^{-A}.
+\]
+Consequently, with Proposition~\ref{p:consume}, $m_4\to13/4$
+two-sidedly.
+\end{theorem}
+
+\begin{proof}
+Choose $B^{*}=2(A+c_1+B)$ and apply \eqref{e:pars} to
+$\rho-\mathrm{Model}$. The spectral $L^{2}$-distance splits over
+the arc classification. On MM bins, Lemma~\ref{l:MM} with
+$A'=A+2B^{*}$ gives a pointwise relative saving $(\log)^{-A'}$,
+hence $\sum_{\mathrm{MM}}|\mathrm{dens}-\mathrm{comb}|^{2}
+\ll(\log)^{-2A'+c}\sum\mathrm{main}^{2}$; by Lemma~\ref{l:comb}
+the comb agrees with the model to $(\log)^{-B^{*}+c}$ relative,
+absorbed by the choice of $B^{*}$. The mixed and doubly-minor
+bins contribute $\ll(\log)^{-B^{*}/2+c_1}$ relative by
+Lemma~\ref{l:minor}. The $(k,j)$-aggregation constants of the
+bridge and glue layer are archived and certified
+(\S\ref{s:fm:R}); the normalization match to $KJV^{2}$ is the
+consumer interface there. All bounds are on absolute values,
+hence two-sided; all constants depend only on $(A,B)$ and are
+ineffective. Choosing $B^{*}$ then $A'$ in that order involves no
+circularity.
+\end{proof}
+
+\begin{remark}[The progression-frame route; falsifier
+r95]\label{rem:prog}
+The archived reduction of the variance to a locked two-modulus
+progression covariance suggests a shorter argument: expand both
+progression errors in additive characters and evaluate by
+Siegel--Walfisz. Executed at the moduli $(r,q)$ separately this
+produces \emph{incomplete} character sums (the lock couples
+residues modulo $r$ to residues modulo $q$, and the $a$-sum over
+one modulus has no orthogonality against the other); the
+expansion must be lifted to the joint modulus
+$M\asymp rq\le(\log X)^{2B}$, where it becomes a complete-sum
+argument parallel to the one above. An earlier draft presented
+that sketch without the lift; it was replaced by the
+spectral proof, in which the $\tau$-transform runs over the full
+period and the orthogonality (Lemma~\ref{l:comb}) is exact. The
+slip and its correction are falsifier r95 on the forward record.
+\end{remark}
+
+\begin{corollary}[The $13/18$ rung]\label{c:1318}
+With ineffective constants,
+\[
+\liminf_{T\to\infty}\frac{N_0^{s}(T,2T)}{N(T,2T)}\ge\frac{13}{18},
+\qquad
+\liminf_{T\to\infty}\frac{N_d(T,2T)}{N(T,2T)}\ge\frac{31}{36},
+\]
+and the same for any fixed primitive Dirichlet $L$-function.
+\end{corollary}
+
+\begin{proof}
+Theorem~\ref{t:D} and Proposition~\ref{p:consume} give
+$m_4=13/4+o(1)$ two-sidedly; Theorem~\ref{t:m3} gives $\mu_3\to2$;
+the certificate (Lemma~\ref{l:cert}, equivalently the
+Christoffel-function count of Proposition~\ref{p:count} at
+$(1,1,\tfrac43,2,\tfrac{13}4)$) gives $13/18$ and $31/36$
+exactly, monotonicity in the fourth moment converting
+$m_4\to13/4$ into the two liminf bounds. The Dirichlet
+$L$-function case is as in \cite[Thm.~E]{C26}: the framework
+uses only the functional-equation symmetry
+$\rho\mapsto1-\bar\rho$, the zero-density bound, and the
+explicit formula, all available for any fixed primitive
+Dirichlet $L$-function. Constants are
+ineffective through Lemma~\ref{l:MM}.
+\end{proof}
+
+\section{The fifth and sixth moments}\label{s:five}
+
+\subsection{The product identities}
+
+\begin{proposition}\label{p:prod}
+For a $b$-cycle of position lattices sharing a window, with any
+per-lattice densities $f_i,g_i$:
+$\sum_jN_f(j)N_g(j)=\sum_t\prod_iC_i(t)$,
+$C_i(t)=\sum_xf_i(x)g_i(x+t)$. In particular the lock variance is
+the pointwise product of the lattice autocorrelations, summed
+over the common shift.
+\end{proposition}
+
+\begin{proof}
+Two chains share a lock vector iff they differ by a common shift;
+the chain sum then factorizes over the positions.
+\end{proof}
+
+This identity ($O(N\log N)$ to evaluate) transports the spectral
+argument of \S\ref{s:four} \emph{factor by factor} to every cycle
+length: each factor is a windowed single prime sum, so the
+three-leaf closure (per-factor Siegel--Walfisz on all-major bins,
+Vaughan on any minor factor, comb by Proposition~\ref{p:local},
+truncation by Proposition~\ref{p:consume} with stronger
+exponents) applies verbatim. Machine faces: the
+twin-singular-series product model tracks the empirical five-fold
+product at $0.28$--$2.5\%$ (six modulus patterns, $T=4800$ to
+$76800$, improving with height) and the six-fold product at
+$0.11$--$1.29\%$.
+
+\subsection{Pair layers collapse onto certified anchors}
+
+The Bell$(5)=52$ and Bell$(6)=203$ class ledgers are
+machine-enumerated (class tables $1/10/15/10/10/5/1$ and
+$1/15/45/15/20/60/10/15/15/6/1$; pentagon chords $10+5$; hexagon
+chords $30+15$; matching crossing spectrum $5/6/3/1$).
+Frozen-slot identities --- a singleton block repeats a walk value
+and leaves the overlap range unchanged; machine-exact --- reduce
+every pair class to the four-cycle geometry, whose anchors are
+now \emph{exact rationals} (\S\ref{s:five:cert}):
+$t_{\mathrm{adj}}=\tfrac7{60}$, $t_{\mathrm{opp}}=\tfrac1{30}$,
+$\Phi_4=\tfrac14-2t_{\mathrm{adj}}-t_{\mathrm{opp}}=-\tfrac1{60}$
+(sine-model cumulant convention, cf.\ Remark~\ref{r:books}).
+Odd-block classes vanish by the local law. Hence
+\[
+m_5=\underbrace{1+\tfrac{10}3+10t_{\mathrm{adj}}
++5t_{\mathrm{opp}}+5\Phi_4}_{=\,67/12\ \text{exactly}}+\ C_5,
+\qquad
+m_6=\tfrac{39}4+6C_5+\{2,2,2\}+\{4,2\}+\{6\},
+\]
+the rational parts being anchor-free (the $t$-geometry cancels:
+$10t_{\mathrm{adj}}+5\Phi_4+5t_{\mathrm{opp}}=\tfrac54$ and
+$30t_{\mathrm{adj}}+15t_{\mathrm{opp}}+15\Phi_4=\tfrac{15}4$
+identically --- verified symbolically in the certification
+audit and kernel-compiled in the Lean package,
+\S\ref{s:verif}(f)), with $\{2,2,2\}=\tfrac{131}{420}$ now
+\emph{certified exactly} (Proposition~\ref{p:t222}),
+$\{4,2\}=-0.0552(8)$ (the four-cycle connected object consumed
+jointly with a spectator pair), and $\{6\}=-0.0078(8)$
+(grouped midpoint-grid ladders, \S\ref{s:conv}). The former write-out items W1--W3
+are written out in \S\ref{s:writeouts}.
+
+\subsection{The pairing layer certified exactly}\label{s:five:cert}
+
+\begin{proposition}[Exact pairing constants]\label{p:t222}
+The four-cycle anchors and the three-chord classes are the exact
+rationals
+\[
+t_{\mathrm{adj}}=\tfrac7{60},\quad
+t_{\mathrm{opp}}=\tfrac1{30},\quad
+T_0=\tfrac3{70},\quad T_1=\tfrac1{90},\quad
+T_2=\tfrac1{180},\quad T_3=\tfrac1{70},
+\]
+whence $\{2,2,2\}=5T_0+6T_1+3T_2+T_3=\tfrac{131}{420}$
+(Touchard--Riordan multiplicities $5/6/3/1$).
+\end{proposition}
+
+\begin{proof}
+Each constant is the integral over a box of
+$(1-\mathrm{spread})_+\cdot\prod\min(|x_i|,1)$ for an explicit
+walk (the chord-pattern walks of the Bell ledgers): a
+piecewise-polynomial integrand all of whose kink hypersurfaces
+are $\{0,\pm1\}$-combinations of the variables at levels
+$\{0,\pm1\}$. Since $0$ is a walk position and every variable is
+a position or a difference of two positions, the support lies in
+$[-1,1]^d$ and the $\min$-caps never bind. The integral is then
+computed \emph{exactly} in rational arithmetic by iterated
+integration with full breakpoint enumeration: inner breakpoints
+have unit leading coefficients, so all collision and boundary
+resultants remain small-integer forms, and on every kink-free
+piece the integrand is a polynomial of degree at most $2/4/8$ (in
+the inner/middle/outer variable), integrated exactly by closed
+Newton--Cotes rules of order $5/7/9$ at rational nodes. Every
+piece is integrated twice (whole piece, and the two halves): for
+polynomials of degree below the rule order the two exact
+rationals must coincide, and any missed kink forces a
+discrepancy; no discrepancy occurred. $t_{\mathrm{opp}}$ and
+$T_0$ additionally admit short closed-form evaluations by orthant
+decomposition (Appendix~\ref{a:cert}), agreeing with the
+algorithmic values. Code and outputs:
+\texttt{certification/exact\_t222.py}.
+\end{proof}
+
+\begin{remark}[The anchor correction]\label{r:anchor}
+The archived anchor $t_{\mathrm{adj}}=0.11717$ (rounds 69--71
+grid) is corrected by Proposition~\ref{p:t222} to
+$\tfrac7{60}=0.11\overline{6}$: a $+0.43\%$ rectangle-rule bias
+at kinks. Nothing consumed downstream changes: the $m_5$ and
+$m_6$ rational layers are anchor-free (above), and the
+reconciliation of Remark~\ref{r:books} becomes exact. The
+formerly conjectural rational identifications of the three-chord
+classes are now theorems. Register items D7, D8.
+\end{remark}
+
+\subsection{The write-outs W1--W3}\label{s:writeouts}
+
+The three items carried as named write-outs in the audit ledger
+are discharged here; their pre-registered faces are in
+\texttt{certification/writeouts\_verification.py} (all green;
+one face fired during construction and was converted ---
+Appendix~\ref{a:record}).
+
+\begin{lemma}[W2: free-slot factorization]\label{l:W2}
+In any $b$-cycle cell ledger, a slot whose lock is unconstrained
+factorizes exactly: the cell aggregate equals the contracted
+$(b-1)$-cycle aggregate times the window mass
+$\sum_{m\in W}\LL(m)$ of the free slot, and
+$\sum_{m\in W}\LL(m)=|W|\bigl(1+O(e^{-c\sqrt{\log X}})\bigr)$.
+\end{lemma}
+
+\begin{proof}
+The lock sum over the free slot's offset is unrestricted, so the
+double sum factorizes by Fubini; on the walk-geometry side this
+is the frozen-slot identity (a singleton block repeats a walk
+value and leaves the overlap range unchanged --- machine-exact,
+\texttt{face\_o5\_gate}/\texttt{face\_b6\_frame}). The mass
+evaluation is the prime number theorem with the classical error
+term \cite[\S18]{Dav}; the consumption normalization divides it
+out. The face verifies both the exact Fubini identity on the live
+family and the PNT mass at height ($1.00041$ at $X=2\times
+10^{5}$).
+\end{proof}
+
+\begin{lemma}[W3: triple-pair factorization]\label{l:W3}
+The $\{2,2,2\}$ class aggregate of the sixth-moment ledger
+equals the product of the three pair main terms against the joint
+overlap volume, up to a deviation aggregate
+$\ll_A KJ'V'^2(\log X)^{-A}$ in the consumed normalization.
+\end{lemma}
+
+\begin{proof}
+The six positions form three disjoint affine pair-chains. The
+$p$-local density factorizes over the three chains by the CRT and
+Proposition~\ref{p:local} (disjoint slots; the merger
+corrections are the pair events already booked in the local law), so the
+singular-series model is the product of the three twin series.
+Archimedean coupling enters only through the joint window overlap
+(the walk geometry $O_6$), which is the certified exact layer of
+Proposition~\ref{p:t222}. The deviation from the product of pair
+mains is controlled by three applications of the $k=2$ instance
+of the spectral transport: by Proposition~\ref{p:prod} the
+resolved variance factorizes over the three chains, each factor a
+windowed single prime sum, and the three-leaf closure of
+\S\ref{s:four} applies to each factor with the exponents of
+Proposition~\ref{p:consume}. The face tracks the product model at
+$1.9\%$ (median over four shift patterns) at $X=6\times10^{4}$.
+\end{proof}
+
+\begin{proposition}[W1: the resolved multi-dimensional
+comb]\label{p:W1}
+For a $b$-cycle with $b-1$ lock coordinates, the resolved dilated
+density
+$\rho(\tau_1,\dots,\tau_{b-1})$ obeys the multi-dimensional comb
+identification: the model comb is supported on the product CRT
+progressions (one congruence per coordinate, as in
+Lemma~\ref{l:comb}), with local factors the $\kappa_b$-values of
+Proposition~\ref{p:local} and twin-series factors off the moduli;
+and the resolved spectral $L^2$-distance from the comb obeys the
+bound of Theorem~\ref{t:D} with the same exponents.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{p:prod} the resolved variance is carried by
+the product $\prod_i|S_i|^2$ on the joint analysis grid, and the
+multi-$\tau$ transform is complete in each coordinate, so the
+$(b-1)$-dimensional Parseval identity holds coordinatewise
+(verified exactly in the face, $1.2\times10^{-16}$). The
+frequency classification of \S\ref{s:four} applies per factor:
+on all-major bins each factor obeys Lemma~\ref{l:MM}; any minor
+factor is closed by Lemma~\ref{l:minor}; the comb identification
+in each coordinate is Lemma~\ref{l:comb}, whose CRT progression
+now runs per coordinate (complete orthogonality in each, since
+each transform covers its full period). The argument of
+Theorem~\ref{t:D} then repeats verbatim with $b-1$ classification
+indices; the truncation exponents strengthen with $k$
+(Proposition~\ref{p:consume}). The previously stated bracketing
+(aggregate faces above, resolved four-cycle case below) is
+subsumed: the aggregate instances are the $\tau$-summed cases,
+and the resolved four-cycle case is Lemma~\ref{l:comb} itself.
+The resolved-comb face (worked $5$-cycle family) shows the CRT
+class contrast directly.
+\end{proof}
+
+\subsection{The connected values}\label{s:five:conn}
+
+$C_5=\int O_5C_5^{\mathrm{Urs}}=0.0278(1)$: grouped
+midpoint-grid ladder (protocol of \S\ref{s:conv})
+$0.02784/0.02781/0.02780$ at $dv=0.05/0.04/0.032$, monotone
+settling; the $O$-weighted integration box is exact. The
+six-cycle connected value $\{6\}=-0.0078(8)$: midpoint ladder
+with the same protocol. (An earlier endpoint-grid evaluation
+$C_5=0.0275(5)$, $\{6\}=-0.0100(12)$ is retired: endpoint grids
+sign-flip on coarse steps at $b\ge6$ --- register item, 32nd
+conversion --- while midpoint grids settle monotonically; the
+correction of the four-cycle anchors to their exact rationals,
+\S\ref{s:five:cert}, was forced by the same audit.)
+Fluctuations are
+controlled by the factor-wise variance lemmas (the transports of
+Theorem~\ref{t:D}; the resolved multi-dimensional comb exhibits
+are bracketed by the aggregate faces and the resolved four-cycle
+case --- now Proposition~\ref{p:W1}). End-to-end faces: the
+assembled
+$m_5=5.6111(1)$ and $m_6=10.1657(18)$ both lie inside the
+sine-model bands \eqref{e:guebands}.
+
+\emph{Grading note.} After the certification of
+\S\ref{s:five:cert}, the constants still carried numerically are
+exactly three: $C_5$, $\{4,2\}$, $\{6\}$ --- evaluations of
+explicit piecewise-polynomial integrals in dimensions $4$, $4$,
+$5$, at the stated two-sided bands, not certified enclosures.
+By the dimension theorem of \S\ref{s:conv} each of the three
+is a finite rational combination of rational polytope volumes,
+hence \emph{rational}; the exact-integration algorithm of
+Proposition~\ref{p:t222} applies to them unchanged, the
+computation being heavier by the extra iterated levels and the
+ordered-partition count of the connected integrands. Their
+closed-form evaluation is the designated next computation
+(item N1, \S\ref{s:verif}). The headline of this paper consumes these
+constants \emph{with} their bands through the exact dual
+certificate of \S\ref{s:lp}, so the claim is exactly: \emph{the
+stated bounds hold provided the three connected constants lie
+within their stated bands}.
+
+\subsection{The convolution calculus, rationality, and the
+midpoint protocol}\label{s:conv}
+
+The connected constants admit a second, structural
+representation that both fixes their arithmetic nature and
+dictates the numerical protocol. Write $W$ for the unit-square
+window autocorrelation and $B$ for the sine-kernel box; the
+cumulant integrands assemble from iterated convolutions of these
+two profiles. Three results (derivations and verification gates
+in the reproduction package, the \texttt{cyclic\_cumulant} and
+\texttt{midpoint\_ladder} engines):
+
+\emph{(i) The trace/convolution identity.} At $b=2$ the
+connected integral evaluates in closed form,
+$\int O_2C_2=1-\|W\star\widehat B\|^{2}=\tfrac13$ exactly ---
+the calibration gate (F-TRACE) for everything below; the $b=3,4$
+instances reproduce the exact pairing values of
+Proposition~\ref{p:t222} to $3\times10^{-14}$.
+
+\emph{(ii) The partition-cyclic cumulant formula (F-CYC).} For
+the $b$-cycle connected class,
+\[
+C_b(v)\;=\;\sum_{P\vdash[b]}(-1)^{|P|-1}
+\sum_{\text{cyclic orders of }P}
+\operatorname{ov}\bigl(\text{merged-}w\text{ walk}\bigr),
+\]
+the inner sum running over the distinct cyclic arrangements of
+the blocks and $\operatorname{ov}$ the overlap volume of the
+merged walk --- validated against the direct Ursell integrands
+at $b=3,4,5$ to $3\times10^{-14}$.
+
+\emph{(iii) Dimension and rationality.} In every
+$(P,\sigma)$-term of (ii) the walk constraints eliminate one
+integration variable ($(m-1)$-dimensionality), and the resulting
+domain is a finite union of polytopes cut by the unit-coefficient
+hyperplane family $\mathcal H$ of Appendix~\ref{a:cert}(A1)
+with polynomial integrands of rational coefficients. Each term
+is therefore a rational number, and so are $C_5$, $\{4,2\}$ and
+$\{6\}$ --- the same argument that produced
+$t_{\mathrm{adj}}=\tfrac7{60}$ and $\{2,2,2\}=\tfrac{131}{420}$
+in closed form. What separates the three remaining constants
+from Proposition~\ref{p:t222} is only the piece count of the
+exact integration, not its kind (item N1, \S\ref{s:verif}).
+
+\emph{The midpoint protocol.} The numerical ladders for
+(i)--(iii) revealed a grid pathology recorded as the registry's
+$32$nd conversion (Appendix~\ref{a:record}, D10): endpoint
+grids on the kinked integrands sign-flip at $b\ge6$ on coarse
+steps, while midpoint grids --- which never sample on the kink
+set $\mathcal H$ --- settle monotonically. All connected
+constants of this paper are evaluated by grouped midpoint-grid
+ladders, calibrated at $b=4$ against the exact values of
+Proposition~\ref{p:t222} (agreement to the ladder's own band),
+and the earlier endpoint-grid adoptions are retired.
+
+\section{Consumption and the proof of
+Theorem~\ref{t:main}}\label{s:lp}
+
+With $(m_1,\dots,m_4)=(1,\tfrac43,2,\tfrac{13}4)$ pinned
+two-sidedly (Theorem~\ref{t:m3}, Theorem~\ref{t:D},
+\eqref{e:moments}), write $C_5=0.0278+\delta$,
+$|\delta|\le0.0001$: the fifth- and sixth-moment constraints are
+\[
+m_5\;\ge\;M_5(\delta):=\tfrac{67}{12}+0.0278+\delta,
+\qquad
+m_6\;\le\;M_6(\delta):=\tfrac{39}4+\tfrac{131}{420}
++6(0.0278+\delta)-0.0552-0.0078+0.0018,
+\]
+the same $\delta$ entering both (correlated-band accounting: the
+$6C_5$ term of $m_6$ moves with the $C_5$ term of $m_5$; the
+independent $m_6$ band $0.0018$ itemizes as $0.0002+0.0008
++0.0008$ over the frozen-slot transport, $\{4,2\}$ and $\{6\}$
+--- the former $\{2,2,2\}$ band contribution is retired by
+Proposition~\ref{p:t222}). The consumption is no longer a
+numerical linear program but an exact certificate:
+
+\begin{lemma}[Exact dual certificate]\label{l:dual}
+Let $a=\tfrac{27}{50}$, $b=\tfrac{263}{200}$, $c=\tfrac{103}{50}$
+and
+\[
+P(x)\;=\;\frac{\bigl[(x-a)(x-b)(x-c)\bigr]^{2}}{(abc)^{2}}
+\;=\;\sum_{k=0}^{6}y_kx^{k}.
+\]
+Then $P\ge0$ on $\mathbb R$ (a perfect square), $P(0)=y_0=1$,
+$y_5<0$, $y_6>0$. Consequently, for \emph{any} probability
+measure $\nu$ on $[0,\infty)$ --- no support bound --- with
+$m_1=1$, $m_2=\tfrac43$, $m_3=2$, $m_4=\tfrac{13}4$,
+$m_5\ge M_5$, $m_6\le M_6$:
+\[
+\nu(\{0\})\;\le\;\int P\,d\nu
+\;=\;\sum_{k\le4}y_km_k+y_5m_5+y_6m_6
+\;\le\;\sum_{k\le4}y_km_k+y_5M_5+y_6M_6\;=:\;w_0(M_5,M_6),
+\]
+and $w_0$ is affine in $(M_5,M_6)$, hence maximized over the
+$\delta$-band at a corner ($\mathrm dw_0/\mathrm d\delta
+=y_5+6y_6<0$, so the worst corner is $\delta=-0.0001$:
+$M_5=\tfrac{168331}{30000}$, $M_6=\tfrac{42701}{4200}$).
+There, exact rational arithmetic gives
+\[
+w_0\;=\;\tfrac{1153107070889}{11233957316589}
+\;=\;0.10264\ldots,
+\qquad
+1-2w_0\;\ge\;0.7947,\qquad 1-w_0\;\ge\;0.8973 .
+\]
+\end{lemma}
+
+\begin{proof}
+Nonnegativity and $P(0)=1$ are immediate from the closed form;
+the sign conditions $y_5=-2(a{+}b{+}c)\cdot(ab{+}bc{+}ca)\ldots$
+follow from the expansion with positive roots (displayed in the
+certification package; the denominator-cleared expansion, the
+corner evaluation, and the final inequalities are
+kernel-checked in core Lean~4, \texttt{lean/RhGate/
+Certificate.lean}, and verified independently in exact rational
+arithmetic by \texttt{certification/certify\_lp.py}).
+The mass bound is the Chebyshev--Markov mechanism of
+Lemma~\ref{l:cert} at degree six: $y_5<0$ converts the lower
+moment bound, $y_6>0$ the upper. The atoms $(a,b,c)$ were
+extracted from the numerical LP extremal (a pinched four-atom
+measure) and rationalized; any rational triple gives a valid
+bound, so the LP solver leaves the trust base.
+\end{proof}
+
+Theorem~\ref{t:main} follows through the consumption mechanism of
+\S\ref{s:frame}. The rungs: $m_4$ alone gives $13/18$, $31/36$
+(Corollary~\ref{c:1318}, certificate $Q$ of Lemma~\ref{l:cert},
+leading coefficient positive --- also support-free). The
+Dirichlet $L$-function case is verbatim. All constants
+ineffective.\qed
+
+\begin{corollary}[Sign-only rung]\label{c:signs}
+If the three connected constants merely satisfy $C_5\ge0$,
+$\{4,2\}\le0$ and $\{6\}\le0$ (with $C_5\le0.1$), then, by the
+re-optimized exact certificate of Appendix~\ref{a:cert}(A5),
+\[
+\liminf\frac{N_0^{s}}{N}\;\ge\;0.7403,\qquad
+\liminf\frac{N_d}{N}\;\ge\;0.8701 .
+\]
+Sign certification is a far coarser target than an enclosure for
+the designated 4D/5D exact integration; the full payoff curve is
+tabulated in Appendix~\ref{a:cert}(A5).
+\end{corollary}
+
+\begin{remark}[The repaired intermediate rung; register
+D6]\label{r:rung}
+An earlier stage of this research quoted an intermediate rung
+($0.7295/0.8647$) from the fourth- and fifth-moment chain alone,
+``consuming no sixth-moment information''. The certification
+audit found this rung unsound as stated: with only a \emph{lower} bound on
+$m_5$ and no $m_6$ (or support) information, the origin-mass
+problem on unbounded support is not improved at all --- mass
+$\varepsilon=c/\Lambda^{4}$ at height $\Lambda$ boosts $m_5$
+arbitrarily at vanishing cost to $m_1,\dots,m_4$, and the audit's
+LP at support ranges $8/20/60/200$ degraded
+$0.73144\to0.72580\to0.72340\to0.72257\to\tfrac{13}{18}$. Any
+dual certificate for a lower fifth-moment bound needs a negative
+$x^5$-coefficient dominated by a positive $x^6$-coefficient, i.e.\
+sixth-moment (or support) information is \emph{necessary}. The
+rung is therefore demoted: it holds in the stated form only with
+the $m_6$ cap, in which case it is subsumed by
+Lemma~\ref{l:dual}. The full certificate is unaffected
+($y_6>0$).
+\end{remark}
+
+\medskip
+\noindent\emph{Merge-audit note on the band model.} The audit
+first ran an \emph{anti}-correlated variant (the $\delta$ of
+$m_5$ entering $m_6$ with opposite sign) and obtained $0.78972$;
+the correlated form above is the correct accounting, since $C_5$
+is a single unknown shifting both constraints together. Both runs
+are recorded in the register (D3) so the sensitivity of the
+headline to the band model is on the record: under the
+(incorrect, doubly conservative) anti-correlated accounting the
+headline would read $0.7897/0.8949$.
+
+\section{Numerical verification}\label{s:faces}
+
+The standalone pipeline (\texttt{pipeline/}; \texttt{numpy},
+\texttt{scipy}) reruns every gate in a few minutes. Central
+height table (sixteen coprime modulus families):
+
+\begin{center}
+\begin{tabular}{lcccccccc}
+$T$ & 2400 & 4800 & 9600 & 19200 & 38400 & 57600 & 76800 & 153600\\
+\hline
+dispersion ($10^{-3}$) & 8.39 & 5.19 & 4.16 & 4.06 & 3.87 & 1.84
+& 1.29 & 1.04\\
+tracking (\%) & 1.5 & 1.0 & 0.7 & 0.9 & 0.8 & 0.4 & 0.2 & 0.2\\
+\end{tabular}
+\end{center}
+
+\noindent (full-range geometric mean $0.706$ per doubling: the
+pure averaging law $2^{-1/2}$). Further faces: local closure
+exact (zero violations, seven configurations); Parseval exact;
+per-bin Siegel--Walfisz face falling tenfold over the range;
+Bell(5)/Bell(6) gates exact; five- and six-fold product faces
+green at all heights; well-spacing zero violations; hybrid size
+control $24$--$31\times$ height-stable; consumption LP
+grid-stable. The registry: $194$ pre-registered checks, $160$
+passed, $34$ fired and converted, all forward-recorded (the
+$31$st--$34$th conversions belong to the corrected-constants
+pass and the Lean compiles, \S\ref{s:verif}(f),
+Appendix~\ref{a:record}).
+
+The certification audit of August 16, 2026 re-ran: the full
+moment-chain gate suite at $T=9600$ (ALL PASS, $72$s: dispersion $4.163\times
+10^{-3}$, tracking median $0.73\%$, SW RMS $1.599\times10^{-3}$,
+tightness $24.8$--$31.3\times$, five-fold $0.06$--$1.29\%$,
+six-fold $0.01$--$0.73\%$, LP $0.79454/0.89727$ at two grids
+under the since-retired endpoint constants; the
+corrected-constants rerun gives $0.79472/0.89736$);
+the fourth-moment identity suite at $T=9600$ (ALL PASS,
+$48$s); the constant suite of \S\ref{s:fm}
+(\texttt{m1\_suite.py validate}: $6/6$ local
+factors, $100/100$ vector sieve, anchors and cross-convention
+difference reproduced; core $-0.00545$ against archive
+$-0.00544$; $\alpha$-truncation $-0.00491$); the sawtooth
+certification (\texttt{sawtooth\_cert}: grid $1.8675$, samples
+$1.8419/1.8494/1.8512$, certificate $2.100$); the continuum
+quadrature gates (\texttt{quadrature\_cert}: geometric tail ratio $0.500$
+certified, $c_0=-1.4228$ decade-stable); and the certificate
+suite of \S\ref{s:cert}
+(\texttt{certificate\_verification.py} exact;
+\texttt{moment\_lp\_reopt} $0.0721$; \texttt{mu3\_ledger\_gates};
+\texttt{cumulant\_engine} gates $C_2$ exact,
+$\int O_3C_3=0$). An independent re-implementation of the
+consumption LP (different code, HiGHS backend) reproduced every
+rung as recorded in \S\ref{s:lp}.
+
+A second certification pass (same date) added: the exact
+pairing-layer integrals (\texttt{exact\_t222.py}: all values of
+Proposition~\ref{p:t222}, dual-scheme identical rationals, the
+closed-form cross-checks, and the match of the conjectured
+rationals); the exact dual certificate
+(\texttt{certify\_lp.py}: expansion, both band corners, final
+inequalities, all exact); the write-out faces
+(\texttt{writeouts\_verification.py}: free-slot Fubini exact,
+window mass $1.00041$, triple-pair product model median $0.9814$,
+resolved Parseval $1.2\times10^{-16}$, resolved CRT contrast ---
+one face fired during construction and was converted, the
+registry's $30$th); and the support-range probe behind
+Remark~\ref{r:rung}.
+
+The corrected-constants pass re-ran: the grouped
+midpoint-grid ladders for $C_5$, $\{4,2\}$, $\{6\}$
+(\S\ref{s:conv}; checkpointed engines, $b=4$ calibration exact
+against Proposition~\ref{p:t222}); the exact dual certificate at
+the corrected corners (\texttt{certify\_lp.py}: expansion,
+both band corners, final inequalities, all exact, worst corner
+$w_0=\tfrac{1153107070889}{11233957316589}$); the convolution
+trace gates (F-TRACE: $b=2$ exact $\tfrac13$, $b=3,4$ to
+$3\times10^{-14}$); and --- for the first time in the program
+--- a genuine Lean kernel compile of the identity layer on the
+maintainers' toolchain (\S\ref{s:verif}(f)).
+
+\begin{remark}[Effective faces, ineffective theorem]
+The faces are finite-height measurements with effective
+constants; the theorem's constants are ineffective (Siegel). The
+faces verify the exact-identity layer, the model identifications,
+and the qualitative averaging behaviour the proof predicts; they
+cannot and do not verify the asymptotics. The two kinds of
+evidence are kept distinct throughout.
+\end{remark}
+
+\section{Verification status}\label{s:verif}
+
+\emph{Claim grade: certified-candidate.} The chain = classical
+inputs (Siegel--Walfisz \cite{Dav,IK}, Vaughan, singular-series
+truncation, \cite{MRT} for \S\ref{s:fm}) + archived certified
+lemmas (bridge, glue, aggregation, D1 truncation, consumer
+interface, anchor certificates: \S\ref{s:fm}) + the
+machine-verified identities of
+\S\S\ref{s:cert},~\ref{s:local}--\ref{s:five} + the numerically
+evaluated connected constants of \S\ref{s:five:conn} + the
+consumption layer of \S\ref{s:frame}. Grades by layer:
+
+\emph{(a) Machine-exact or exact-rational, re-verified in the
+certification audit.} The certificate algebra (Lemma~\ref{l:cert}) and
+$\kappa(c)$ laws; the local closure
+(Proposition~\ref{p:local}); the Parseval and product identities;
+the Bell ledgers and frozen-slot identities; the anchor-free
+$67/12$ and $39/4$; the $197/60$ ledger arithmetic and the now
+fully exact two-bookkeeping reconciliation
+(Remark~\ref{r:books}); the exact pairing-layer constants
+$t_{\mathrm{adj}}=\tfrac7{60}$, $t_{\mathrm{opp}}=\tfrac1{30}$,
+$\{2,2,2\}=\tfrac{131}{420}$ (Proposition~\ref{p:t222},
+Appendix~\ref{a:cert}); the exact dual certificate
+(Lemma~\ref{l:dual}) --- the consumption step involves no LP
+solver, no grid, and no support bound; the sawtooth constant
+$C_{\mathrm{saw}}=2.10$ (grid-plus-analytic certification).
+
+\emph{(b) Certified-candidate analytic layer (pre-Lean,
+pre-review).} The nine-class $\mu_3$ ledger (two nonstandard
+steps written out in the archived memo); the truncation
+discharge; the spectral proof of Lemma D (Theorem~\ref{t:D}) ---
+whose minor/mixed-bin size bookkeeping is classical in kind but
+carried at write-out grade with face-checked budgets --- and its
+factor-wise transports to $k=5,6$, including the written-out
+W1--W3 (\S\ref{s:writeouts}), which are proved at this layer's
+grade; the covered-zone/band/glue chain of \S\ref{s:fm}. Five
+adversarial audit rounds precede the frozen chain (archive
+rounds r93, r95, r100, r102).
+
+\emph{(c) Write-out items.} Discharged:
+W1 (Proposition~\ref{p:W1}), W2 (Lemma~\ref{l:W2}), W3
+(Lemma~\ref{l:W3}), each with a pre-registered face. W2 is
+complete (elementary); W1 and W3 are proved at the grade of
+layer (b), since they consume the same spectral transports.
+
+\emph{(d) Numerical constants, not yet certified enclosures.}
+N1 (reduced, and now known rational): $C_5$, $\{4,2\}$,
+$\{6\}$ (grouped midpoint-grid ladders with stated bands,
+\S\ref{s:five:conn}; each proved a rational number by the
+dimension theorem of \S\ref{s:conv}, so certification means
+identifying a fraction, not enclosing a real); the designated
+route is the exact-integration algorithm of
+Proposition~\ref{p:t222} (same kink structure; heavier by
+dimension and by the ordered-partition count --- cluster scale,
+mechanical in kind). The \emph{certificate family} of
+Appendix~\ref{a:cert}(A5) makes the payoff graded and
+plug-in: any future enclosure yields an exact certificate, and a
+sign-only certification already yields $0.740/0.870$. N2
+(partially discharged): the quadrature's slope
+is proved exactly $1$, its constant is identified in closed form,
+$c_0=\gamma-2$ (Proposition~\ref{p:c0}), and the geometric tail
+was already certified (r60); what remains computed is the mean
+oscillation $\overline{\mathrm{osc}}$ inside $c^{*}$ and the
+universality-collapse rate write-out. Only the conservative
+charge $\varepsilon_{CL}$ is consumed anywhere
+(Lemma~\ref{l:CL}). Full certification of N1 upgrades
+Theorem~\ref{t:main} to the grade of Corollary~\ref{c:1318};
+of N2, Theorem~\ref{t:fm} to $0.7031/0.8515$.
+
+\emph{(e) Imports.} \cite{C26}: the framework of
+\S\ref{s:frame} (matrix, block structure, tail, counting,
+first two moments) --- a publicly posted preprint of this
+program, not independently peer-reviewed; its own analytic
+imports are published literature. Directly consumed published
+literature: \cite{Wei52} and \cite[Thm.~5.12]{IK} (explicit
+formula), \cite[Thm.~9.2]{Tit86} (zero density),
+\cite{Mon73,BGST} (prime-side pair-correlation evaluation,
+unconditional in the band), \cite{MRT}, \cite{HR},
+\cite{Dav}.
+
+\emph{(f) Formalization status.}
+The identity layer has now been \emph{compiled and
+kernel-checked} on the maintainers' machine: core Lean~4
+(toolchain \texttt{leanprover/lean4:v4.33.0}, no
+\texttt{mathlib}), package \texttt{lean/RhGate/}, build log
+included. Compiled content: the anchor-free assembly identities
+$m_4=\tfrac{13}4$, $m_5$-part $=\tfrac{67}{12}$, $m_6$
+pair-layer $=\tfrac{39}4$ as universally quantified rational
+identities (any anchors $t_{\mathrm a},t_{\mathrm o}$ ---
+\texttt{Anchors.lean}); the consumption arithmetic
+$\tfrac{13}{18}$, $\tfrac{31}{36}$; and the coincidence-counting
+local law at $b=4$, $p=5$ by full kernel enumeration of all
+$125$ lock classes (\texttt{LocalClosure.lean} --- this theorem
+is \emph{axiom-free}; the others use only
+\texttt{propext}, \texttt{Classical.choice},
+\texttt{Quot.sound}). Zero \texttt{sorry}s. The compile itself
+fired a registered check and became the $33$rd conversion: the
+seed files' proofs invoked \texttt{ring} and \texttt{decide}
+on $\mathbb Q$, neither available in core Lean (\texttt{ring}
+is a \texttt{mathlib} tactic; core \texttt{Rat} arithmetic is
+not kernel-reducible, so \texttt{decide} stalls on
+\texttt{instDecidableEqRat}); all five affected proofs were
+repaired with the core \texttt{grind} tactic, statements
+unchanged (Appendix~\ref{a:record}). A second same-machine compile (August 16, 20:09) covered the
+certificate layer: \texttt{Certificate.lean} (the
+denominator-cleared expansion identity of Lemma~\ref{l:dual},
+nonnegativity, normalization, both corner evaluations of $w_0$,
+the corner-selection inequality $y_5+6y_6<0$ --- so the
+\emph{choice} of binding corner is itself kernel-checked ---
+the headline inequalities $1-2w_0\ge\tfrac{7947}{10000}$,
+$1-w_0\ge\tfrac{8973}{10000}$, the monic expansion of
+Appendix~\ref{a:cert}(A6), the exact $\{2,2,2\}$ arithmetic
+and the instantiated anchor identities) and
+\texttt{LocalClosure2.lean} (the local law at $b=4$, $p=7$ and
+$b=5$, $p=5$: $343$ and $625$ lock classes by kernel
+\texttt{decide} on $\mathbb N$ --- both \emph{axiom-free}).
+This compile fired the registry a second time (the $34$th
+conversion): \texttt{grind}'s ring/linear core treats a square
+$(\cdot)^2$ as an opaque atom and cannot close perfect-square
+nonnegativity; the repair is the \emph{core} ordered-ring lemma
+\texttt{Lean.Grind.OrderedRing.sq\_nonneg} (term-mode,
+statement unchanged, still mathlib-free). The pre-compile seed
+\texttt{SOSCertificate.lean} --- whose headline constants
+carried the retired endpoint-grid corner --- is removed from the
+package to preclude coexisting $0.7946$/$0.7947$ headline
+theorems; its still-valid content is absorbed into
+\texttt{Certificate.lean}, and the draft is preserved in the
+program archive. Every statement is proxy-verified in
+exact rational arithmetic (\texttt{certify\_lp.py}) or full
+\texttt{Python} enumeration (zero deviations). What Lean
+certifies is the rational-arithmetic layer alone: the moment
+pinning, the measure-theoretic Chebyshev--Markov step and the
+analytic chain remain graded as in layers (b)--(e). The truncation, spectral and consumption
+\emph{analysis} remains unformalized; formalization of the
+analytic layer --- which relies on the framework of
+\cite{C26} --- is graded pending. The formalization package
+accompanying \cite{C26} is separate from this repository; the
+compiled coverage of this paper is exactly as stated above.
+
+\emph{(g) The gate.} Per the program's verification gate, the
+record claim follows (i) the certified fractions N1 (and
+optionally N2), (ii) compiled Lean formalization of the identity
+and certificate layers with the queue's Q1--Q6 (both are now
+compiled, \S\ref{s:verif}(f); the analytic layer remains), and
+(iii)
+external review. No Riemann Hypothesis, zero-density input,
+pair-correlation conjecture, or Kloosterman technology is used
+anywhere. Nothing here bears on RH itself.
+
+\section*{Acknowledgements}
+
+The mathematical development of this paper --- the framework of
+\S\ref{s:frame}, the certificate calculus, the spectral proof of
+Lemma D, the moment identifications, the convolution calculus,
+and the reproduction and Lean packages --- was carried out by
+Claude (Anthropic), a large language model, working within a
+research program directed by the authors under the
+falsifier-first verification discipline described in
+\S\ref{s:verif} and Appendix~\ref{a:record}. The authors
+specified objectives, arbitrated decisions, compiled and audited
+the Lean package on their own toolchain, and take full academic
+responsibility for the content. This paper is built on the
+two-thirds theorem \cite{C26}, a preprint of the same research
+program.
+
+\appendix
+
+\section{The comb identification, with a worked
+pair}\label{a:comb}
+
+In the $\tau$-frame the model of $\rho(\tau)$ is assembled from
+twin singular series: with $\SSS$ the Hardy--Littlewood series
+$\SSS(h)=2C_2\prod_{p\mid h,\,p>2}\frac{p-1}{p-2}$ ($h$ even),
+window overlap counts $V_m,V_n$, and exact diagonal pieces,
+\[
+\mathrm{Model}(\tau)=\!\!\sum_{\substack{t\equiv0\ (b_2)\\
+t\equiv\tau\ (b_1)\\ t\notin\{0,\tau\}}}\!\!
+\SSS\!\Bigl(\frac{t}{b_2}\Bigr)\SSS\!\Bigl(\frac{t-\tau}{b_1}\Bigr)
+V_m\!\Bigl(\frac{t}{b_2}\Bigr)V_n\!\Bigl(\frac{t-\tau}{b_1}\Bigr)
++\ \text{diagonals}.
+\]
+The CRT progression $t\equiv0\ (b_2)$, $t\equiv\tau\ (b_1)$ is
+the \emph{complete} orthogonality of the joint frame: a shift $t$
+contributes iff it is simultaneously a $b_2$-lattice twin shift
+on the $m$-side and, offset by $\tau$, a $b_1$-lattice twin shift
+on the $n$-side; no incomplete sums occur because the
+$\tau$-transform runs over the full period. The local factors of
+$\SSS$ at the primes $p\mid b_1b_2$ are exactly the
+$\kappa$-values of Proposition~\ref{p:local} at $b=4$; for
+$p\nmid b_1b_2$ they are the twin factors.
+
+\emph{Worked pair} $(b_1,b_2)=(5,3)$: $M=15$, and for
+$\tau\equiv\tau_0$ the surviving shifts are the single residue
+class $t\equiv t_0(\tau)\ (15)$ with
+$t_0=3\cdot(2\tau\bmod5)\bmod15$ (here $3^{-1}\equiv2\ (5)$). For
+example $\tau=1$ gives $t\equiv6\ (15)$: the model sums
+$\SSS(t/3)\SSS((t-1)/5)V_mV_n$ over $t=6,21,36,\dots$ and the
+negative branch, plus the diagonal $t=\tau$ term when $3\mid\tau$
+and $t=0$ when $5\mid\tau$ (neither here). This is precisely what
+\texttt{face\_dispersion} constructs; its agreement with the
+measured profile at $0.2$--$4\%$ across all sixteen families and
+eight heights is the numerical face of Lemma~\ref{l:comb}. At
+cycle lengths $5$ and $6$ the same complete-orthogonality logic
+gives the product-model combs of \S\ref{s:five} (aggregate faces
+green at $0.1$--$2.5\%$).
+
+\section{Provenance, research record, and discrepancy
+register}\label{a:record}
+
+\subsection*{The research record}
+
+The mathematics of this paper was developed in an interactive
+research program (August 2026) whose working discipline is
+falsifier-first: every structural claim was registered with a
+numerical check before adoption, every firing was converted on
+the forward record, and the complete trail --- round logs,
+memos, claim ledgers, correction history, scripts --- is
+preserved in the program archive that accompanies the
+reproduction package. The four stages of the chain
+(\S\ref{s:cert}, \S\ref{s:fm},
+\S\S\ref{s:trunc}--\ref{s:four},
+\S\S\ref{s:five}--\ref{s:lp}) were each closed under
+adversarial audit rounds before the certification audit of
+\S\ref{s:verif} froze the chain presented here.
+
+\subsection*{Conversions that shaped this text}
+
+Six of the registry's fired-and-converted checks shaped the
+mathematics directly: the evaluation-transfer repair (envelopes
+are never transported to limits; r61); the model-subtraction
+correction of the reduced covariance (r80); the hybrid size
+budget (two firings, r88); the $\tau$-frame lesson (fixed-cutoff
+arc statistics never self-average; the Parseval identity entered
+here; r90); the incomplete-sum slip of the progression frame
+(r95, Remark~\ref{rem:prog}); and the removal of an unproven
+sixth-moment cap from an internal ladder rung (the intermediate
+values quoted in Theorem~\ref{t:main} consume exactly what their
+chains prove). The 29th conversion (r103) is the Lean-draft
+inverse omission of \S\ref{s:local}.
+
+\subsection*{Discrepancy register of the certification audit
+(August 16, 2026)}
+
+\begin{itemize}
+\item[D1.] Earlier draft of \S\ref{s:fm}, assembly paragraph:
+printed $\Lambda_2(0)=0.156293$; the closed form at $\bar R=0.0066$ gives
+$0.154193$, and the theorem constants $0.6916/0.8458$ are
+consistent with the latter. Corrected in \S\ref{s:fm}; theorem
+unaffected. \emph{Impact on the main theorem: none.}
+\item[D2.] An earlier draft attributed the bands
+$5.573\pm0.113$, $10.02\pm0.27$ to measurement ``on
+$2\times10^{7}$ zeta zeros''; the reproduction package derives
+exactly these numbers from GUE double-window Richardson
+extrapolation (\texttt{gue\_bands.py},
+\texttt{m5m6\_bands.py}), and no zeta-zero
+dataset of that size exists in the record. This paper
+attributes the bands to the sine-model/GUE measurement
+\eqref{e:guebands}. If a zeta-zero measurement exists it is not
+in the record and is not consumed. \emph{Impact: attribution
+only; no constant changes.}
+\item[D3.] Consumption LP band model: correlated vs
+anti-correlated $\delta$-accounting ($0.79454$ vs $0.78972$);
+the correlated form is correct and is what
+\texttt{face\_lp\_full} implements; both on record
+(\S\ref{s:lp}). \emph{Impact: the anti-correlated variant is
+doubly conservative; headline unchanged.}
+\item[D4.] The $m_4$+$m_5$ rung: an earlier stage quoted
+$0.7295/0.8647$; the audit's independent LP gives
+$0.73144/0.86572$ under the same constraints at bounded support.
+Superseded by D6: the rung is demoted regardless.
+\emph{Impact: none on the main chain (the demoted rung is not
+consumed).}
+\item[D5.] Formalization language: earlier program documents
+described \cite{C26} as ``Lean-formalized''; that statement
+concerns the package accompanying \cite{C26}, of which no
+compiled artifact exists in this repository
+(\S\ref{s:verif}(f)). The compiled coverage of this paper is
+exactly as graded in (f).
+\emph{Impact: grading language only.}
+\item[D6.] The intermediate $m_4$+$m_5$ rung
+($0.7295/0.8647$, an earlier stage) is unsound on unbounded
+support without sixth-moment information: the audit's LP degrades
+to $13/18$ as the support range grows ($0.73144\to0.72257$ at
+$R=8\to200$), and a dual certificate for a fifth-moment lower
+bound necessarily consumes $x^6$-information. Rung demoted and
+repaired (Remark~\ref{r:rung}); the main chain is unaffected
+($y_6>0$ in Lemma~\ref{l:dual}). \emph{Impact: removes an
+intermediate rung; headline unaffected.}
+\item[D7.] The archived four-cycle anchor
+$t_{\mathrm{adj}}=0.11717$ (rounds 69--71; quoted in earlier
+drafts and \texttt{m1\_suite}) carries a $+0.43\%$
+rectangle-rule grid bias: the exact value is $\tfrac7{60}
+=0.11667$ (Proposition~\ref{p:t222}). Downstream totals are
+unaffected (the $m_5$/$m_6$ rational layers are anchor-free);
+the saturated-split triple $0.2677/0.0156/{-0.0177}$ becomes
+exactly $\tfrac4{15}/\tfrac1{60}/{-\tfrac1{60}}$
+(Remark~\ref{r:books}), in better agreement with the cumulant
+engine's independent $-0.01663$. \emph{Impact: none on the
+rational layers (anchor-free); corrects the archived anchor.}
+\item[D8.] The rational identifications
+$T_0,\dots,T_3=\tfrac3{70},\tfrac1{90},\tfrac1{180},\tfrac1{70}$,
+recorded in the audit ledger as a conjecture and not consumed, are
+now proven (Proposition~\ref{p:t222}); $\{2,2,2\}=\tfrac{131}{420}$
+is consumed exactly and its band contribution retired.
+\emph{Impact: tightens $m_6$; contributes to the headline.}
+\item[D9.] The continuum-quadrature constant
+$c_0=-1.4228$ (r60, ``computed, not fitted'') is identified in
+closed form: $c_0=\gamma-2$ (Proposition~\ref{p:c0}). The audit
+located a $d=2$ discrepancy between the archive's tensor-sieve
+$\gamma$-array and the raw Euler closed form
+($\widetilde\gamma_2=C_2-1$ vs $\gamma_2=C_2$, shifting the
+constant by exactly $-2$); this is the archive's parity-mean
+convention (the $q=2$ arc block booked in $\bar D$), not an
+error --- the raw-convention constant is $\gamma$, and both
+conventions are now documented with the conversion. The slope-$1$
+law of the partial sums, previously a measurement
+($0.99996$), is proved exactly. \emph{Impact: N2 partial
+discharge; main theorem unaffected.}
+\item[D10.] The endpoint-grid ladders behind
+the previous connected constants fired their refinement face:
+at $b\ge6$ and coarse steps the endpoint evaluation
+\emph{sign-flips} ($b=6$ at $dv=0.4$: $+0.036$ against the true
+$-0.010$), and the archived adoptions $C_5=0.0275(5)$,
+$\{4,2\}=-0.0548(10)$, $\{6\}=-0.0100(12)$ inherited a
+systematic shift. Grouped \emph{midpoint}-grid ladders
+(\S\ref{s:conv}), calibrated exactly against
+Proposition~\ref{p:t222} at $b=4$, settle monotonically and give
+the corrected $C_5=0.0278(1)$, $\{4,2\}=-0.0552(8)$,
+$\{6\}=-0.0078(8)$ consumed in \S\ref{s:lp} (registry's
+$32$nd conversion; the $31$st is D7's anchor correction,
+independently forced by the same audit). \emph{Impact: direct
+--- these are the constants the headline consumes; the theorem
+value moved $0.7946\to0.7947$ under the correction.}
+\item[D11.] The Lean draft files claimed
+core-decidability of their $\mathbb Q$-statements
+(``\texttt{decide} on $\mathbb Q$'') and used \texttt{ring};
+the maintainers' compile showed both unavailable in core
+Lean~4.33 (\texttt{ring} is \texttt{mathlib};
+\texttt{instDecidableEqRat} does not kernel-reduce). Five
+proofs repaired with \texttt{grind}, statements unchanged;
+build then succeeded (registry's $33$rd conversion;
+\S\ref{s:verif}(f)). \emph{Impact: proofs only; statements
+unchanged.}
+\item[D12.] The second compile fired on
+\texttt{cert\_nonneg}: \texttt{grind} assigns the square
+$(\cdot)^2$ as an opaque atom (its diagnostics guess the atom's
+value) and cannot derive perfect-square nonnegativity; repaired
+with core \texttt{Lean.Grind.OrderedRing.sq\_nonneg}
+(registry's $34$th conversion). The audit also found the
+superseded seed \texttt{SOSCertificate.lean} silently outside
+the build roots while declaring identically named headline
+theorems at the retired constants; the file is removed from the
+package (content absorbed; the draft is preserved in the
+program archive) and
+the build now covers every \texttt{.lean} file in the
+directory. \emph{Impact: proofs and packaging only; statements
+unchanged.}
+\item[D13.] The citation relation to \cite{C26} was reversed
+twice on the forward record: an intermediate revision absorbed
+the framework into the text with proofs (when \cite{C26} was
+not yet publicly posted), and the present revision restores
+\cite{C26} as the cited foundation and removes the duplicated
+proofs, keeping statements only (\S\ref{s:frame}).
+\emph{Impact: attribution and exposition; no mathematical
+content changed.}
+\end{itemize}
+
+\noindent The registry's $30$th conversion occurred during the
+certification audit: the first version of the W1 resolved-comb
+face
+used raw multiples of $b_1b_2$ as the on-progression and fired;
+the corrected face implements the per-coordinate CRT classes
+(\S\ref{s:writeouts}). Forward-recorded in
+\texttt{writeouts\_verification.py}. The $31$st--$34$th are
+D7, D10, D11 and D12 above.
+
+\subsection*{Reproduction}
+
+A consolidated reproduction checklist accompanies this paper
+(\texttt{REPRODUCTION.md}): environment, one command per suite,
+expected outputs with the August 16, 2026 rerun values, and the
+mapping from every quoted constant to the script that regenerates
+it. Total runtime of the full set is under fifteen minutes on one
+CPU (the session package's optional long gates under thirty; the
+exact $\{2,2,2\}$ certification under two hours).
+
+\section{The exact certification layer}\label{a:cert}
+
+\subsection*{A1. The exact-integration algorithm}
+
+Every pairing-layer constant is an integral
+$\int_{[-1,1]^{d}}(1-\mathrm{spread}(p_1,\dots,p_b))_+\,
+\prod_i|x_i|\,dx$ where the walk positions $p_j$ are
+$\{0,1\}$-combinations of the chord variables and $0$ is a
+position (so the support forces $|x_i|\le1$ and the
+$\min(|\cdot|,1)$ caps of the $C_2$ factors never bind). The
+integrand is piecewise polynomial; its kink set is contained in
+the hyperplane family
+\[
+\mathcal H=\bigl\{p_i-p_j=c\bigr\}_{i<j,\ c\in\{0,\pm1\}}
+\cup\bigl\{x_i=0,\pm1\bigr\},
+\]
+all with coefficients in $\{-1,0,1\}$ and unit leading
+coefficients in the innermost variable. Iterated integration:
+the inner integral is computed exactly between the enumerated
+inner breakpoints; because leading coefficients are units, the
+breakpoints are themselves small-integer linear forms in the
+outer variables, and the piece structure of a partial integral
+changes only on (i) direct kinks, (ii) collisions of two inner
+breakpoints, (iii) breakpoint--boundary collisions --- an
+explicitly enumerated resultant family at each level. On every
+kink-free piece the (partial) integrand is a polynomial of
+degree at most $2/4/8$ in the inner/middle/outer variable,
+integrated exactly by closed Newton--Cotes rules of order
+$5/7/9$ at rational nodes, in exact rational arithmetic
+throughout. \emph{Self-check}: each piece is integrated by the
+same rule on the whole piece and on its two halves; for a
+polynomial of degree below the rule order both are the exact
+integral, so the two rationals must be \emph{identical}, and a
+kink missed by the enumeration forces a discrepancy on the
+containing piece. No discrepancy occurred at any level of any
+run. Independent cross-checks: closed-form orthant evaluations
+(A2), and the float grid ladders of the archive
+($10^{-6}$-agreement with the certified rationals).
+
+\subsection*{A2. Closed-form cross-checks}
+
+$T_0$ (positions $\{0,v,w,u\}$): in the all-positive orthant
+$\int_{[0,1]^3}(1-\max(v,w,u))vwu=\tfrac1{56}$ (order and
+integrate); a one-negative orthant gives
+$\int_0^1t(1-t)^5/20\,dt=\tfrac1{840}$; summing the orbit,
+$T_0=2\cdot\tfrac1{56}+6\cdot\tfrac1{840}=\tfrac3{70}$.
+$t_{\mathrm{opp}}$ (positions $\{0,v,v{+}w,w\}$): the same
+decomposition gives $\tfrac1{30}$ exactly, confirming the
+archived exact anchor. $t_{\mathrm{adj}}$: the two same-sign
+quadrants give $\tfrac1{20}$ each and the two mixed quadrants
+$\tfrac1{120}$ each: $t_{\mathrm{adj}}=\tfrac{14}{120}
+=\tfrac7{60}$ (not the archived grid value $0.11717$; register
+D7).
+
+\subsection*{A3. The certified values}
+
+\[
+t_{\mathrm{adj}}=\tfrac7{60},\quad
+t_{\mathrm{opp}}=\tfrac1{30},\quad
+T_0=\tfrac3{70},\quad
+T_1=\tfrac1{90},\quad
+T_2=\tfrac1{180},\quad
+T_3=\tfrac1{70},\quad
+\{2,2,2\}=\tfrac{131}{420},
+\]
+with $\Phi_4=-\tfrac1{60}$, saturated $\{2,2\}=\tfrac4{15}$,
+plateau $=\tfrac1{60}$, connected model $=-\tfrac1{60}$
+(Remark~\ref{r:books}). Code:
+\texttt{certification/exact\_t222.py} (classes run separately;
+dual-scheme identical-rational check at every piece).
+
+\subsection*{A4. The continuum-quadrature constant in closed form
+(N2, partial discharge)}
+
+\begin{proposition}[$c_0=\gamma-2$]\label{p:c0}
+Let $\gamma_d$ denote the free coefficients of the partial-sum
+identity (Lemma~\ref{l:PS}) at the $(1,1)$ class. Then
+$\gamma_d$ has the exact Euler closed form
+\[
+\gamma_{2m}=C_2\prod_{p\mid m}\frac1{p(p-2)}
+\quad(m\ \text{odd squarefree}),\qquad
+\gamma_d=0\ \text{otherwise},
+\]
+and, in the raw convention,
+$\sum_{d\le M}d\gamma_d=\log M+\gamma+o(1)$; in the archive
+convention (the $q=2$ arc block booked inside the parity mean,
+$\widetilde\gamma_2=\gamma_2-\beta_2=C_2-1$),
+\[
+c_0\;=\;\gamma-2\;=\;-1.4227843\ldots
+\]
+\end{proposition}
+
+\begin{proof}
+(i)~The closed form: from the arc identity
+(Proposition~\ref{p:S}) at $b_1=b_2=1$,
+$\beta_q=\mu(q)^2/\varphi(q)^2$, and
+$\gamma_d=\sum_e\mu(e)\beta_{de}$ factorizes over primes with
+local weights $f_0(p)=1-(p-1)^{-2}$, $f_1(p)=(p-1)^{-2}$,
+$f_{v\ge2}=0$; $f_0(2)=0$ forces $2\,\|\,d$ and the product
+assembles to the display ($C_2$ the twin-prime constant).
+(ii)~The constant: $\sum_{d\le M}d\gamma_d
+=2C_2\sum_{m\le M/2}\prod_{p\mid m}\tfrac1{p-2}$, whose Dirichlet
+series is $\zeta(s+1)E(s)$ with
+$E(0)=\prod_p(1-\tfrac1p)\prod_{p>2}(1+\tfrac1{p-2})
+=\tfrac1{2C_2}$ (slope $2C_2E(0)=1$ exactly) and
+$E'(0)/E(0)=\sum_p\tfrac{\log p}{p-1}
+-\sum_{p>2}\tfrac{\log p}{p-1}=\log2$ (the $p$-sums cancel
+pairwise except $p=2$); the double-pole residue gives
+$2C_2[E(0)(\log\tfrac M2+\gamma)+E'(0)]=\log M+\gamma$.
+(iii)~The convention shift: the archive tensor sieve
+(\texttt{tail\_bound}) and the closed form agree at \emph{every}
+$d$ except $d=2$, where the archived class-$d$ replacement books
+$\widetilde\gamma_2=C_2-1$ (the $q=2$ block moved to the parity
+mean); this shifts $\sum d\gamma_d$ by exactly $-2$. Numerical
+verification (\texttt{n2\_c0\_certification.py}): the raw sum
+converges to $\gamma$ with deviations
+$9.4\times10^{-4}/6.3\times10^{-5}/9.2\times10^{-6}$ at
+$M=10^4/10^5/2\times10^7$; the archived measurement $-1.42279$
+at $M=1.6\times10^{7}$ matches $\gamma-2$ to $10^{-5}$; the
+partial-sum identity closes with its $d>M$ tail
+($\mathrm{LHS}-\mathrm{RHS}-\mathrm{tail}=-0.010$ at
+$M=2\times10^5$, $D=2\times10^{7}$, consistent with the
+remaining truncation).
+\end{proof}
+
+\noindent Consequently the ``computed constants'' of
+Lemma~\ref{l:CL} reduce to: slope $=1$ (proved), $c_0=\gamma-2$
+(closed form), the certified geometric tail $T_\Gamma$
+(archive r60, ratio $0.500$), and the single remaining computed
+piece $\overline{\mathrm{osc}}$ inside $c^{*}$. N2 is thereby
+partially discharged; what remains is the
+$\overline{\mathrm{osc}}$ identification (or certified
+enclosure) and the universality-collapse rate write-out.
+
+\subsection*{A5. The N1 certificate family and its payoff curve}
+
+The exact dual certificate re-optimizes against any hypothetical
+certified enclosures $C_5\in[c_-,c_+]$, $\{4,2\}\le u_{42}$,
+$\{6\}\le u_{6}$ (correlated accounting: the single unknown
+$C_5$ enters $m_5$ and $m_6$ together; the worst case is a
+corner of the affine family). Exact rational certificates
+(\texttt{certificate\_family.py}, atoms re-optimized per
+scenario):
+
+\begin{center}
+\begin{tabular}{lcc}
+scenario (what the 4D/5D exact integration certifies) &
+$1-2w_0\ge$ & $1-w_0\ge$\\
+\hline
+current bands ($\pm0.0001$; $u_{42},u_6$ at band tops) &
+$0.79472$ & $0.89736$\\
+enclosure width $0.01$ & $0.77418$ & $0.88709$\\
+enclosure width $0.04$ & $0.74299$ & $0.87149$\\
+signs only: $C_5\ge0$, $\{4,2\}\le0$, $\{6\}\le0$ &
+$0.74031$ & $0.87016$\\
+no connected information & $13/18$ & $31/36$\\
+\end{tabular}
+\end{center}
+
+\noindent Sensitivity of the shipped certificate (exact):
+$\partial(\text{headline})/\partial c_-=+7.32$,
+$\partial/\partial c_+=-5.61$,
+$\partial/\partial(u_{42}{+}u_6)=-0.93$. In particular a
+\emph{sign-only} certification of the three connected constants
+--- far coarser than an enclosure --- already certifies
+$0.740/0.870$, and the designated 4D/5D exact computation has a
+graded payoff at every achievable width. Computational spec from
+the certified 3D runs: the exact integrator's cost is
+(pieces$\times$nodes) per level ($\approx40$--$400$ per level in
+3D at $\le90$ kink forms); the $C_5$ and $\{4,2\}$ integrands
+carry $\le541$ resp.\ $\le75\times$(spectator) overlap terms on
+the same $\{0,\pm1\}$-kink family, one extra level ($\{6\}$:
+two), placing the runs at cluster scale rather than laptop
+scale.
+
+\subsection*{A6. The exact dual certificate}
+
+The polynomial of Lemma~\ref{l:dual} expands (numerator, monic)
+as
+\[
+x^6-\tfrac{783}{100}x^5+\tfrac{975601}{40000}x^4
+-\tfrac{19203237}{500000}x^3+\tfrac{1599367847}{50000000}x^2
+-\tfrac{16571397771}{1250000000}x
++\tfrac{534950348409}{250000000000},
+\]
+with $(abc)^2=\tfrac{534950348409}{250000000000}$, so
+$y_0=1$, $y_5=-\tfrac{783}{100}(abc)^{-2}<0$,
+$y_6=(abc)^{-2}>0$. Corner evaluations at the corrected
+constants (exact):
+$w_0(\delta{=}-0.0001)=\tfrac{1153107070889}{11233957316589}$
+(binding), $w_0(\delta{=}+0.0001)
+=\tfrac{1151185570889}{11233957316589}$.
+
+\emph{Construction of the atoms.} The triple
+$(a,b,c)=(\tfrac{27}{50},\tfrac{263}{200},\tfrac{103}{50})$
+is extracted from the primal extremal measure of the moment
+problem, then rationalized; its validity does not depend on the
+extraction. In detail: (i) the discretized linear program
+(maximize origin mass subject to
+$m_1,\dots,m_4$ pinned, $m_5\ge M_5$, $m_6\le M_6$; grid
+$dx=0.001$) has optimal measure supported on four atoms,
+$\{0,\ 0.5385,\ 1.3195,\ 2.0645\}$ at the binding corner ---
+complementary slackness forces the optimal dual polynomial to
+vanish doubly at the three non-origin atoms, which dictates the
+shape $P=[(x-a)(x-b)(x-c)]^{2}/(abc)^{2}$; (ii) the atoms are
+rationalized to low-height fractions within $5\times10^{-3}$ of
+the extremal support; (iii) \emph{any} positive rational triple
+yields a valid certificate --- $P$ is a perfect square, so
+$P\ge0$; $P(0)=1$ by the normalization; the monic numerator has
+$x^{5}$-coefficient $-2(a{+}b{+}c)<0$ and $x^{6}$-coefficient
+$1>0$, so $y_5<0<y_6$ automatically --- hence the LP solver, the
+grid, and the extraction all leave the trust base, and only the
+exact rational evaluation of $w_0$ at the chosen triple remains,
+which is Lemma~\ref{l:dual} (kernel-checked). The rounding cost
+of the rationalization is $6\times10^{-6}$ in the headline (LP
+optimum $0.794716$ at the same corner against the certified
+$0.794710$). Verification:
+\texttt{certification/certify\_lp.py}; Lean:
+\texttt{lean/RhGate/Certificate.lean}, kernel-compiled
+(\S\ref{s:verif}(f)): the denominator-cleared identity, this
+monic expansion, nonnegativity, both corners, the
+corner-selection sign $y_5+6y_6<0$ and the headlines; zero
+\texttt{sorry}s.
+
+\begin{thebibliography}{99}
+
+\bibitem{BGST} S.~A.~C.~Baluyot, D.~A.~Goldston,
+A.~I.~Suriajaya, and C.~L.~Turnage-Butterbaugh, \emph{Pair
+correlation of zeros of the Riemann zeta function I: proportions
+of simple zeros and critical zeros}, arXiv:2501.14545 (2025).
+
+\bibitem{GS} D.~A.~Goldston and A.~I.~Suriajaya, \emph{Zeta zeros
+on the critical line}, arXiv:2511.20059 (2025).
+
+\bibitem{BCY11} H.~M.~Bui, J.~B.~Conrey, and M.~P.~Young,
+\emph{More than 41\% of the zeros of the zeta function are on the
+critical line}, Acta Arith.\ \textbf{150} (2011), 35--64.
+
+\bibitem{C26} Claude (Anthropic), \emph{More than two thirds
+of the zeros of the Riemann zeta function lie on the critical
+line}, preprint, August 2026,
+\url{https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf}.
+
+\bibitem{Con89} J.~B.~Conrey, \emph{More than two fifths of the
+zeros of the Riemann zeta function are on the critical line},
+J.\ reine angew.\ Math.\ \textbf{399} (1989), 1--26.
+
+\bibitem{Dav} H.~Davenport, \emph{Multiplicative Number Theory},
+3rd ed., Springer GTM 74, 2000.
+
+\bibitem{Fen12} S.~Feng, \emph{Zeros of the Riemann zeta function
+on the critical line}, J.\ Number Theory \textbf{132} (2012),
+511--542.
+
+\bibitem{HR} H.~Halberstam and H.-E.~Richert, \emph{Sieve
+Methods}, Academic Press, 1974.
+
+\bibitem{IK} H.~Iwaniec and E.~Kowalski, \emph{Analytic Number
+Theory}, AMS Colloquium Publ.\ 53, 2004.
+
+\bibitem{Lev74} N.~Levinson, \emph{More than one third of zeros
+of Riemann's zeta-function are on $\sigma=1/2$}, Adv.\ Math.\
+\textbf{13} (1974), 383--436.
+
+\bibitem{MRT} K.~Matom\"aki, M.~Radziwi\l{}\l, and T.~Tao,
+\emph{Correlations of the von Mangoldt and higher divisor
+functions I. Long shift ranges}, Proc.\ London Math.\ Soc.\ (3)
+\textbf{118} (2019), 284--350.
+
+\bibitem{Mon73} H.~L.~Montgomery, \emph{The pair correlation of
+zeros of the zeta function}, Proc.\ Sympos.\ Pure Math.\
+\textbf{24} (1973), 181--193.
+
+\bibitem{Mon75} H.~L.~Montgomery, \emph{Distribution of the zeros
+of the Riemann zeta function}, Proc.\ ICM Vancouver 1974, vol.~1,
+379--381.
+
+\bibitem{PRZZ} K.~Pratt, N.~Robles, A.~Zaharescu, and
+D.~Zeindler, \emph{More than five-twelfths of the zeros of
+$\zeta$ are on the critical line}, Res.\ Math.\ Sci.\ \textbf{7}
+(2020), no.~2.
+
+\bibitem{Sel42} A.~Selberg, \emph{On the zeros of Riemann's
+zeta-function}, Skr.\ Norske Vid.-Akad.\ Oslo I (1942), no.~10.
+
+\bibitem{Tit86} E.~C.~Titchmarsh, \emph{The Theory of the
+Riemann Zeta-Function}, 2nd ed.\ (revised by D.~R.~Heath-Brown),
+Oxford University Press, 1986.
+
+\bibitem{Wei52} A.~Weil, \emph{Sur les ``formules explicites''
+de la th\'eorie des nombres premiers}, Comm.\ S\'em.\ Math.\
+Univ.\ Lund (1952), 252--265.
+
+\end{thebibliography}
+\end{document}

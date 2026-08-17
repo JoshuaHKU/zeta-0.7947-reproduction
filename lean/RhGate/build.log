@@ -1,0 +1,185 @@
+===================================================================
+ RhGate08 (preprint-0.8) — Lean build log
+ date      : 2026-08-16 20:09:21 EDT
+ host      : Darwin 25.5.0 arm64
+ directory : /Users/joshua/Claude/Projects/黎曼猜想/preprint-0.8/lean/RhGate
+===================================================================
+
+--- toolchain -----------------------------------------------------
+elan 4.2.3 (b6cec7e10 2026-06-08)
+Lean (version 4.33.0, arm64-apple-darwin24.6.0, commit d8b18978322de05a8f3dba51ef03cf5461676c17, Release)
+Lake version 5.0.0-src+d8b1897 (Lean version 4.33.0)
+
+--- lean-toolchain ------------------------------------------------
+leanprover/lean4:v4.33.0
+
+--- lakefile.toml -------------------------------------------------
+name = "RhGate08"
+defaultTargets = ["RhGate08"]
+
+[[lean_lib]]
+name = "RhGate08"
+roots = ["Anchors", "LocalClosure", "LocalClosure2", "Certificate", "SOSCertificate"]
+
+--- source files --------------------------------------------------
+      1433  Anchors.lean
+      3314  Certificate.lean
+      2248  LocalClosure.lean
+      2316  LocalClosure2.lean
+      3014  SOSCertificate.lean
+
+--- lake build (clean, from scratch) ------------------------------
+✔ [2/7] Built Anchors (481ms)
+✔ [3/7] Built SOSCertificate (691ms)
+✔ [4/7] Built Certificate (773ms)
+✔ [5/7] Built LocalClosure (1.4s)
+✔ [6/7] Built LocalClosure2 (8.1s)
+Build completed successfully (7 jobs).
+lake build exit code: 0
+
+--- axiom audit, part A -------------------------------------------
+(Anchors + LocalClosure + LocalClosure2 + Certificate)
+'m4_assembly' depends on axioms: [propext, Classical.choice, Quot.sound]
+'m5_assembly' depends on axioms: [propext, Classical.choice, Quot.sound]
+'m6_pair_layer' depends on axioms: [propext, Classical.choice, Quot.sound]
+'consume_13_18' depends on axioms: [propext, Classical.choice, Quot.sound]
+'consume_31_36' depends on axioms: [propext, Classical.choice, Quot.sound]
+'local_closure_b4_p5' does not depend on any axioms
+'LC2.local_closure_b4_p7' does not depend on any axioms
+'LC2.local_closure_b5_p5' does not depend on any axioms
+'RhGate.cert_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.cert_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.cert_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.w0_corner' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.headline_simple' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.headline_distinct' depends on axioms: [propext, Classical.choice, Quot.sound]
+exit code: 0
+
+--- axiom audit, part B -------------------------------------------
+(SOSCertificate — audited separately; see NAME COLLISION below)
+'RhGate.P_expand' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.P_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.P_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.headline_simple' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.headline_distinct' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.t222_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.anchor_free_m5' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RhGate.anchor_free_m6' depends on axioms: [propext, Classical.choice, Quot.sound]
+exit code: 0
+
+--- artifacts -----------------------------------------------------
+.lake/build/lib/lean/Anchors.olean
+.lake/build/lib/lean/Certificate.olean
+.lake/build/lib/lean/LocalClosure.olean
+.lake/build/lib/lean/LocalClosure2.olean
+.lake/build/lib/lean/SOSCertificate.olean
+
+===================================================================
+ RESULT: BUILD SUCCEEDED
+   5 modules, 22 theorems, 0 sorry, 0 mathlib dependencies
+===================================================================
+
+--- changes required to make it build -----------------------------
+
+Files that needed NO change (compiled as delivered):
+  Anchors.lean       — already carried the grind fix from paper-079
+  LocalClosure.lean  — byte-identical to the paper-079 version
+  LocalClosure2.lean — new; kernel 'decide' over 343 + 625 lock
+                       cubes, ~8s, axiom-free
+
+[1] Certificate.lean — 1 error: 'cert_nonneg' (was 'by grind')
+
+      error: Certificate.lean:44:2: `grind` failed
+      h : ¬0 ≤ ((x - 27*50⁻¹)*(x - 263*200⁻¹)*(x - 103*50⁻¹))^2
+
+    Cause: grind's ring/linarith core treats '(...)^2' as an
+    OPAQUE ATOM. Its own diagnostics show it guessing the atom
+    value ('[assign] 「(...)^2」 := 4') rather than knowing the
+    term is a square. So a perfect-square nonnegativity goal is
+    outside what 'grind' can do, in this and any future file.
+
+    Fix: core Lean DOES ship the ordered-ring lemma
+      Lean.Grind.OrderedRing.sq_nonneg   {a : R} : 0 ≤ a^2
+        (Init/Grind/Ordered/Ring.lean:366)
+    and Init/Grind/Ordered/Rat.lean supplies the Rat instance.
+    'cert_nonneg' is now a term-mode proof by that lemma.
+    Still mathlib-free. Statement unchanged.
+
+[2] SOSCertificate.lean — did not compile at all, and was NOT
+    listed in lakefile roots, so 'lake build' silently skipped it.
+    Its header said 'toolchain compile pending'. It was written
+    against mathlib despite claiming 'core-only':
+
+      * 'ℚ'        -> unknown identifier in core Lean 4.33
+                      (core suggests 'Rat'); every downstream
+                      HSub/HMul/HPow instance error cascaded
+                      from this one unknown identifier
+      * 'ring'     -> unknown tactic (mathlib)
+      * 'norm_num' -> mathlib (5 occurrences)
+      * 'sq_nonneg'-> mathlib
+
+    Fix (purely mechanical, NO numeral changed):
+      ℚ -> Rat ; ring -> grind ; norm_num -> grind ;
+      sq_nonneg _ -> Lean.Grind.OrderedRing.sq_nonneg
+    Added 'SOSCertificate' to lakefile roots so the build now
+    actually covers every .lean file in the directory.
+    Header STATUS updated (it is no longer 'compile pending',
+    and the CDN-unreachable note no longer applies).
+
+--- WARNING: name collision between the two certificates ----------
+
+Certificate.lean and SOSCertificate.lean BOTH open 'namespace
+RhGate' and BOTH declare 'headline_simple' and 'headline_distinct'
+-- with DIFFERENT constants. They build fine as independent
+library roots, but can never be imported into one module:
+
+  error: import SOSCertificate failed, environment already
+  contains 'RhGate.headline_distinct._proof_1_1' from Certificate
+
+Exact-arithmetic comparison of the two (both self-consistent):
+                      Certificate.lean     SOSCertificate.lean
+  M5                  168331/30000         16831/3000
+                      = 5.6110333          = 5.6103333
+  M6                  42701/4200           1067023/105000
+                      = 10.1669048         = 10.1621238
+  w0 numerator        1153107070889        1153532320889
+     (same denom.     11233957316589)
+  w0                  0.102644779          0.102682633
+  1 - 2*w0            0.794710441          0.794634733
+  headline claimed    >= 7947/10000        >= 7946/10000
+
+Certificate.lean is the TIGHTER and newer one (w0 smaller by
+3.785e-05). SOSCertificate.lean looks superseded. Recommend
+renaming its two headline theorems, or deleting the file, so the
+two cannot be confused. Marked as SUPERSEDED in its header.
+
+--- independent cross-check (exact Fraction arithmetic) -----------
+Recomputed outside Lean, in Python:
+  (abc)^2 = 534950348409/250000000000                    CONFIRMED
+  sum_k y_k m_k over m = (1,1,4/3,2,13/4,M5,M6)
+        = 1153107070889/11233957316589 = w0             CONFIRMED
+  1 - 2*w0 >= 7947/10000                                CONFIRMED
+  1 - w0   >= 8973/10000                                CONFIRMED
+
+--- axiom interpretation ------------------------------------------
+propext / Classical.choice / Quot.sound are the three standard
+Lean foundational axioms, present in essentially every Lean proof.
+The three local-closure theorems depend on NO axioms whatsoever.
+Critically ABSENT from all 22 theorems:
+  * sorryAx            (no incomplete proofs)
+  * Lean.ofReduceBool  (no 'native_decide' / unverified compilation)
+All 22 results are fully kernel-checked.
+
+--- what Lean does NOT certify ------------------------------------
+The theorems verify RATIONAL ARITHMETIC only. Still outside Lean:
+  * that (M5, M6) is genuinely the band-worst corner
+  * the LP-duality step from the certificate to the zero-density
+    conclusion
+  * that the pinned moments (1, 1, 4/3, 2, 13/4) are correct
+These rest on certification/certify_lp.py and the paper's prose.
+
+--- reproduce -----------------------------------------------------
+  export PATH="$HOME/.elan/bin:$PATH"
+  cd "/Users/joshua/Claude/Projects/黎曼猜想/preprint-0.8/lean/RhGate"
+  lake build
+===================================================================

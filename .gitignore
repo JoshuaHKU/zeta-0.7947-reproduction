@@ -1,0 +1,14 @@
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+!lean/RhGate/build.log
+# Python
+__pycache__/
+*.pyc
+# Lean build artifacts
+lean/RhGate/.lake/
+# macOS
+.DS_Store
