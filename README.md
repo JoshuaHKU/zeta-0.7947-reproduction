@@ -3,6 +3,8 @@
 Preprint + self-contained reproduction, certification and Lean
 packages. / 预印本与自包含的复现、认证及 Lean 形式化包。
 
+Repository / 仓库: https://github.com/JoshuaHKU/zeta-0.7947-reproduction
+
 Built on the two-thirds preprint
 [[C26]](https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf)
 (Claude, Anthropic, August 2026); all other references are published

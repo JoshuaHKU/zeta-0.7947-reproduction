@@ -1,5 +1,8 @@
 # Reproduction checklist — preprint-0.8/paper.tex
 
+Public repository / 公开仓库:
+https://github.com/JoshuaHKU/zeta-0.7947-reproduction
+
 Self-contained reproduction and certification package for the paper
 "More than 0.7947 of the zeros of the Riemann zeta function are simple
 and on the critical line" (authors: Hongyi Yang, Shihua Yang;
