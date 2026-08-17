@@ -20,16 +20,17 @@
 function are simple and on the critical
 line\thanks{Verification status (read this first): the chain of
 this paper consists of classical inputs, machine-verified
-identities, certified constants, and numerically evaluated
-connected constants carrying stated two-sided bands. Its claim
+identities, certified constants, and connected constants
+certified in exact rational arithmetic. Its claim
 grade is \emph{certified-candidate}, not record: each connected
 constant is proved RATIONAL (a finite signed sum of rational
-polytope volumes, \S\ref{s:conv}); all three are now
-\emph{identified} at machine precision with
-uniqueness-guaranteed rational reconstruction ---
+polytope volumes, \S\ref{s:conv}), and all three are now
+\emph{proved as exact rationals} by symbolic evaluation of
+those very volumes ---
 $C_5=\tfrac1{36}$, $\{4,2\}=-\tfrac{23}{420}$,
-$\{6\}=-\tfrac1{126}$ (\S\ref{s:five:conn}; symbolic
-verification designated) --- the Lean
+$\{6\}=-\tfrac1{126}$ (\S\ref{s:five:conn}; two independent
+exact methods, confirmed bitwise by machine-precision
+ladders) --- the Lean
 formalization covers the identity and certificate layers only
 (kernel-compiled, core Lean~4, zero \texttt{sorry};
 \S\ref{s:verif}(f)), the analytic layer is unformalized, and no
@@ -71,7 +72,7 @@ evaluates
 the third through sixth trace moments of the Gabor-compressed
 Weil matrix of \cite{C26} --- $m_3=2$ and $m_4=\tfrac{13}4$
 exactly, $m_5=\tfrac{101}{18}$ and
-$m_6=\tfrac{12809}{1260}+O(10^{-4})$ via the identified
+$m_6=\tfrac{12809}{1260}$ via the symbolically certified
 connected sine-kernel Ursell constants --- and consumes them through a
 moment-pinned linear program built on an explicit
 Chebyshev--Markov certificate --- an
@@ -97,24 +98,27 @@ the write-out items W1--W3
 are written out in \S\ref{s:writeouts}; the analytic chain is
 certified-candidate; the connected constants are proved
 rational by the polytope dimension theorem of \S\ref{s:conv},
-and all three are now \emph{identified}:
+and all three are now \emph{proved}:
 $C_5=\tfrac1{36}$, $\{4,2\}=-\tfrac{23}{420}$ and
-$\{6\}=-\tfrac1{126}$, each pinned by a seven-rung Romberg
-ladder converging at machine precision (adjacent-row drift
-$2\times10^{-16}$) with a uniqueness-guaranteed unique rational
-reconstruction, calibrated against two exact anchors in the same
-run --- and $\{4,2\}$ hitting its pre-registered candidate
-(\S\ref{s:five:conn}; symbolic verification designated); the
+$\{6\}=-\tfrac1{126}$, each certified in exact rational
+arithmetic --- every term lifted to a rational polytope volume
+and evaluated by an exact facet recursion, $1310$ per-term
+fractions archived, two independent symbolic methods agreeing
+fraction by fraction --- and independently confirmed by
+seven-rung Romberg ladders converging at machine precision
+(adjacent-row drift $2\times10^{-16}$), calibrated against two
+exact anchors in the same run, with $\{4,2\}$ hitting its
+pre-registered candidate (\S\ref{s:five:conn}); the
 consumption layer (inertia, tail, counting) is that of
 \cite{C26}, recalled in \S\ref{s:frame}.
 The consumption step itself is exact: a rational sum-of-squares
-dual certificate, kernel-checked in core Lean~4 (twenty theorems across the
+dual certificate, kernel-checked in core Lean~4 (twenty-one theorems across the
 identity, local-law and certificate layers, zero
 \texttt{sorry}). A standalone reproduction and
 certification package accompanies the paper
 (\url{https://github.com/JoshuaHKU/zeta-0.7947-reproduction});
 a falsifier registry
-($201$ pre-registered checks, $35$ fired and converted, all
+($202$ pre-registered checks, $35$ fired and converted, all
 forward-recorded) documents the research trail.
 \end{abstract}
 
@@ -179,7 +183,7 @@ explicitly in \S\ref{s:verif}: the $13/18$ rung rests on the
 classical-technology proof of Lemma D (\S\ref{s:four}) and
 the consumption layer of \cite{C26} (recalled in
 \S\ref{s:frame}); the $0.7962$ headline
-additionally consumes the identified constants
+additionally consumes the symbolically certified constants
 $C_5=\tfrac1{36}$, $\{4,2\}=-\tfrac{23}{420}$,
 $\{6\}=-\tfrac1{126}$ (\S\ref{s:five:conn}; the pairing
 layer is exact, \S\ref{s:five:cert}). Nothing in this paper bears on the Riemann Hypothesis
@@ -1487,7 +1491,7 @@ audit and kernel-compiled in the Lean package,
 \emph{certified exactly} (Proposition~\ref{p:t222}),
 $\{4,2\}=-\tfrac{23}{420}$ (the four-cycle connected object
 consumed jointly with a spectator pair) and
-$\{6\}=-\tfrac1{126}$ (both identified,
+$\{6\}=-\tfrac1{126}$ (both likewise certified exactly,
 \S\ref{s:five:conn}). The former write-out items W1--W3
 are written out in \S\ref{s:writeouts}.
 
@@ -1636,32 +1640,83 @@ class contrast directly.
 
 $C_5=\int O_5C_5^{\mathrm{Urs}}=\tfrac1{36}$,
 $\{4,2\}=-\tfrac{23}{420}$ and $\{6\}=-\tfrac1{126}$,
-\emph{identified at machine precision}: seven-rung grouped
+\emph{proved in exact rational arithmetic} and independently
+confirmed at machine precision.
+
+\emph{The symbolic certification.} The direct route --- the
+piecewise exact integration of Proposition~\ref{p:t222},
+generalized from three to four and five dimensions --- closes
+$\{4,2\}$ term by term, but not $\{6\}$: the piece count
+multiplies across integration levels, and single
+five-dimensional terms project to centuries of exact
+arithmetic. The closure is a change of representation. Since
+\[
+\mathrm{ov}(P)\;=\;\bigl(1-(\max_i p_i-\min_i p_i)\bigr)_+
+\;=\;\mathrm{Leb}\{\,t\in\mathbb R:\ t\le p_i\le t+1\ \forall
+i\,\},
+\]
+each term of the signed sums of \S\ref{s:conv} \emph{is} the
+volume of one bounded rational polytope,
+\[
+\int_{\mathbb R^d}\mathrm{ov}_A(x)\,\mathrm{ov}_B(x)\,dx
+\;=\;\mathrm{Vol}_{d+2}\bigl\{(x,t,s):\ t\le A_i(x)\le t+1,\
+s\le B_j(x)\le s+1\bigr\},
+\]
+with every facet coefficient in $\{0,\pm1\}$ (boundedness
+because $0$ lies in both position families, forcing
+$t,s\in[-1,0]$; the weight $\min(|v|,1)$ of the $\{4,2\}$
+variant lifts one further dimension); the cost migrates from
+the \emph{product} of per-level piece counts to the size of
+the face lattice. Each volume is evaluated by the exact facet
+recursion
+$\mathrm{Vol}_n(P)=\tfrac1n\sum_i\mathrm{dist}(c,H_i)\,
+\mathrm{Vol}_{n-1}(F_i)$, arranged so that projecting each
+facet to a coordinate hyperplane cancels the irrational facet
+normalizations --- the computation stays in rational
+arithmetic throughout --- and memoized on tight constraint
+sets. All $1310$ terms ($150$ for $C_5$, $78$ for $\{4,2\}$,
+$1082$ for $\{6\}$) are evaluated as exact fractions, archived
+per term in the reproduction package, and their signed sums
+are
+\[
+C_5=\tfrac1{36},\qquad \{4,2\}=-\tfrac{23}{420},\qquad
+\{6\}=-\tfrac1{126}
+\]
+exactly. Gates, all passed: the pure four-cycle through the
+same code path returns $\Phi_4=-\tfrac1{60}$ (by both exact
+methods); the three-dimensional regression reproduces every
+exact value of Proposition~\ref{p:t222}
+($\tfrac3{70},\tfrac1{90},\tfrac1{180},\tfrac1{70},
+\tfrac7{60},\tfrac1{30}$); the two symbolic methods agree
+fraction by fraction on every term computed by both; the term
+construction (position families, masks, signs, weights) is
+cross-checked numerically against the ladder engine; and the
+three placement classes of $\{4,2\}$ come out as
+$-\tfrac2{315}$, $-\tfrac1{1260}$, $-\tfrac1{252}$,
+recombining with multiplicities $6/6/3$ as
+$-\tfrac{23}{420}$.
+
+\emph{The numerical confirmation.} Seven-rung grouped
 midpoint ladders ($dv$ down to $0.00125$ for $C_5$, $0.0125$
 for $\{6\}$, $0.0015625$ for the four-dimensional
 spectator-pair variant of $\{4,2\}$; GPU-accelerated engine
 with support pruning, term trie and negation symmetry,
 mathematically identical to the reference engines and
-cross-validated bitwise on three architectures) whose Romberg
-tables converge with adjacent-row drift $2\times10^{-16}$;
-within the error band the rational reconstruction is
-\emph{unique by the $Q^{2}\ge1/(2\varepsilon)$ criterion}.
-Credibility anchors: the identical pipeline reproduces, in the
-same runs, the exact values $0$ ($b=3$) and
-$\Phi_4=-\tfrac1{60}$ ($b=4$) at $10^{-18}$; the raw-ladder
-error ratios against the identified fractions converge to the
-pure $h^{2}$ value $4.000$; and $\{4,2\}$ \emph{hit its
-pre-registered candidate} ($-\tfrac{23}{420}$, registered from
-three coarse reference rungs before the fine ladder ran), its
-three placement-class components identifying separately as
-$-\tfrac2{315}$, $-\tfrac1{1260}$, $-\tfrac1{252}$ with
-$6(-\tfrac2{315})+6(-\tfrac1{1260})+3(-\tfrac1{252})
-=-\tfrac{23}{420}$. The seven-cycle constant is identified at
-one rung less as $C_7=-\tfrac{17}{360}$ (not consumed).
-Symbolic verification of the identified fractions by the
-exact-integration algorithm of Proposition~\ref{p:t222} is the
-designated closure (item N1; the values enter \S\ref{s:lp} at
-the identification grade of \S\ref{s:verif}(d)). The mixed
+cross-validated bitwise on three architectures) converge, with
+Romberg adjacent-row drift $2\times10^{-16}$, to the proved
+fractions; within the error band the rational reconstruction
+is \emph{unique by the $Q^{2}\ge1/(2\varepsilon)$ criterion}
+and lands on the same values. Credibility anchors: the
+identical pipeline reproduces, in the same runs, the exact
+values $0$ ($b=3$) and $\Phi_4=-\tfrac1{60}$ ($b=4$) at
+$10^{-18}$; the raw-ladder error ratios against the certified
+fractions converge to the pure $h^{2}$ value $4.000$; and
+$\{4,2\}$ \emph{hit its pre-registered candidate}
+($-\tfrac{23}{420}$, registered from three coarse reference
+rungs before the fine ladder ran), componentwise. The
+seven-cycle constant is identified at one rung less as
+$C_7=-\tfrac{17}{360}$ (identification grade only; not
+symbolically certified, not consumed). The mixed
 odd-block class $\{3,3\}$ \emph{vanishes}: identically zero
 --- exact floating-point zeros, not small numbers --- on every
 grid tested (two protocols, four resolutions, all three
@@ -1669,8 +1724,8 @@ placement classes), the model-side face of the odd-block
 vanishing proved on the arithmetic side in \S\ref{s:five};
 the residual allowance it formerly carried in the $m_6$ budget
 is retired (register D17). An
-observation, not consumed: the identified constants of the
-program --- $\tfrac13$, $\tfrac7{60}$, $\tfrac1{30}$,
+observation, not consumed: the certified and identified
+constants of the program --- $\tfrac13$, $\tfrac7{60}$, $\tfrac1{30}$,
 $-\tfrac1{60}$, $\tfrac{131}{420}$, $\tfrac1{36}$,
 $-\tfrac{23}{420}$, $-\tfrac1{126}$ and the $\{4,2\}$
 components --- have denominators dividing $1260$; adding
@@ -1688,15 +1743,17 @@ $m_6=\tfrac{12809}{1260}=10.16587\ldots$ both lie inside the
 sine-model bands \eqref{e:guebands}.
 
 \emph{Grading note.} By the dimension theorem of
-\S\ref{s:conv} every connected constant is rational. All three
-are consumed at \emph{identification} grade (machine-precision
-Romberg limit + uniqueness-guaranteed reconstruction + double
-exact-anchor calibration + the pre-registration hit for
-$\{4,2\}$; symbolic verification by the algorithm of
-Proposition~\ref{p:t222} designated). The headline claim is
-exactly: \emph{the stated bounds hold provided the identified
-values are correct} --- the precise grading is
-\S\ref{s:verif}(d).
+\S\ref{s:conv} every connected constant is rational; the
+symbolic certification above computes the three consumed
+constants exactly, and they enter \S\ref{s:lp} at \emph{proof}
+grade --- exact-rational computer-assisted, the grade of
+Proposition~\ref{p:t222} (register D18). The former
+identification proviso is discharged; the numerical
+identification (machine-precision Romberg limit,
+uniqueness-guaranteed reconstruction, double exact-anchor
+calibration, the pre-registration hit for $\{4,2\}$) stands as
+an independent confirmation, agreeing bitwise with the
+symbolic values. The precise grading is \S\ref{s:verif}(d).
 
 \subsection{The convolution calculus, rationality, and the
 midpoint protocol}\label{s:conv}
@@ -1740,9 +1797,10 @@ $\{6\}$ --- the same argument that produced
 $t_{\mathrm{adj}}=\tfrac7{60}$ and $\{2,2,2\}=\tfrac{131}{420}$
 in closed form. What separates the remaining constants from
 Proposition~\ref{p:t222} is only the piece count of the exact
-integration, not its kind; for $C_5$ and $\{6\}$ the target
-fractions are now identified (\S\ref{s:five:conn}), reducing
-item N1 to verification (\S\ref{s:verif}).
+integration, not its kind; the polytope route of
+\S\ref{s:five:conn} tames that piece count and carries the
+exact integration through all three constants, closing item
+N1 (\S\ref{s:verif}).
 
 \emph{The midpoint protocol.} The numerical ladders for
 (i)--(iii) revealed a grid pathology recorded as the registry's
@@ -1760,7 +1818,7 @@ Theorem~\ref{t:main}}\label{s:lp}
 
 With $(m_1,\dots,m_4)=(1,\tfrac43,2,\tfrac{13}4)$ pinned
 two-sidedly (Theorem~\ref{t:m3}, Theorem~\ref{t:D},
-\eqref{e:moments}) and the identified values of
+\eqref{e:moments}) and the certified values of
 \S\ref{s:five:conn}, both remaining constraints are exact
 rationals:
 \[
@@ -1771,7 +1829,8 @@ m_6\;\le\;M_6:=\tfrac{39}4+\tfrac{131}{420}
 =\tfrac{12809}{1260}.
 \]
 Every band contribution is retired: the constant bands by the
-identifications ($\{2,2,2\}$ by Proposition~\ref{p:t222}),
+exact certifications (\S\ref{s:five:conn}; $\{2,2,2\}$ by
+Proposition~\ref{p:t222}),
 and the residual allowance formerly carried for the mixed
 odd-block class $\{3,3\}$ by its written-out vanishing
 (\S\ref{s:five:conn}). The consumption is an exact
@@ -1837,9 +1896,9 @@ re-optimized exact certificate of Appendix~\ref{a:cert}(A5),
 \liminf\frac{N_0^{s}}{N}\;\ge\;0.7403,\qquad
 \liminf\frac{N_d}{N}\;\ge\;0.8701 .
 \]
-Sign certification is a far coarser target than an enclosure for
-the designated 4D/5D exact integration; the full payoff curve is
-tabulated in Appendix~\ref{a:cert}(A5).
+Sign certification is a far coarser target than the exact
+certification now in place (\S\ref{s:five:conn}); the full
+payoff curve is tabulated in Appendix~\ref{a:cert}(A5).
 \end{corollary}
 
 \begin{remark}[The repaired intermediate rung; register
@@ -1897,7 +1956,7 @@ per-bin Siegel--Walfisz face falling tenfold over the range;
 Bell(5)/Bell(6) gates exact; five- and six-fold product faces
 green at all heights; well-spacing zero violations; hybrid size
 control $24$--$31\times$ height-stable; consumption LP
-grid-stable. The registry: $201$ pre-registered checks, $166$
+grid-stable. The registry: $202$ pre-registered checks, $167$
 passed, $35$ fired and converted, all forward-recorded (the
 $31$st--$35$th conversions belong to the corrected-constants
 pass, the Lean compiles and the spectral-route audit,
@@ -1970,6 +2029,20 @@ fraction} $-\tfrac{23}{420}$ exactly; the exact anchors ($0$
 at $b=3$, $-\tfrac1{60}$ at $b=4$) were reproduced by the
 identical pipeline at $10^{-18}$ in the same runs.
 
+The certification pass closed N1 symbolically: every term of
+the three constants lifted to a rational polytope volume and
+evaluated by the exact facet recursion of
+\S\ref{s:five:conn}, $1310$ exact fractions archived per
+term, the full $\{6\}$ sum in $9.1$ single-core hours. (The
+piecewise route, retained as the independent second method,
+projects to $\sim10^{8}$ hours on the same $\{6\}$ term set
+--- the polytope lift is a $\sim10^{9}$-fold algorithmic
+reduction at $b=6$.) The pre-registered falsifier F-SYM-N1
+--- any mismatch between a symbolic sum and its identified
+fraction --- did not fire: the symbolic values agree bitwise
+with the numerical reconstruction on all three constants and
+on all three $\{4,2\}$ placement components.
+
 \begin{remark}[Effective faces, ineffective theorem]
 The faces are finite-height measurements with effective
 constants; the theorem's constants are ineffective (Siegel). The
@@ -2024,22 +2097,27 @@ W1 (Proposition~\ref{p:W1}), W2 (Lemma~\ref{l:W2}), W3
 complete (elementary); W1 and W3 are proved at the grade of
 layer (b), since they consume the same spectral transports.
 
-\emph{(d) Identified values.} N1 status: all connected
-constants are proved rational (\S\ref{s:conv}) and all three
-are \emph{identified} --- machine-precision Romberg limits
-(adjacent-row drift $2\times10^{-16}$), uniqueness-guaranteed
-rational reconstruction, double exact-anchor calibration in the
-same pipeline, cross-architecture bitwise agreement,
-pre-registered $h^{2}$ prediction gates, and for $\{4,2\}$ a
-pre-registration hit with componentwise identification
-(\S\ref{s:five:conn}) --- consumed at identification grade.
-Their symbolic verification by the exact-integration algorithm
-of Proposition~\ref{p:t222} is the designated closure of N1.
-$C_7=-\tfrac{17}{360}$ is identified one rung weaker and is
-not consumed. The \emph{certificate family} of
-Appendix~\ref{a:cert}(A5) makes the payoff graded and
-plug-in: any future enclosure yields an exact certificate, and a
-sign-only certification already yields $0.740/0.870$. N2
+\emph{(d) Certified values.} N1 status: \emph{closed}. All
+connected constants are proved rational (\S\ref{s:conv}), and
+the three consumed constants are \emph{proved} --- each an
+exact-rational polytope-volume computation with per-term
+archives, dual-method fraction-by-fraction agreement, and all
+calibration gates passed (\S\ref{s:five:conn}) --- consumed
+at proof grade, the grade of Proposition~\ref{p:t222}. The
+numerical identification (machine-precision Romberg limits
+with adjacent-row drift $2\times10^{-16}$,
+uniqueness-guaranteed rational reconstruction, double
+exact-anchor calibration in the same pipeline,
+cross-architecture bitwise agreement, pre-registered $h^{2}$
+prediction gates, and for $\{4,2\}$ a pre-registration hit
+with componentwise identification) stands as an independent
+confirmation.
+$C_7=-\tfrac{17}{360}$ remains at identification grade, one
+rung weaker, and is not consumed. With N1 closed,
+Theorem~\ref{t:main} stands at the grade of
+Corollary~\ref{c:1318}; the \emph{certificate family} of
+Appendix~\ref{a:cert}(A5) remains as the graded plug-in
+record of that payoff. N2
 (partially discharged): the quadrature's slope
 is proved exactly $1$, its constant is identified in closed form,
 $c_0=\gamma-2$ (Proposition~\ref{p:c0}), and the geometric tail
@@ -2047,9 +2125,8 @@ was already certified (r60); what remains computed is the mean
 oscillation $\overline{\mathrm{osc}}$ inside $c^{*}$ and the
 universality-collapse rate write-out. Only the conservative
 charge $\varepsilon_{CL}$ is consumed anywhere
-(Lemma~\ref{l:CL}). Full certification of N1 upgrades
-Theorem~\ref{t:main} to the grade of Corollary~\ref{c:1318};
-of N2, Theorem~\ref{t:fm} to $0.7031/0.8515$.
+(Lemma~\ref{l:CL}). Full certification of N2 upgrades
+Theorem~\ref{t:fm} to $0.7031/0.8515$.
 
 \emph{(e) Imports.} \cite{C26}: the framework of
 \S\ref{s:frame} (matrix, block structure, tail, counting,
@@ -2093,11 +2170,12 @@ the corner-selection sign --- so the \emph{choice} of
 binding corner is itself kernel-checked --- the headline
 inequalities, the monic expansion of Appendix~\ref{a:cert}(A6),
 the exact $\{2,2,2\}$ arithmetic and the instantiated anchor
-identities; the compiled corner is that of the pre-identification
-revision, and the updated \texttt{Certificate.lean} at the
-identified constants ($M_5=\tfrac{101}{18}$, headlines
-$\tfrac{7957}{10000}$/$\tfrac{8978}{10000}$) is written and
-queued for the same-machine recompile) and
+identities; a third same-machine compile (August 17) covers
+the final revision --- \texttt{Certificate.lean} at the exact
+constants ($M_5=\tfrac{101}{18}$, $M_6=\tfrac{12809}{1260}$,
+headlines $\tfrac{7962}{10000}$/$\tfrac{8981}{10000}$),
+thirteen certificate-layer theorems including the exact $M_5$
+and $M_6$ arithmetic, clean build, axiom audit as stated) and
 \texttt{LocalClosure2.lean} (the local law at $b=4$, $p=7$ and
 $b=5$, $p=5$: $343$ and $625$ lock classes by kernel
 \texttt{decide} on $\mathbb N$ --- both \emph{axiom-free}).
@@ -2126,8 +2204,9 @@ compiled coverage of this paper is exactly as stated above.
 
 \emph{(g) The gate.} Per the program's verification gate, the
 record claim follows (i) the symbolic verification of the
-identified N1 fractions and the $\{4,2\}$ closure (and
-optionally N2), (ii) compiled Lean formalization of the identity
+N1 fractions and the $\{4,2\}$ closure --- \emph{now
+discharged} (\S\ref{s:five:conn}, (d) above) --- and
+optionally N2, (ii) compiled Lean formalization of the identity
 and certificate layers with the queue's Q1--Q6 (both are now
 compiled, \S\ref{s:verif}(f); the analytic layer remains), and
 (iii)
@@ -2138,17 +2217,16 @@ anywhere. Nothing here bears on RH itself.
 \section{Outlook: routes to higher
 proportions}\label{s:outlook}
 
-The chain of this paper exhausts the $k\le6$ moment tower at
-the identification level; we record, with the quantitative
+The chain of this paper exhausts the $k\le6$ moment tower in
+exact rational arithmetic; we record, with the quantitative
 evidence in hand, where further gains can come from.
 
-\emph{(a) Closing the present chain.} The designated closures
-are the symbolic verification of the three identified fractions
-by the exact-integration algorithm of
-Proposition~\ref{p:t222} (reducing item N1 from
-identification to proof), the formalization of the analytic
-layer, and external review. These change grades, not
-constants.
+\emph{(a) Closing the present chain.} Of the designated
+closures, the first --- symbolic verification of the three
+connected fractions, moving item N1 from identification to
+proof --- is carried out in this paper (\S\ref{s:five:conn});
+what remains is the formalization of the analytic layer and
+external review. These change grades, not constants.
 
 \emph{(b) The $k=8$ rung.} The seven-cycle constant is already
 identified ($C_7=-\tfrac{17}{360}$, \S\ref{s:five:conn}), and
@@ -2188,8 +2266,8 @@ diminishing returns entirely; whether the compressed-matrix
 framework admits one is, in our view, the most consequential
 open question raised by this work.
 
-\emph{(e) A structural question.} Every constant identified
-by the program --- $\tfrac13$, $\tfrac7{60}$, $\tfrac1{30}$,
+\emph{(e) A structural question.} Every constant certified or
+identified by the program --- $\tfrac13$, $\tfrac7{60}$, $\tfrac1{30}$,
 $-\tfrac1{60}$, $\tfrac{131}{420}$, $\tfrac1{36}$,
 $-\tfrac{23}{420}$, $-\tfrac1{126}$, $-\tfrac{17}{360}$ ---
 is a rational with denominator dividing
@@ -2378,7 +2456,8 @@ systematic shift. Grouped \emph{midpoint}-grid ladders
 (\S\ref{s:conv}), calibrated exactly against
 Proposition~\ref{p:t222} at $b=4$, settle monotonically and give
 the corrected $C_5=0.0278(1)$, $\{4,2\}=-0.0552(8)$,
-$\{6\}=-0.0078(8)$ consumed in \S\ref{s:lp} (registry's
+$\{6\}=-0.0078(8)$, since certified exactly
+(\S\ref{s:five:conn}) (registry's
 $32$nd conversion; the $31$st is D7's anchor correction,
 independently forced by the same audit). \emph{Impact: direct
 --- these are the constants the headline consumes; the theorem
@@ -2460,6 +2539,21 @@ the model face of the arithmetic odd-block vanishing of
 the exact rational $\tfrac{12809}{1260}$ and the theorem moves
 $0.7960\to0.7962$. \emph{Impact: direct --- the consumption
 inputs are now exact rationals end to end.}
+\item[D18.] The symbolic certification of N1: the direct
+4D/5D generalization of the piecewise integrator closed
+$\{4,2\}$ term by term but projected to centuries per term at
+$b=6$ (multiplicative piece-count growth); the polytope lift
+of \S\ref{s:five:conn} --- each term one rational polytope
+volume, exact facet recursion, a $\sim10^{9}$-fold reduction
+at $b=6$ --- evaluated all $1310$ terms as exact fractions,
+summing to $\tfrac1{36}$, $-\tfrac{23}{420}$, $-\tfrac1{126}$
+exactly. All gates passed ($\Phi_4=-\tfrac1{60}$ by both
+methods; 3D regression matching Proposition~\ref{p:t222};
+per-term dual-method agreement; componentwise $\{4,2\}$
+recombination); the pre-registered falsifier F-SYM-N1 did not
+fire; symbolic and numerical values agree bitwise.
+\emph{Impact: grades only --- N1 moves from identification to
+proof; the constants and the theorem are unchanged.}
 \end{itemize}
 
 \noindent The registry's $30$th conversion occurred during the
@@ -2631,10 +2725,10 @@ scenario):
 
 \begin{center}
 \begin{tabular}{lcc}
-scenario (what the 4D/5D exact integration certifies) &
+scenario (graded by the information consumed) &
 $1-2w_0\ge$ & $1-w_0\ge$\\
 \hline
-current status (all identified; allowance retired) &
+current status (all certified exactly; allowance retired) &
 $0.79627$ & $0.89814$\\
 enclosure width $0.01$ & $0.77418$ & $0.88709$\\
 enclosure width $0.04$ & $0.74299$ & $0.87149$\\
@@ -2650,15 +2744,12 @@ $\partial/\partial c_+=-5.61$,
 $\partial/\partial(u_{42}{+}u_6)=-0.93$. In particular a
 \emph{sign-only} certification of the three connected constants
 --- far coarser than an enclosure --- already certifies
-$0.740/0.870$, and the designated 4D/5D exact computation has a
-graded payoff at every achievable width. Computational spec from
-the certified 3D runs: the exact integrator's cost is
-(pieces$\times$nodes) per level ($\approx40$--$400$ per level in
-3D at $\le90$ kink forms); the $C_5$ and $\{4,2\}$ integrands
-carry $\le541$ resp.\ $\le75\times$(spectator) overlap terms on
-the same $\{0,\pm1\}$-kink family, one extra level ($\{6\}$:
-two), placing the runs at cluster scale rather than laptop
-scale.
+$0.740/0.870$, and the exact computation --- now carried out,
+landing on the top row --- realizes the full payoff. (The
+level-by-level cost model that placed the direct piecewise
+runs at cluster scale is what the polytope lift of
+\S\ref{s:five:conn} circumvented: the certified runs completed
+on a single workstation core in hours.)
 
 \subsection*{A6. The exact dual certificate}
 

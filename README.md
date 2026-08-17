@@ -38,7 +38,10 @@ Headline, certified in exact rational arithmetic and kernel-checked
 in core Lean 4 (the rational-arithmetic layer):
 **N₀ˢ/N ≥ 1 − 2w₀ ≥ 0.7962, N_d/N ≥ 1 − w₀ ≥ 0.8981** at exact
 rational inputs end to end: C₅ = 1/36, {4,2} = −23/420,
-{6} = −1/126 identified (gpu/COMPUTATION_REPORT.md), M₆ = 12809/1260.
+{6} = −1/126 **proved symbolically** (exact polytope-volume
+integration, 1310 per-term fractions: gpu/exact/, verifier
+gpu/exact_polytope.py; independently confirmed by the GPU
+ladders, gpu/COMPUTATION_REPORT.md §4ter), M₆ = 12809/1260.
 
 DOI: [10.5281/zenodo.21975236](https://doi.org/10.5281/zenodo.21975236)
 

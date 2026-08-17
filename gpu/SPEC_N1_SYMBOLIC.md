@@ -81,7 +81,13 @@ G2: re-derive t_adj = 7/60 and {2,2,2}=131/420 with the same code
     path (3D regression vs exact_t222.py).
 G3: dual-scheme identical-rational check active on every piece.
 
-Status: specification delivered; implementation is the designated
-next engineering step (the paper's grading is unchanged until the
-runs complete — identification grade, symbolic verification
-designated).  实现为既定下一步工程；运行完成前论文分级不变。
+Status: **COMPLETED**.  The direct piecewise generalization
+(exact_connected.py) closed {4,2} but was infeasible at b=6
+(multiplicative piece growth); the polytope lift
+(exact_polytope.py: each term one rational polytope volume,
+exact facet recursion, ~10^9x reduction at b=6) evaluated all
+1310 terms as exact fractions (gpu/exact/), summing to 1/36,
+-23/420, -1/126 exactly.  All gates G1-G3 passed; F-SYM-N1 did
+not fire; N1 upgraded identification → proof (paper §5.5,
+register D18).  状态：已完成——多面体提升路线求出全部 1310 项
+精确分数，三常数符号证明成立，N1 由识别升为证明。

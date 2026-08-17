@@ -33,9 +33,11 @@ short set (≈ 15 min); the midpoint ladders are long gates (hours).
     cd certification
     python3 certify_lp.py            # exact Fractions; < 1 s
 
-Recorded 2026-08-17 (ALL constants identified: C5 = 1/36,
-{4,2} = −23/420, {6} = −1/126; gpu/COMPUTATION_REPORT.md §4/4bis,
-paper §5.5/D15-D16):
+Recorded 2026-08-17 (ALL constants PROVED symbolically:
+C5 = 1/36, {4,2} = −23/420, {6} = −1/126 — exact polytope-volume
+integration, 1310 per-term fractions in gpu/exact/, independently
+confirmed by the GPU ladders; gpu/COMPUTATION_REPORT.md
+§4/4bis/4ter, paper §5.5/D15-D18):
 - P(x) at atoms (5323/10000, 6561/5000, 10293/5000): perfect
   square, P(0)=1, y₅<0, y₆>0 — UNBOUNDED support, no LP solver
 - M5 = 101/18; M6 = 12809/1260 — EXACT rationals end to end
