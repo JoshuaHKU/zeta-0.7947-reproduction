@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Exact rational dual (SOS) certificate for the consumption LP.
 
-Certificate polynomial (atoms a=27/50, b=263/200, c=103/50):
+Certificate polynomial (atoms a=2673/5000, b=13149/10000,
+c=10303/5000):
 
     P(x) = [(x-a)(x-b)(x-c)]^2 / (abc)^2 .
 
@@ -17,16 +18,16 @@ bound is exact rational arithmetic.  Verified here at BOTH corners of
 the correlated C5-band (the bound is affine in the band parameter d,
 so the corner maximum is the band maximum).
 
-Moment inputs (preprint, corrected grouped-midpoint constants):
-    M5(d) = 67/12 + 0.0278 + d,       |d| <= 0.0001
-    M6(d) = 39/4 + 131/420 + 6*(0.0278+d) - 0.0552 - 0.0078 + 0.0018
-with {2,2,2} = 131/420 EXACT (exact_t222.py), {4,2} and {6} at their
-corrected bands (the 0.0018 = 0.0002+0.0008+0.0008 independent band;
-see paper S[s:conv] for the midpoint protocol and D10 for the retired
-endpoint-grid values).
+Moment inputs (identified constants, paper S5.5 / register D15):
+    M5 = 67/12 + 1/36 = 101/18                     (C5 = 1/36, EXACT)
+    M6 = 39/4 + 131/420 + 1/6 - 1/126 - 0.0544 + 0.0002
+       = 3202427/315000            ({6} = -1/126 identified;
+                                    {4,2} = -0.0552(8) band top;
+                                    frozen-slot transport 0.0002)
+with {2,2,2} = 131/420 EXACT (exact_t222.py).
 
 Output: exact rational w0-bound and the theorem constants
-    1-2w0 >= 0.7947,  1-w0 >= 0.8973 .
+    1-2w0 >= 0.7957,  1-w0 >= 0.8978 .
 
 Statements mirrored in core Lean (lean/RhGate/Certificate.lean).
 """
@@ -38,7 +39,7 @@ def polymul(p,q):
         for j,qj in enumerate(q): r[i+j]+=pi*qj
     return r
 
-a,b,c = F(27,50), F(263,200), F(103,50)
+a,b,c = F(2673,5000), F(13149,10000), F(10303,5000)
 cub = polymul(polymul([-a,F(1)],[-b,F(1)]),[-c,F(1)])
 num = polymul(cub,cub)
 n2 = (a*b*c)**2
@@ -53,26 +54,29 @@ for x in (F(1,3), F(7,5)):
     assert Px == Qx and Px >= 0
 
 mom = [F(1),F(1),F(4,3),F(2),F(13,4)]
-C5, dC5, band6 = F(278,10000), F(1,10000), F(18,10000)
+C5 = F(1,36); SIX = F(-1,126)
 t222 = 5*F(3,70)+6*F(1,90)+3*F(1,180)+F(1,70)
 assert t222 == F(131,420)
 
+M5 = F(67,12) + C5
+assert M5 == F(101,18)
+# single residual band: {4,2} in -0.0552(8); y6>0 => band top binds
 worst = None
-for d in (-dC5, dC5):                          # affine in d => corners
-    M5 = F(67,12) + C5 + d
-    M6 = F(39,4) + t222 + 6*(C5+d) + F(-552,10000) + F(-78,10000) + band6
+for u42 in (F(-560,10000), F(-544,10000)):
+    M6 = F(39,4) + t222 + 6*C5 + SIX + u42 + F(2,10000)
     w0 = sum(y[k]*mom[k] for k in range(5)) + y[5]*M5 + y[6]*M6
-    print(f"corner d={float(d):+.4f}:  w0 <= {w0}  = {float(w0):.9f}")
+    print(f"{{4,2}} corner {float(u42):+.4f}:  w0 <= {w0}")
     if worst is None or w0 > worst: worst = w0
 
 print("\nband-worst  w0 <=", worst, "=", float(worst))
 print("1-2w0 =", 1-2*worst, "=", float(1-2*worst))
 print("1-w0  =", 1-worst,  "=", float(1-worst))
-assert worst == F(1153107070889, 11233957316589), "w0 mismatch vs paper"
-assert 1-2*worst >= F(7947,10000), "0.7947 fails"
-assert 1-worst  >= F(8973,10000), "0.8973 fails"
+assert worst == F(281255854405058410769981,
+                  2753785207121825824389981), "w0 mismatch vs paper"
+assert 1-2*worst >= F(7957,10000), "0.7957 fails"
+assert 1-worst  >= F(8978,10000), "0.8978 fails"
 print("\nCERTIFIED (exact rational arithmetic, unbounded support):")
-print("  N0^s/N >= 1-2w0 >= 0.7947      N_d/N >= 1-w0 >= 0.8973")
+print("  N0^s/N >= 1-2w0 >= 0.7957      N_d/N >= 1-w0 >= 0.8978")
 
 # 13/18 certificate re-check (Lemma 3.1 polynomial):
 Q21 = polymul([F(3,2),-F(21,8),F(1)],[F(3,2),-F(21,8),F(1)])

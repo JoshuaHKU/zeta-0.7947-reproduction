@@ -4,7 +4,7 @@ Public repository / 公开仓库:
 https://github.com/JoshuaHKU/zeta-0.7947-reproduction
 
 Self-contained reproduction and certification package for the paper
-"More than 0.7947 of the zeros of the Riemann zeta function are simple
+"More than 0.7957 of the zeros of the Riemann zeta function are simple
 and on the critical line" (authors: Hongyi Yang, Shihua Yang;
 mathematical development by Claude (Anthropic), see the paper's
 Acknowledgements). The paper is built on the publicly posted
@@ -32,13 +32,14 @@ short set (≈ 15 min); the midpoint ladders are long gates (hours).
     cd certification
     python3 certify_lp.py            # exact Fractions; < 1 s
 
-Recorded 2026-08-16:
-- P(x) = [(x−27/50)(x−263/200)(x−103/50)]²/(abc)²: perfect square,
-  P(0)=1, y₅<0, y₆>0 — valid on UNBOUNDED support, no LP solver
-- corner d=−0.0001 (binding): w₀ = 1153107070889/11233957316589
+Recorded 2026-08-17 (identified constants C5 = 1/36, {6} = −1/126;
+see gpu/COMPUTATION_REPORT.md and paper §5.5/D15):
+- P(x) at atoms (2673/5000, 13149/10000, 10303/5000): perfect
+  square, P(0)=1, y₅<0, y₆>0 — UNBOUNDED support, no LP solver
+- M5 = 101/18 exact; M6 = 3202427/315000 ({4,2} band top)
+- w₀ = 281255854405058410769981/2753785207121825824389981
   (asserted exactly against the paper and lean/RhGate/Certificate.lean)
-- **1−2w₀ ≥ 0.7947, 1−w₀ ≥ 0.8973 — exact rational**
-- corner d=+0.0001: w₀ = 1151185570889/11233957316589
+- **1−2w₀ ≥ 0.7957, 1−w₀ ≥ 0.8978 — exact rational**
 - 13/18 certificate re-check: E[Q] = 5/36 exact
 
 ## 2. Identity and face gate suite (paper §§5–10 faces)
@@ -118,17 +119,6 @@ All recorded outputs match the values quoted in the paper (§10, §11,
 Appendix A); the sawtooth, quadrature and §4 constants reproduce the
 audit record digit-for-digit.
 
-## 5b. GPU ladders for N1 (optional; cluster/GPU hardware)
-
-    cd gpu
-    python3 midpoint_ladder_gpu.py validate   # b=4 gate vs CPU engine (PASS)
-    python3 midpoint_ladder_gpu.py 6 0.02     # {6} rung; see gpu/README.md
-    python3 rational_reconstruct.py X EPS     # fraction candidates
-
-Backend cupy/torch/numpy auto-selected; v1-slice checkpointing and
-multi-node splitting; compute estimates and the recommended rung
-schedule are in gpu/README.md.
-
 ## 6. Lean — compiled identity + certificate layers (paper §11(f))
 
     cd lean/RhGate
@@ -160,9 +150,9 @@ and the analytic chain are graded in paper §11.
 
 | constant | value | script |
 |---|---|---|
-| dual certificate & headline (EXACT) | w₀ = 1153107070889/11233957316589; 0.7947/0.8973 | certification/certify_lp.py + lean/RhGate/Certificate.lean |
+| dual certificate & headline (EXACT) | 0.7957/0.8978 | certification/certify_lp.py + lean/RhGate/Certificate.lean |
 | t_adj, t_opp, T₀–T₃, {2,2,2} (EXACT) | 7/60, 1/30, 3/70, 1/90, 1/180, 1/70, 131/420 | certification/exact_t222.py |
-| C₅, {4,2}, {6} (banded; rational by §s:conv) | 0.0278(1), −0.0552(8), −0.0078(8) | certification/midpoint_ladder.py |
+| C₅, {6} (IDENTIFIED), {4,2} (banded) | 1/36, −1/126, −0.0552(8) | gpu/COMPUTATION_REPORT.md + certification/midpoint_ladder.py |
 | F-CYC / F-TRACE gates | exact / ≤ 3.4e-14 | certification/cyclic_cumulant.py |
 | identity faces, LP grid edge | ALL PASS; 0.79472/0.89736 | pipeline/run_all.py |
 | certificate laws, κ(c), threshold | exact; 0.0721 | scripts/certificate_verification.py, moment_lp_reopt.py |

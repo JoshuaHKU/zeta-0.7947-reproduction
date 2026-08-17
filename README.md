@@ -1,9 +1,7 @@
-# More than 0.7947 of the zeros of the Riemann zeta function are simple and on the critical line
+# More than 0.7957 of the zeros of the Riemann zeta function are simple and on the critical line
 
 Preprint + self-contained reproduction, certification and Lean
 packages. / 预印本与自包含的复现、认证及 Lean 形式化包。
-
-Repository / 仓库: https://github.com/JoshuaHKU/zeta-0.7947-reproduction
 
 Built on the two-thirds preprint
 [[C26]](https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf)
@@ -22,8 +20,6 @@ development by Claude (Anthropic) — see the paper's Acknowledgements.
 | `pipeline/` | Identity & face gate suite, `python3 run_all.py` (~60 s, ALL PASS) / 恒等式与数值面门套件 |
 | `scripts/` | Constant suites and calibration faces (§3–§4 gates, GUE bands, sawtooth, quadrature) / 常数套件与校准面 |
 | `lean/RhGate/` | Core Lean 4 package: 4 modules, 20 theorems, 0 `sorry`, no mathlib; identity, local-law and certificate layers kernel-checked / 核心 Lean 4 包 |
-| `gpu/` | GPU midpoint-ladder engine for the cluster-scale N1 computation (cupy/torch/numpy backends, validated against the CPU engine) + rational reconstruction / N1 集群级计算的 GPU 引擎与有理重构 |
-| `paper-zh.tex` / `paper-zh.pdf` | Chinese translation (XeLaTeX; the English version is authoritative) / 中文译本（以英文版为准） |
 
 ## Quick start / 快速开始
 
@@ -40,8 +36,8 @@ cd lean/RhGate && lake build   # toolchain: leanprover/lean4:v4.33.0
 
 Headline, certified in exact rational arithmetic and kernel-checked
 in core Lean 4 (the rational-arithmetic layer):
-**N₀ˢ/N ≥ 1 − 2w₀ ≥ 0.7947, N_d/N ≥ 1 − w₀ ≥ 0.8973**, with
-w₀ = 1153107070889/11233957316589.
+**N₀ˢ/N ≥ 1 − 2w₀ ≥ 0.7957, N_d/N ≥ 1 − w₀ ≥ 0.8978** at the
+identified constants C₅ = 1/36, {6} = −1/126 (gpu/COMPUTATION_REPORT.md).
 
 ## Claim grade / 声明等级
 
