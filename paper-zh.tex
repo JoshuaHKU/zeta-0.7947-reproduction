@@ -2,35 +2,29 @@
 % 中文译本 / Chinese translation of:
 %   "More than 0.7947 of the zeros of the Riemann zeta function
 %    are simple and on the critical line" (paper.tex, August 2026)
-% Compile: xelatex paper-zh.tex (twice).  Overleaf: set compiler to XeLaTeX.
+% 编译: xelatex paper-zh.tex (两遍).
+% Overleaf: 菜单 Menu → Compiler 选 XeLaTeX 后 Recompile.
+% Compile with XeLaTeX (twice); on Overleaf set Compiler = XeLaTeX.
 \documentclass[11pt]{article}
 \usepackage[margin=1.1in]{geometry}
 \usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
 \usepackage{booktabs}
-\usepackage{fontspec}
-% CJK 断行与字体: 优先 xeCJK (Overleaf/完整 TeXLive), 否则回退到
-% XeTeX 原生 locale 断行 + 含 CJK 的主字体 (精简 TeXLive 亦可编译)
-\IfFileExists{xeCJK.sty}{%
-  \IfFileExists{ctexhook.sty}{%
-    \usepackage{xeCJK}%
-    \IfFontExistsTF{Noto Serif CJK SC}%
-      {\setCJKmainfont{Noto Serif CJK SC}}%
-      {\setCJKmainfont{Noto Sans CJK SC}}%
-  }{%
-    \XeTeXlinebreaklocale "zh"%
-    \XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt%
-    \IfFontExistsTF{Noto Sans CJK SC}%
-      {\setmainfont{Noto Sans CJK SC}}%
-      {\setmainfont{Noto Serif CJK SC}}%
-  }%
+% ---- 中文支持: ctex 优先 (Overleaf / 完整 TeX Live), 本地精简
+% ---- 环境自动回退到 fontspec + XeTeX locale 断行 ---------------
+\IfFileExists{ctex.sty}{%
+  \usepackage[UTF8]{ctex}%
+  \usepackage{fontspec}%
 }{%
-  \XeTeXlinebreaklocale "zh"%
-  \XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt%
+  \usepackage{fontspec}%
+  \XeTeXlinebreaklocale "zh"
   \IfFontExistsTF{Noto Sans CJK SC}%
     {\setmainfont{Noto Sans CJK SC}}%
     {\setmainfont{Noto Serif CJK SC}}%
 }
-\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=blue!55!black,urlcolor=blue!55!black]{hyperref}
 \numberwithin{equation}{section}
 \newtheorem{theorem}{定理}[section]
 \newtheorem{lemma}[theorem]{引理}
@@ -66,11 +60,11 @@ Lean~4 内核编译，零 \texttt{sorry}；\S\ref{s:verif}(f)），解析层未
 差异登记册、以及纲领的验证门（形式化与外部评审先于任何纪录性声明）
 见 \S\ref{s:verif} 与附录~\ref{a:record}。本文为英文原文之中文译本，
 以英文版为准。}}
-\author{杨鸿毅 (Hongyi Yang)\\[2pt]
-\small 多伦多大学 University of Toronto\\
+\author{杨弘毅\\[2pt]
+\small 多伦多大学\\
 \small \texttt{hongy.yang@mail.utoronto.ca}
-\and 杨世华 (Shihua Yang)\\[2pt]
-\small 香港大学 The University of Hong Kong\\
+\and 杨世华\\[2pt]
+\small 香港大学\\
 \small \texttt{u3590485@connect.hku.hk}}
 \date{2026 年 8 月}
 \begin{document}
@@ -116,8 +110,9 @@ $\{6\}=-0.0078(8)$ 为带明示带宽的中点网格阶梯求值
 （$194$ 项预注册检查，$34$ 项触发并转化，全部前向记录）记录了研究
 轨迹。
 \end{abstract}
-
+\newpage
 \tableofcontents
+\newpage
 
 \section{引言}\label{s:intro}
 
