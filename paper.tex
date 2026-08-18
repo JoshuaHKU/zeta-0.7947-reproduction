@@ -21,7 +21,7 @@ function are simple and on the critical
 line\thanks{Verification status (read this first): the chain of
 this paper consists of classical inputs, machine-verified
 identities, certified constants, and connected constants
-certified in exact rational arithmetic. Its claim
+proved in exact rational arithmetic. Its claim
 grade is \emph{certified-candidate}, not record: each connected
 constant is proved RATIONAL (a finite signed sum of rational
 polytope volumes, \S\ref{s:conv}), and all three are now
@@ -122,8 +122,9 @@ a falsifier registry
 forward-recorded) documents the research trail.
 \end{abstract}
 
+\newpage
 \tableofcontents
-
+\newpage
 \section{Introduction}\label{s:intro}
 
 That a positive proportion of the nontrivial zeros of $\zeta(s)$
@@ -202,9 +203,12 @@ moments are used exactly as established there
 (\S\ref{s:frame}). The advance is fourfold. \emph{(i) The
 moment ladder}: \cite{C26} consumes only
 $\mu_1\to1$, $\mu_2\to\tfrac43$; this paper evaluates
-$\mu_3\to2$ and $\mu_4\to\tfrac{13}4$ exactly, and
-$\mu_5$, $\mu_6$ up to three connected constants with proved
-rationality (\S\S\ref{s:cert}--\ref{s:five}). \emph{(ii)
+$\mu_3\to2$ and $\mu_4\to\tfrac{13}4$ exactly, and the
+$\mu_5$, $\mu_6$ layers at exact rational model values
+($\tfrac{101}{18}$, $\tfrac{12809}{1260}$), their three
+connected Ursell constants proved as exact rationals by
+symbolic polytope-volume integration
+(\S\S\ref{s:cert}--\ref{s:five}). \emph{(ii)
 The truncation technology}: the $\ell_1$-truncated cell ledger
 with Siegel--Walfisz/Vaughan closure (\S\ref{s:trunc}), absent
 from \cite{C26}, is what makes the higher moments computable
@@ -286,7 +290,7 @@ values.
 The research program behind this paper operates falsifier-first:
 every structural claim carries a pre-registered numerical check;
 corrections are recorded forward, never edited away; claims are
-graded. Thirty-four of the registry's checks have fired and been
+graded. Thirty-five of the registry's checks have fired and been
 converted --- several of them shaping this paper directly
 (Appendix~\ref{a:record}). The chain's grade, its named
 write-out items, and the results of the certification audit are
@@ -340,15 +344,16 @@ and $\sum m_\rho|\gamma_\rho|^{-2}<\infty$). The zero
 multiset is invariant under $\rho\mapsto1-\bar\rho$, so $W$
 is Hermitian. With $s=\tfrac12+i\tau$ define the prime-side
 densities
-\[
+\begin{gather*}
 \mu(\tau)=\frac1{2\pi}\mathrm{Re}\,
 \frac{\Gamma'}{\Gamma}\Bigl(\frac14+\frac{i\tau}2\Bigr)
--\frac{\log\pi}{2\pi},\quad
+-\frac{\log\pi}{2\pi}, \\
 \Pi_X(\tau)=\frac{1}{2\pi(\tfrac14+\tau^{2})}
-+\frac1\pi\,\mathrm{Re}\,\frac{X^{s}-1}{s},\quad
++\frac1\pi\,\mathrm{Re}\,\frac{X^{s}-1}{s}, \\
 P_X(\tau)=-\frac1\pi\sum_{n\le X}
 \frac{\LL(n)}{\sqrt n}\cos(\tau\log n),
-\]
+\end{gather*}
+
 and $\nu_X=\mu+\Pi_X+P_X$. Weil's explicit formula
 \cite{Wei52} (in the normalization of
 \cite[Thm.~5.12]{IK}, applied to $k=f*\tilde g$,
@@ -1326,7 +1331,8 @@ an ineffective input.
 
 \begin{lemma}[Minor and mixed leaves]\label{l:minor}
 For $\gamma$ minor at cutoff $P^{*}$ (denominator range
-$((\log X)^{B^{*}},Y(\log X)^{-B^{*}})$ by Dirichlet
+$((\log X)^{B^{*}}, \\ 
+Y(\log X)^{-B^{*}})$ by Dirichlet
 approximation), $|S(\gamma)|^{2}\ll Y^{2}(\log Y)^{-B^{*}/2+c_0}$
 by Vaughan's estimate. Hence the doubly-minor spectral mass
 carries a $(\log)^{-B^{*}+2c_0}$ saving squared, and each mixed
@@ -1465,7 +1471,8 @@ $0.11$--$1.29\%$.
 \subsection{Pair layers collapse onto certified anchors}
 
 The Bell$(5)=52$ and Bell$(6)=203$ class ledgers are
-machine-enumerated (class tables $1/10/15/10/10/5/1$ and
+machine-enumerated (class tables $1/10/15 \\
+/10/10/5/1$ and
 $1/15/45/15/20/60/10/15/15/6/1$; pentagon chords $10+5$; hexagon
 chords $30+15$; matching crossing spectrum $5/6/3/1$).
 Frozen-slot identities --- a singleton block repeats a walk value
@@ -1931,7 +1938,10 @@ is a single unknown shifting both constraints together. Both runs
 are recorded in the register (D3) so the sensitivity of the
 headline to the band model is on the record: under the
 (incorrect, doubly conservative) anti-correlated accounting the
-headline would read $0.7897/0.8949$.
+headline would have read $0.7897/0.8949$. With every band now
+retired and the inputs exact (\S\ref{s:five:conn}), the
+accounting question no longer arises; the note is kept as part
+of the forward record.
 
 \section{Numerical verification}\label{s:faces}
 
@@ -2029,7 +2039,7 @@ fraction} $-\tfrac{23}{420}$ exactly; the exact anchors ($0$
 at $b=3$, $-\tfrac1{60}$ at $b=4$) were reproduced by the
 identical pipeline at $10^{-18}$ in the same runs.
 
-The certification pass closed N1 symbolically: every term of
+The symbolic-certification pass (August 17) closed N1: every term of
 the three constants lifted to a rational polytope volume and
 evaluated by the exact facet recursion of
 \S\ref{s:five:conn}, $1310$ exact fractions archived per
@@ -2060,8 +2070,9 @@ truncation, \cite{MRT} for \S\ref{s:fm}) + archived certified
 lemmas (bridge, glue, aggregation, D1 truncation, consumer
 interface, anchor certificates: \S\ref{s:fm}) + the
 machine-verified identities of
-\S\S\ref{s:cert},~\ref{s:local}--\ref{s:five} + the numerically
-evaluated connected constants of \S\ref{s:five:conn} + the
+\S\S\ref{s:cert},~\ref{s:local}--\ref{s:five} + the
+symbolically certified connected constants of
+\S\ref{s:five:conn} + the
 consumption layer of \S\ref{s:frame}. Grades by layer:
 
 \emph{(a) Machine-exact or exact-rational, re-verified in the
@@ -2074,7 +2085,10 @@ fully exact two-bookkeeping reconciliation
 (Remark~\ref{r:books}); the exact pairing-layer constants
 $t_{\mathrm{adj}}=\tfrac7{60}$, $t_{\mathrm{opp}}=\tfrac1{30}$,
 $\{2,2,2\}=\tfrac{131}{420}$ (Proposition~\ref{p:t222},
-Appendix~\ref{a:cert}); the exact dual certificate
+Appendix~\ref{a:cert}); the symbolically certified connected
+constants $C_5=\tfrac1{36}$, $\{4,2\}=-\tfrac{23}{420}$,
+$\{6\}=-\tfrac1{126}$ (\S\ref{s:five:conn}; register D18);
+the exact dual certificate
 (Lemma~\ref{l:dual}) --- the consumption step involves no LP
 solver, no grid, and no support bound; the sawtooth constant
 $C_{\mathrm{saw}}=2.10$ (grid-plus-analytic certification).
@@ -2577,7 +2591,9 @@ expected outputs with the August 16, 2026 rerun values, and the
 mapping from every quoted constant to the script that regenerates
 it. Total runtime of the full set is under fifteen minutes on one
 CPU (the session package's optional long gates under thirty; the
-exact $\{2,2,2\}$ certification under two hours).
+exact $\{2,2,2\}$ certification under two hours; the N1
+polytope certification: $\{4,2\}$ and $C_5$ in minutes,
+$\{6\}$ in $9.1$ single-core hours, term-parallel).
 
 \section{The exact certification layer}\label{a:cert}
 
@@ -2793,7 +2809,7 @@ $x^{5}$-coefficient $-2(a{+}b{+}c)<0$ and $x^{6}$-coefficient
 $1>0$, so $y_5<0<y_6$ automatically --- hence the LP solver, the
 grid, and the extraction all leave the trust base, and only the
 exact rational evaluation of $w_0$ at the chosen triple remains,
-which is Lemma~\ref{l:dual} (kernel recompile queued). The
+which is Lemma~\ref{l:dual}. The
 rounding cost of the rationalization is below $10^{-6}$ in
 the headline. Verification:
 \texttt{certification/certify\_lp.py}; Lean:
